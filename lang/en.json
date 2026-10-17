@@ -6,7 +6,7 @@
     "ImageTips": "<p><strong>Best art for the sheet</strong></p><p>The image also fills the sheet's background, faint and cropped to fit.</p><ul><li>Portrait shape, taller than wide.</li><li>Transparent background (PNG or WebP), so only the character shows.</li><li>Face in the upper third.</li><li>About 1000 px tall or more.</li></ul><p>Wide images lose their sides, and token art shows its round frame.</p>",
     "Spellcast": "Spellcast",
     "Resource": {
-      "step": "Left click: +1 · Right click: −1"
+      "step": "{name} · Left click: +1 · Right click: −1"
     },
     "Favorite": {
       "section": "Favorites",

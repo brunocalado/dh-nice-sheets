@@ -153,21 +153,20 @@
     </div>
 </aside>
 
-{{!-- A vital as a card: its label over a ring with one segment per slot around a core icon. The ring
-     is open at the bottom and the count sits in the opening, which saves the card a line of its own.
-     The armor card is laid out as a banner by CSS alone, so the collapsed sheet can stack it like the
-     others without a re-render. --}}
+{{!-- A vital as a card: a ring with one segment per slot around a core icon. The ring is open at the
+     bottom and the count sits in the opening, which saves the card a line of its own. The icon and
+     hue name the resource, so the name shows only where it costs no height (the armor banner) and is
+     otherwise in the tooltip and the aria-label. The armor card is laid out as a banner by CSS
+     alone, so the collapsed sheet can stack it like the others without a re-render. --}}
 {{#*inline "ringCard"}}
-    <div class="nice-ring-card {{kind}}" data-action="niceStepResource" data-resource="{{resource}}"
-         {{#if @root.editable}}data-tooltip="DH_NICE_SHEETS.Resource.step"{{/if}}>
-        <span class="nice-ring-label">
-            {{label}}
-            {{!-- The system's action id carries this spelling. The click handler resolves the closest
-                 [data-action], so the gear opens the armor tooltip without also stepping the card. --}}
-            {{#if (and gear @root.editable card.max)}}
-                <a class="nice-ring-gear" data-action="toggleArmorMangement"><i class="fa-solid fa-gear" inert></i></a>
-            {{/if}}
-        </span>
+    <div class="nice-ring-card {{kind}}" data-action="niceStepResource" data-resource="{{resource}}" aria-label="{{label}}"
+         data-tooltip-text="{{#if @root.editable}}{{localize "DH_NICE_SHEETS.Resource.step" name=label}}{{else}}{{label}}{{/if}}">
+        <span class="nice-ring-label">{{label}}</span>
+        {{!-- The system's action id carries this spelling. The click handler resolves the closest
+             [data-action], so the gear opens the armor tooltip without also stepping the card. --}}
+        {{#if (and gear @root.editable card.max)}}
+            <a class="nice-ring-gear" data-action="toggleArmorMangement"><i class="fa-solid fa-gear" inert></i></a>
+        {{/if}}
         <div class="nice-ring">
             <svg viewBox="0 0 100 100" aria-hidden="true">
                 <circle class="well" cx="50" cy="50" r="35" />

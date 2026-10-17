@@ -185,13 +185,12 @@
     padding: 6px 12px;
 
     .nice-ring { grid-area: ring; }
-    .nice-ring-label { grid-area: label; }
+    .nice-ring-label { grid-area: label; display: block; }
   }
 
+  /* Shown on the armor banner only, where it sits beside the ring at no cost in height. */
   .nice-ring-label {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    display: none;
     font-family: var(--nice-font-display);
     font-size: var(--font-size-11);
     font-weight: 700;
@@ -203,9 +202,12 @@
   }
 
   .nice-ring-gear {
-    display: inline-grid;
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    display: grid;
     place-items: center;
-    font-size: 9px;
+    font-size: 10px;
     color: var(--nice-text-muted);
     transition: color 0.15s var(--nice-ease);
 
