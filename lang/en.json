@@ -1,0 +1,72 @@
+{
+  "DH_NICE_SHEETS": {
+    "SheetLabel": "Nice Sheet",
+    "Failure": "Nice Sheets ran into an error with Daggerheart {version}, so parts of the character sheet may be missing, or the system's sheet opens in its place. Until Nice Sheets is updated, switch to the system's sheet with Configure Sheet, in the sheet window's menu. The details are in the browser console (F12).",
+    "ChangeImage": "Change character image",
+    "ImageTips": "<p><strong>Best art for the sheet</strong></p><p>The image also fills the sheet's background, faint and cropped to fit.</p><ul><li>Portrait shape, taller than wide.</li><li>Transparent background (PNG or WebP), so only the character shows.</li><li>Face in the upper third.</li><li>About 1000 px tall or more.</li></ul><p>Wide images lose their sides, and token art shows its round frame.</p>",
+    "Spellcast": "Spellcast",
+    "Favorite": {
+      "section": "Favorites",
+      "add": "Add to favorites",
+      "remove": "Remove from favorites"
+    },
+    "Collapse": {
+      "collapse": "Collapse to the sidebar",
+      "expand": "Expand the sheet"
+    },
+    "Group": {
+      "collapse": "Collapse this group",
+      "expand": "Expand this group"
+    },
+    "LevelUp": {
+      "title": "Level Up",
+      "content": "Raise {name} to level {level}?",
+      "pending": "{name} has a level up to level {level} waiting. Open the level-up manager?",
+      "level": "Level {level}",
+      "levels": "Levels {start}–{end}",
+      "left": "{count} left to choose",
+      "allChosen": "All advancements chosen",
+      "choicesLeft": "Settle the advancement choices to continue",
+      "levelReady": "Level {level} is ready",
+      "readyToFinish": "Everything is set. Finish to apply the level up",
+      "unfinished": "Some levels still have choices to make"
+    },
+    "TagTeam": {
+      "label": "Tag Team",
+      "ready": "Ask the table for a Tag Team (costs {cost} Hope)",
+      "noHope": "A Tag Team needs {cost} Hope",
+      "chat": "{name} wants to use a Tag Team",
+      "cost": "Costs {cost} Hope"
+    },
+    "Notes": {
+      "tab": "Notes",
+      "title": "Notes",
+      "placeholder": "Write anything here. It saves as you type."
+    },
+    "Settings": {
+      "ShowBiography": {
+        "name": "Show the biography under Notes",
+        "hint": "Shows the system's biography fields (pronouns, age, faith, background, connections) below the notes in the Notes tab. Hidden by default; this choice is saved on your user."
+      },
+      "SuggestSheet": {
+        "name": "Suggest the Nice Sheet to players",
+        "hint": "The first time a player opens their character in another sheet, ask once whether to switch to the Nice Sheet. A player who says no is not asked again."
+      }
+    },
+    "Offer": {
+      "title": "Try the Nice Sheet",
+      "content": "Open <strong>{name}</strong> in the Nice Sheet? It keeps every roll and action of the system's sheet, with a richer design.",
+      "hint": "This changes the sheet of this character for everyone who opens it. You can switch back at any time with Configure Sheet, in the sheet window's menu.",
+      "yes": "Switch to the Nice Sheet",
+      "no": "Keep this sheet"
+    },
+    "Container": {
+      "make": "Use as container",
+      "unmake": "Stop using as container",
+      "takeOut": "Take out of the container",
+      "count": "Items stored here",
+      "empty": "Drag items here to store them",
+      "equipped": "Equipped items can't go in a container. Unequip it first."
+    }
+  }
+}

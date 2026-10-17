@@ -1,0 +1,33 @@
+<section class="tab {{tabs.experiences.cssClass}}" data-tab="{{tabs.experiences.id}}" data-group="{{tabs.experiences.group}}">
+    <div class="nice-scroll">
+        <fieldset class="nice-panel">
+            <legend>
+                {{localize tabs.experiences.label}}
+                <a class="nice-legend-button" data-action="addExperience"
+                   data-tooltip="{{localize "DOCUMENT.New" type=(localize "DAGGERHEART.GENERAL.experience.single")}}">
+                    <i class="fa-solid fa-plus" inert></i>
+                </a>
+            </legend>
+            <ol class="nice-exp-list">
+                {{#each document._source.system.experiences as |experience key|}}
+                    <li class="nice-exp">
+                        <div class="nice-exp-head">
+                            <input class="nice-exp-value" type="text" inputmode="numeric" data-dtype="Number"
+                                   name="system.experiences.{{key}}.value" value="{{numberFormat experience.value sign=true}}" />
+                            <input class="nice-exp-name" type="text" name="system.experiences.{{key}}.name" value="{{experience.name}}"
+                                   placeholder="{{localize "DAGGERHEART.GENERAL.name"}}" />
+                            {{!-- Core experiences come from the character's heritage and cannot be removed. --}}
+                            <a class="nice-exp-delete {{#if experience.core}}disabled{{/if}}"
+                               {{#unless experience.core}}data-action="removeExperience"{{/unless}} data-experience="{{key}}"
+                               data-tooltip="{{#if experience.core}}{{localize "DAGGERHEART.ACTORS.Character.cannotRemoveCoreExperience"}}{{else}}{{localize "CONTROLS.CommonDelete"}}{{/if}}">
+                                <i class="fa-solid fa-trash" inert></i>
+                            </a>
+                        </div>
+                        <textarea class="nice-exp-description" name="system.experiences.{{key}}.description" rows="2"
+                                  placeholder="{{localize "DAGGERHEART.GENERAL.description"}}">{{experience.description}}</textarea>
+                    </li>
+                {{/each}}
+            </ol>
+        </fieldset>
+    </div>
+</section>

@@ -1,0 +1,55 @@
+<section class="tab {{tabs.inventory.cssClass}} {{tabs.inventory.id}}" data-tab="{{tabs.inventory.id}}" data-group="{{tabs.inventory.group}}">
+    {{!-- `search-inventory` is the input the system's SearchFilter binds to. The purse shares the
+         row: only the currencies enabled in the system's homebrew settings are rendered, and the
+         search field absorbs whatever width they leave. --}}
+    <div class="search-section nice-toolbar">
+        <div class="search-bar">
+            <input type="search" name="search" class="search-inventory" placeholder="{{localize "DAGGERHEART.GENERAL.searchPlaceholder"}}" />
+            <i class="fa-solid fa-magnifying-glass" inert></i>
+        </div>
+        {{#if nice.currencies.length}}
+            <div class="nice-purse">
+                {{#each nice.currencies as |currency|}}
+                    <label class="nice-coin" data-tooltip="{{localize currency.label}}">
+                        <i class="{{currency.icon}}" inert></i>
+                        <span class="nice-coin-label">{{localize currency.label}}</span>
+                        <input type="text" name="{{currency.field.fieldPath}}" data-allow-delta value="{{currency.value}}" data-dtype="Number" min="0" step="1" />
+                    </label>
+                {{/each}}
+            </div>
+        {{/if}}
+    </div>
+
+    {{!-- Containers come first, so they are in reach as drop targets; the type sections list only
+         the items no container holds (see NiceCharacterSheet.#sortIntoContainers). --}}
+    <div class="items-section nice-scroll nice-sections">
+        {{#each nice.inventory.containers as |container|}}
+            {{> "modules/dh-nice-sheets/templates/container.hbs" container=container}}
+        {{/each}}
+        {{> itemSection title='TYPES.Item.weapon' type='weapon' collection=@root.nice.inventory.weapons}}
+        {{> itemSection title='TYPES.Item.armor' type='armor' collection=@root.nice.inventory.armor}}
+        {{> itemSection title='TYPES.Item.consumable' type='consumable' collection=@root.nice.inventory.consumables isQuantifiable=true}}
+        {{> itemSection title='TYPES.Item.loot' type='loot' collection=@root.nice.inventory.loot showActions=@root.editable isQuantifiable=true}}
+    </div>
+</section>
+
+{{!-- The system's `daggerheart.inventory-items` fieldset, rebuilt so its plaque can carry the
+     collapse toggle. The rows are still the system's partial, with the same parameters. --}}
+{{#*inline "itemSection"}}
+    <fieldset class="nice-panel drop-section {{#if (lookup @root.nice.collapsedGroups type)}}nice-group-collapsed{{/if}}" data-group-type="{{type}}">
+        <legend>
+            <span>{{localize title}}</span>
+            {{#if @root.editable}}
+                <a class="nice-legend-button" data-action="addNewItem" data-document-class="Item" data-type="{{type}}" data-tooltip="{{localize 'DOCUMENT.Create' type=''}}">
+                    <i class="fa-solid fa-plus" inert></i>
+                </a>
+            {{/if}}
+            {{> "modules/dh-nice-sheets/templates/group-toggle.hbs" collapsed=(lookup @root.nice.collapsedGroups type)}}
+        </legend>
+        <ul class="items-list">
+            {{#each collection as |item|}}
+                {{> 'daggerheart.inventory-item' item=item type=../type actorType=@root.document.type isQuantifiable=../isQuantifiable showActions=../showActions}}
+            {{/each}}
+        </ul>
+    </fieldset>
+{{/inline}}

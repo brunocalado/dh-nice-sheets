@@ -1,0 +1,57 @@
+{
+  "id": "dh-nice-sheets",
+  "title": "Daggerheart: Nice Sheets",
+  "description": "An alternative, selectable character sheet for the Daggerheart system with a richer visual design. Reuses every native roll and action of the system.",
+  "version": "0.0.1",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14",
+    "maximum": "14"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "daggerheart",
+        "type": "system",
+        "compatibility": {
+          "minimum": "2.10.13",
+          "verified": "2.10.13"
+        }
+      }
+    ]
+  },
+  "authors": [
+    {
+      "name": "Mestre Digital",
+      "url": "http://youtube.com/@mestredigital",
+      "flags": {}
+    }
+  ],
+  "esmodules": [
+    "scripts/main.js"
+  ],
+  "styles": [
+    { "src": "styles/base.css" },
+    { "src": "styles/sheet-frame.css" },
+    { "src": "styles/sidebar.css" },
+    { "src": "styles/header.css" },
+    { "src": "styles/traits-tabs.css" },
+    { "src": "styles/tab-bodies.css" },
+    { "src": "styles/limited.css" },
+    { "src": "styles/settings.css" },
+    { "src": "styles/levelup.css" },
+    { "src": "styles/collapsed.css" },
+    { "src": "styles/motion.css" }
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "https://github.com/brunocalado/dh-nice-sheets",
+  "manifest": "https://github.com/brunocalado/dh-nice-sheets/releases/latest/download/module.json",
+  "download": "https://github.com/brunocalado/dh-nice-sheets/releases/latest/download/module.zip",
+  "flags": {}
+}

@@ -1,0 +1,13 @@
+<header class="nice-settings-header">
+    {{!-- The core `editImage` action requires an <img> target, so the picker is the art itself. --}}
+    <span class="nice-settings-medallion">
+        <img class="nice-settings-portrait" src="{{document.img}}" alt=""
+             {{#if editable}}data-action="editImage" data-edit="img" data-tooltip="DH_NICE_SHEETS.ChangeImage"{{/if}} />
+        {{#if editable}}
+            {{!-- The art also becomes the sheet's backdrop, which some image shapes suit better. --}}
+            <i class="nice-image-tips fa-solid fa-circle-info" data-tooltip="DH_NICE_SHEETS.ImageTips"
+               data-tooltip-class="nice-image-tips-tooltip" data-tooltip-direction="RIGHT"></i>
+        {{/if}}
+    </span>
+    <h1 class="actor-name">{{document.name}}</h1>
+</header>

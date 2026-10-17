@@ -1,0 +1,108 @@
+<section class="tab {{tabs.selections.cssClass}}" data-tab="{{tabs.selections.id}}" data-group="{{tabs.selections.group}}">
+    <ol class="nice-lu-steps">
+        {{#each newExperiences}}
+            <li class="nice-lu-step {{#if this.name}}done{{/if}}">
+                <span class="nice-lu-step-mark"></span>
+                <span class="nice-lu-step-title">{{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.newExperiences"}}</span>
+                <div class="nice-lu-step-body nice-lu-experience">
+                    <input type="text" name="{{concat "levelup.levels." this.level ".achievements.experiences." this.key ".name"}}" value="{{this.name}}" placeholder="{{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.experiencePlaceholder"}}" />
+                    <span class="nice-lu-experience-bonus">{{numberFormat this.modifier sign=true}}</span>
+                </div>
+            </li>
+        {{/each}}
+
+        {{#if traits.active}}
+            <li class="nice-lu-step {{#if nice.traitsDone}}done{{/if}}">
+                <span class="nice-lu-step-mark"></span>
+                <span class="nice-lu-step-title">
+                    {{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.traits"}}
+                    <span class="nice-lu-step-count">{{traits.progress.selected}}/{{traits.progress.max}}</span>
+                </span>
+                <div class="nice-lu-step-body">
+                    <input type="text" class="levelup-trait-increases" value="{{traits.values}}" />
+                </div>
+            </li>
+        {{/if}}
+
+        {{#if experienceIncreases.active}}
+            <li class="nice-lu-step {{#if nice.experienceIncreasesDone}}done{{/if}}">
+                <span class="nice-lu-step-mark"></span>
+                <span class="nice-lu-step-title">
+                    {{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.experienceIncreases"}}
+                    <span class="nice-lu-step-count">{{experienceIncreases.progress.selected}}/{{experienceIncreases.progress.max}}</span>
+                </span>
+                <div class="nice-lu-step-body">
+                    <input type="text" class="levelup-experience-increases" value="{{experienceIncreases.values}}" />
+                </div>
+            </li>
+        {{/if}}
+
+        {{#if (gt domainCards.length 0)}}
+            <li class="nice-lu-step nice-lu-card-step {{#if nice.domainCardsDone}}done{{/if}}">
+                <span class="nice-lu-step-mark"></span>
+                <span class="nice-lu-step-title">
+                    {{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.domainCards"}}
+                    <span class="nice-lu-step-count">{{nice.domainCardsChosen}}/{{domainCards.length}}</span>
+                </span>
+                <div class="nice-lu-step-body">
+                    <div class="levelup-card-selection domain-cards">
+                        {{#each domainCards}}
+                            {{#> "systems/daggerheart/templates/components/card-preview.hbs" this }}{{/"systems/daggerheart/templates/components/card-preview.hbs"}}
+                        {{/each}}
+                    </div>
+                    {{#if nice.domainCardHints.length}}
+                        <ul class="nice-lu-card-hints">
+                            {{#each nice.domainCardHints}}<li>{{this}}</li>{{/each}}
+                        </ul>
+                    {{/if}}
+                </div>
+            </li>
+        {{/if}}
+
+        {{#if (gt subclassCards.length 0)}}
+            <li class="nice-lu-step nice-lu-card-step {{#if nice.subclassDone}}done{{/if}}">
+                <span class="nice-lu-step-mark"></span>
+                <span class="nice-lu-step-title">{{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.subclass"}}</span>
+                <div class="nice-lu-step-body">
+                    <div class="levelup-card-selection subclass-cards">
+                        {{#each subclassCards}}
+                            {{> "systems/daggerheart/templates/levelup/parts/selectable-card-preview.hbs" img=this.img header=this.featureLabel name=this.name path=this.path selected=this.selected uuid=this.uuid isMulticlass=this.isMulticlass featureState=this.featureState disabled=this.disabled }}
+                        {{/each}}
+                    </div>
+                </div>
+            </li>
+        {{/if}}
+
+        {{#if multiclass}}
+            <li class="nice-lu-step nice-lu-card-step {{#if nice.multiclassDone}}done{{/if}}">
+                <span class="nice-lu-step-mark"></span>
+                <span class="nice-lu-step-title">{{localize "DAGGERHEART.APPLICATIONS.Levelup.summary.multiclass"}}</span>
+                <div class="nice-lu-step-body">
+                    <div class="levelup-card-selection multiclass-cards" data-path="{{multiclass.path}}" data-tier="{{multiclass.tier}}" data-min-cost="{{multiclass.minCost}}" data-amount="{{multiclass.amount}}" data-value="{{multiclass.value}}" data-type="{{multiclass.type}}">
+                        {{#> "systems/daggerheart/templates/components/card-preview.hbs" multiclass }}{{/"systems/daggerheart/templates/components/card-preview.hbs"}}
+                        {{#if multiclass.domains}}
+                            <div class="nice-lu-picks">
+                                {{#each multiclass.domains}}
+                                    <div class="nice-lu-pick {{#if this.disabled}}disabled{{/if}} {{#if this.selected}}selected{{/if}}" {{#unless this.disabled}}data-action="selectDomain" data-uuid="{{../multiclass.uuid}}" data-domain="{{this.id}}" data-path="{{../multiclass.path}}"{{/unless}}>
+                                        <img class="svg" src="{{this.src}}" alt="" />
+                                        <span>{{localize this.label}}</span>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        {{/if}}
+                        {{#if multiclass.subclasses}}
+                            <div class="nice-lu-picks">
+                                {{#each multiclass.subclasses}}
+                                    <div class="nice-lu-pick {{#if this.disabled}}disabled{{/if}} {{#if this.selected}}selected{{/if}}" {{#unless this.disabled}}data-action="selectSubclass" data-uuid="{{../multiclass.uuid}}" data-subclass="{{this.uuid}}" data-path="{{../multiclass.path}}"{{/unless}}>
+                                        <img src="{{this.img}}" alt="" />
+                                        <span>{{localize this.name}}</span>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        {{/if}}
+                    </div>
+                </div>
+            </li>
+        {{/if}}
+    </ol>
+</section>

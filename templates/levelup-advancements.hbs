@@ -1,0 +1,12 @@
+<section class="tab {{tabs.advancements.cssClass}}" data-tab="{{tabs.advancements.id}}" data-group="{{tabs.advancements.group}}">
+    <div class="nice-lu-budget {{#unless nice.left}}done{{/unless}}">
+        <span class="nice-lu-budget-level">{{localize "DH_NICE_SHEETS.LevelUp.level" level=nice.level}}</span>
+        <span class="nice-lu-budget-picks">
+            {{#each nice.picks as |taken|}}<span class="nice-lu-budget-pick {{#if taken}}taken{{/if}}"></span>{{/each}}
+        </span>
+        <span class="nice-lu-budget-text">
+            {{#if nice.left}}{{localize "DH_NICE_SHEETS.LevelUp.left" count=nice.left}}{{else}}{{localize "DH_NICE_SHEETS.LevelUp.allChosen"}}{{/if}}
+        </span>
+    </div>
+    {{> "modules/dh-nice-sheets/templates/levelup-tiers.hbs" tiers=nice.tiers}}
+</section>

@@ -1,0 +1,8 @@
+<section class="tab {{tabs.loadout.cssClass}} {{tabs.loadout.id}}" data-tab="{{tabs.loadout.id}}" data-group="{{tabs.loadout.group}}">
+    {{!-- No search or filter here: rows the system's loadout filters hide are shown again (see
+         NiceCharacterSheet#_attachPartListeners). --}}
+    <div class="items-section nice-scroll nice-sections">
+        {{> 'daggerheart.inventory-items' title='DAGGERHEART.GENERAL.Tabs.loadout' type='domainCard' collection=document.system.domainCards.loadout canCreate=@root.editable inVault=false}}
+        {{> 'daggerheart.inventory-items' title='DAGGERHEART.GENERAL.Tabs.vault' type='domainCard' collection=document.system.domainCards.vault canCreate=@root.editable inVault=true}}
+    </div>
+</section>

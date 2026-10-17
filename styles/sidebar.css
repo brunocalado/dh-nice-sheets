@@ -1,0 +1,660 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The sidebar (templates/sidebar.hbs): death banner, vitals and resource tracks, Evasion and
+   Proficiency plaques, damage thresholds, massive damage and the shortcut lists. */
+
+/* ========================================================================== */
+/*  Sidebar                                                                     */
+/* ========================================================================== */
+.dh-nice-sheets {
+  .nice-sidebar {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    width: var(--nice-column);
+    border-right: 1px solid var(--nice-line);
+    background: linear-gradient(180deg, var(--nice-sidebar-shade-top), var(--nice-sidebar-shade-mid) 40%, var(--nice-sidebar-shade-bottom));
+  }
+
+  /* Too little room left for the item list: the sidebar scrolls as one column and the list
+     drops its own scroll (toggled by the sheet's #fitSidebar). */
+  .nice-sidebar.nice-scroll-all {
+    overflow-y: auto;
+
+    .shortcut-items-section {
+      flex: none;
+      overflow-y: visible;
+    }
+  }
+
+  /* Death-move ready: a breathing skull banner at the top of the sidebar. */
+  .nice-death-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: calc(var(--header-height) + 6px) 10px -4px;
+    padding: 6px 10px;
+    border: 1px solid var(--nice-death);
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(159, 179, 200, 0.18), rgba(0, 0, 0, 0.35));
+    color: var(--nice-death);
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-11);
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(159, 179, 200, 0.7);
+    box-shadow: 0 0 16px rgba(159, 179, 200, 0.25);
+    transition: color 0.3s var(--nice-ease), background 0.3s var(--nice-ease);
+
+    i {
+      animation: nice-breathe 2.6s ease-in-out infinite;
+    }
+
+    &:hover {
+      color: #fff;
+      background: linear-gradient(180deg, rgba(159, 179, 200, 0.35), rgba(0, 0, 0, 0.35));
+    }
+  }
+
+  /* ---- Vitals ------------------------------------------------------------------ */
+  /* With the death banner in the drag-bar strip, the section title has nowhere to go. */
+  .nice-death-banner + .nice-vitals > .nice-section-title {
+    display: none;
+  }
+
+  .nice-vitals {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    /* The window's drag bar overlays the top of the content: the title is centred in that strip
+       and the first track starts just below it. */
+    padding: 10px 10px 10px;
+    border-bottom: 1px solid var(--nice-line);
+
+    > .nice-section-title {
+      margin: 0 0 4px;
+    }
+  }
+
+  .nice-track {
+    /* Each track has its own hue — red hit points, violet stress, steel armor — and the label,
+       the leader rule, the count and the pips all take it, so the row reads as one unit. */
+    --nice-track-hue: var(--nice-gold);
+    --nice-track-glow: var(--nice-gold-bright);
+    --nice-track-ink: var(--nice-accent);
+    border-radius: 6px;
+    padding: 3px 6px 5px;
+    transition: background 0.3s var(--nice-ease);
+
+    &.hp { --nice-track-hue: var(--nice-hp); --nice-track-glow: var(--nice-hp-glow); --nice-track-ink: var(--nice-hp-glow); }
+    &.stress { --nice-track-hue: var(--nice-stress); --nice-track-glow: var(--nice-stress-glow); --nice-track-ink: var(--nice-stress-glow); }
+    &.armor { --nice-track-hue: var(--nice-armor); --nice-track-glow: var(--nice-armor-glow); --nice-track-ink: var(--nice-armor-glow); }
+
+    > header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .nice-track-label {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-11);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--nice-track-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+
+      i {
+        font-size: 10px;
+        opacity: 0.7;
+      }
+    }
+
+    a.nice-track-label:hover {
+      color: var(--nice-track-glow);
+    }
+
+    /* Leader rule: ties the label to its count across the empty middle of the row. */
+    .nice-track-rule {
+      flex: 1 1 auto;
+      min-width: 12px;
+      height: 1px;
+      background: linear-gradient(90deg,
+        color-mix(in srgb, var(--nice-track-hue) 70%, transparent),
+        color-mix(in srgb, var(--nice-track-hue) 20%, transparent) 45%,
+        color-mix(in srgb, var(--nice-track-hue) 70%, transparent));
+    }
+
+    .nice-track-count {
+      flex: 0 0 auto;
+      display: inline-flex;
+      align-items: baseline;
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-16);
+      font-weight: 700;
+      line-height: 1;
+      color: var(--nice-track-ink);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+
+      .max {
+        font-size: var(--font-size-11);
+        color: var(--nice-text-muted);
+      }
+
+      .sep {
+        margin: 0 2px;
+        opacity: 0.6;
+      }
+    }
+
+    .nice-track-input {
+      /* Size to the digits, so the leader rule ends the same distance from the number as on the
+         armor row, which has no input. */
+      field-sizing: content;
+      min-width: 1ch;
+      height: 1.2em;
+      min-height: 0;
+      padding: 0;
+      border: none;
+      border-bottom: 1px solid transparent;
+      border-radius: 0;
+      background: transparent;
+      /* The system frosts every input (blur + shadow); here the count must read as plain text. */
+      box-shadow: none;
+      backdrop-filter: none;
+      color: inherit;
+      font: inherit;
+      text-align: right;
+      -moz-appearance: textfield;
+      transition: border-color 0.2s;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        appearance: none;
+        margin: 0;
+      }
+
+      &:hover, &:focus {
+        border-bottom-color: var(--nice-track-glow);
+        outline: none;
+        box-shadow: none;
+      }
+    }
+
+    .nice-pips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .nice-pip {
+      flex: 0 0 auto;
+      width: 20px;
+      height: 12px;
+      border: 1px solid color-mix(in srgb, var(--nice-track-hue) 65%, transparent);
+      border-radius: 3px;
+      background: rgba(0, 0, 0, 0.35);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.6);
+      transition: transform 0.18s var(--nice-ease), background 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+      &:hover {
+        transform: translateY(-1px) scale(1.12);
+        border-color: var(--nice-track-glow);
+      }
+
+      &.filled {
+        background: linear-gradient(180deg, var(--nice-track-glow), var(--nice-track-hue) 60%, color-mix(in srgb, var(--nice-track-hue) 70%, black));
+        border-color: var(--nice-track-glow);
+        box-shadow: 0 0 8px color-mix(in srgb, var(--nice-track-hue) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      }
+    }
+
+    /* Armor uses shield glyphs instead of bars. */
+    &.armor .nice-pip {
+      width: 20px;
+      height: 20px;
+      border: none;
+      background: none;
+      box-shadow: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: color-mix(in srgb, var(--nice-armor) 40%, transparent);
+      font-size: 15px;
+
+      &.filled {
+        color: var(--nice-armor-glow);
+        text-shadow: 0 0 8px color-mix(in srgb, var(--nice-armor) 80%, transparent);
+      }
+    }
+
+    /* Extra resources (homebrew or feature-granted) keep the default gold hue and draw the icons
+       configured for them. Their names are free text, so the label gives way to the count and
+       truncates instead of wrapping. */
+    &.extra {
+      .nice-track-label {
+        flex: 0 1 auto;
+        min-width: 0;
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .nice-pip {
+        width: 18px;
+        height: 18px;
+        border: none;
+        background: none;
+        box-shadow: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: color-mix(in srgb, var(--nice-track-hue) 55%, transparent);
+        font-size: 13px;
+
+        img {
+          width: 16px;
+          height: 16px;
+          border: none;
+        }
+
+        img.tinted {
+          filter: var(--golden-filter, brightness(0) saturate(100%) invert(89%) sepia(13%) saturate(2008%) hue-rotate(332deg) brightness(99%) contrast(92%));
+        }
+
+        &.filled {
+          color: var(--nice-track-glow);
+          text-shadow: 0 0 8px color-mix(in srgb, var(--nice-track-hue) 80%, transparent);
+        }
+      }
+    }
+
+    .nice-track-empty {
+      font-size: var(--font-size-12);
+      color: var(--nice-text-muted);
+      font-style: italic;
+    }
+
+    &.flash-worse { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
+    &.flash-better { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
+  }
+
+  /* ---- Evasion / Proficiency plaques -------------------------------------------- */
+  .nice-defense {
+    position: relative;
+    display: flex;
+    gap: 6px;
+    margin-top: 9px;
+
+    /* A faint rule sets the defenses apart from the tracks above. */
+    &::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      inset-inline: 6px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--nice-line), transparent);
+    }
+  }
+
+  /* Each plaque starts from its own content width and the spare room is shared equally, so a
+     longer label or a two-digit value takes what it needs and the label stays centred. */
+  .nice-stat {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 6px;
+    background: var(--nice-panel);
+    box-shadow: 0 2px 4px var(--nice-shadow);
+    overflow: hidden;
+
+    .label {
+      flex: 1 1 auto;
+      min-width: 0;
+      align-self: center;
+      padding: 0 6px;
+      font-family: var(--nice-font-display);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-align: center;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: var(--nice-accent);
+    }
+
+    .value {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      padding: 6px 8px;
+      border-left: 1px solid var(--nice-panel-border);
+      background: rgba(0, 0, 0, 0.3);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-18);
+      font-weight: 700;
+      line-height: 1;
+      /* Cinzel's digits sit off-centre in their line box; trim it to the cap height so the
+         number centres in the plaque. */
+      text-box: trim-both cap alphabetic;
+      color: var(--nice-text);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  /* ---- Damage thresholds ----------------------------------------------------------
+     One bar split into the three damage bands, with each threshold mark set on the border it
+     defines: damage below the first mark is Minor, at or above it Major, at or above the second
+     Severe. */
+  .nice-thresholds {
+    /* The marks take no width of their own (see .mark), so the bands meet under each diamond.
+       Major loses room on both sides, so it gets a wider track to show as much as the others. */
+    display: grid;
+    grid-template-columns: 1fr auto 1.25fr auto 1fr;
+    align-items: center;
+    margin-top: 2px;
+
+    .band {
+      --nice-band: var(--nice-accent);
+      /* An opaque base under the tint, so the text reads against a dark (or light) ground
+         rather than against the art backdrop. */
+      --nice-band-base: var(--nice-ink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      min-width: 0;
+      height: 30px;
+      border-block: 1px solid color-mix(in srgb, var(--nice-band) 55%, transparent);
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--nice-band) 20%, var(--nice-band-base)),
+        color-mix(in srgb, var(--nice-band) 7%, var(--nice-band-base)));
+
+      /* Half a diamond covers each seam; pad that side so the text centres in what shows. */
+      &.minor { padding-right: 16px; }
+      &.major { padding-inline: 16px; }
+      &.severe { padding-left: 16px; }
+
+      &.minor {
+        border-left: 1px solid color-mix(in srgb, var(--nice-band) 55%, transparent);
+        border-radius: 6px 0 0 6px;
+      }
+
+      &.major { --nice-band: #ffab5e; }
+
+      &.severe {
+        --nice-band: #ff7088;
+        border-right: 1px solid color-mix(in srgb, var(--nice-band) 55%, transparent);
+        border-radius: 0 6px 6px 0;
+      }
+    }
+
+    .name {
+      color: var(--nice-band);
+    }
+
+    /* Each mark is set on the seam between two bands (its diamond is drawn below, shared with
+       the Massive band). The negative margins cancel its width, so it overlaps both neighbours
+       instead of opening a gap between them; the block ones keep the row at the bands' 30px, so
+       the Massive band below meets them without a seam. */
+    .mark {
+      margin: -1px -16px;
+    }
+  }
+
+  /* ---- Massive damage -------------------------------------------------------------
+     The variant rule's fourth band. The row is too narrow for a fourth segment, so it hangs
+     under the thresholds as a full-width band of the same height, joined to them as one block:
+     the bands above square their bottom corners and their bottom border serves as the seam. */
+  .nice-thresholds:has(+ .nice-massive) .band {
+    &.minor { border-bottom-left-radius: 0; }
+    &.severe { border-bottom-right-radius: 0; }
+  }
+
+  .nice-massive {
+    --nice-band: #e5332f;
+    /* Diamond, name and cost spread with equal space between them and at the edges. */
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 30px;
+    border: 1px solid color-mix(in srgb, var(--nice-band) 55%, transparent);
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    background: linear-gradient(180deg,
+      color-mix(in srgb, var(--nice-band) 20%, var(--nice-ink)),
+      color-mix(in srgb, var(--nice-band) 7%, var(--nice-ink)));
+
+    .name {
+      color: color-mix(in srgb, var(--nice-band) 75%, var(--nice-text));
+    }
+  }
+
+  /* Names, costs and the diamond marks look the same in both rows. The diamond is a rotated
+     ::before, so the number stays upright inside it. */
+  :is(.nice-thresholds, .nice-massive) {
+    .name, .cost {
+      font-family: var(--nice-font-display);
+      font-weight: 700;
+      line-height: 1;
+      text-box: trim-both cap alphabetic;
+      text-transform: uppercase;
+      white-space: nowrap;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+    }
+
+    .name {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
+    .cost {
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      color: color-mix(in srgb, var(--nice-text) 85%, transparent);
+    }
+
+    .mark {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-13);
+      font-weight: 700;
+      line-height: 1;
+      text-box: trim-both cap alphabetic;
+      color: var(--nice-gold-bright);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 5px;
+        z-index: -1;
+        transform: rotate(45deg);
+        border: 1px solid var(--nice-gold);
+        border-radius: 3px;
+        background: linear-gradient(135deg, var(--nice-ink-3), var(--nice-ink));
+        box-shadow: 0 2px 6px var(--nice-shadow), inset 0 0 0 2px rgba(var(--nice-gold-rgb), 0.12);
+      }
+    }
+  }
+
+  /* ---- Shortcut lists ------------------------------------------------------------ */
+  .shortcut-items-section {
+    flex: 1;
+    padding: 10px 8px 12px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nice-side-section {
+
+    .items-sidebar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .items-sidebar-list:empty::after,
+    .experience-list:empty::after {
+      content: "\2014";
+      display: block;
+      text-align: center;
+      color: var(--nice-text-muted);
+      font-size: var(--font-size-12);
+    }
+
+    /* One line per row. The stats live in the item tooltip (icon and name) and Send to Chat in
+       the ⋮ menu, so the sidebar keeps only what tells the rows apart. */
+    .inventory-item-compact {
+      grid-template: "img name controls" auto / 32px 1fr min-content;
+      align-items: center;
+      padding: 3px 4px;
+      border-radius: 5px;
+      transition: background 0.2s var(--nice-ease);
+
+      &:hover {
+        background: var(--nice-accent-soft);
+      }
+
+      > .item-labels,
+      > .controls > [data-action="toChat"] {
+        display: none;
+      }
+
+      /* Chrome takes the line box from different font tables on Windows and Linux, which moved
+         the name a pixel or two off the icon's center on one of them. Trimming the box to cap
+         height and baseline centers the letters themselves on every platform. */
+      /* Long names cut to one line; the full name is in the item tooltip. The clip box is the
+         trimmed text box, so padding (cancelled by the margin) keeps ascenders and descenders. */
+      > .item-name {
+        align-self: center;
+        min-width: 0;
+        padding-block: 0.3em;
+        margin-block: -0.3em;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        text-box: trim-both cap alphabetic;
+      }
+
+      > .controls {
+        align-self: center;
+        padding-top: 0;
+        margin-bottom: 0;
+      }
+
+      > .img-portait {
+        flex-basis: 32px;
+        height: 32px;
+
+        .item-img,
+        .roll-img {
+          width: 32px;
+          height: 32px;
+        }
+      }
+
+      /* Domain cards carry a colored spine (the system sets --domain-color). It is drawn as its
+         own bar: a one-sided border would follow the row's rounded corners and read as a bracket. */
+      &[data-type="domainCard"] {
+        position: relative;
+        padding-left: 11px;
+
+        /* Same height as the icon and centered on it, so the two read as one unit. */
+        &::before {
+          content: "";
+          position: absolute;
+          left: 2px;
+          top: 50%;
+          height: 32px;
+          transform: translateY(-50%);
+          width: 3px;
+          border-radius: 2px;
+          background: var(--domain-color, var(--nice-gold));
+        }
+      }
+    }
+  }
+
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .experience-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 4px;
+    border-radius: 5px;
+    transition: background 0.2s var(--nice-ease);
+
+    &:hover {
+      background: var(--nice-accent-soft);
+    }
+
+    .experience-value {
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 24px;
+      clip-path: var(--nice-pennant-shape);
+      background: var(--nice-pennant-fill);
+      color: var(--nice-ink);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-12);
+      font-weight: 700;
+      padding-bottom: 3px;
+    }
+
+    .experience-name {
+      flex: 1;
+      font-size: var(--font-size-13);
+      line-height: 1.15;
+    }
+
+    .experience-chat {
+      opacity: 0;
+      transition: opacity 0.2s;
+      color: var(--nice-accent);
+    }
+
+    &:hover .experience-chat {
+      opacity: 1;
+    }
+  }
+}

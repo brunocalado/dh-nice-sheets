@@ -1,0 +1,35 @@
+<section class="tab {{tabs.biography.cssClass}} {{tabs.biography.id}}" data-tab="{{tabs.biography.id}}" data-group="{{tabs.biography.group}}">
+    <div class="items-section nice-scroll nice-sections">
+        <fieldset class="nice-panel nice-notes">
+            <legend><span>{{localize 'DH_NICE_SHEETS.Notes.title'}}</span></legend>
+            <textarea name="{{nice.notes.name}}" placeholder="{{localize 'DH_NICE_SHEETS.Notes.placeholder'}}" {{#unless @root.editable}}disabled{{/unless}}>{{nice.notes.value}}</textarea>
+        </fieldset>
+
+        {{#if nice.showBiography}}
+        <div class="nice-characteristics">
+            <label class="nice-field">
+                <span>{{localize 'DAGGERHEART.ACTORS.Character.pronouns'}}</span>
+                {{formInput systemFields.biography.fields.characteristics.fields.pronouns value=source.system.biography.characteristics.pronouns enriched=source.system.biography.characteristics.pronouns localize=true toggled=true}}
+            </label>
+            <label class="nice-field">
+                <span>{{localize 'DAGGERHEART.ACTORS.Character.age'}}</span>
+                {{formInput systemFields.biography.fields.characteristics.fields.age value=source.system.biography.characteristics.age enriched=source.system.biography.characteristics.age localize=true toggled=true}}
+            </label>
+            <label class="nice-field">
+                <span>{{localize 'DAGGERHEART.ACTORS.Character.faith'}}</span>
+                {{formInput systemFields.biography.fields.characteristics.fields.faith value=source.system.biography.characteristics.faith enriched=source.system.biography.characteristics.faith localize=true toggled=true}}
+            </label>
+        </div>
+
+        <fieldset class="nice-panel nice-story biography-section">
+            <legend><span>{{localize 'DAGGERHEART.ACTORS.Character.story.backgroundTitle'}}</span></legend>
+            {{formInput background.field value=background.value enriched=background.enriched toggled=true}}
+        </fieldset>
+
+        <fieldset class="nice-panel nice-story biography-section">
+            <legend><span>{{localize 'DAGGERHEART.ACTORS.Character.story.connectionsTitle'}}</span></legend>
+            {{formInput connections.field value=connections.value enriched=connections.enriched toggled=true}}
+        </fieldset>
+        {{/if}}
+    </div>
+</section>

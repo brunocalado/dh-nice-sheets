@@ -1,0 +1,146 @@
+<header class="nice-header">
+    <div class="nice-title-row">
+        <div class="nice-name-block">
+            <h1
+                class="actor-name input"
+                contenteditable="plaintext-only"
+                data-property="name"
+                placeholder="{{localize "DAGGERHEART.GENERAL.actorName"}}"
+                autocomplete="off"
+                spellcheck="false"
+            >{{source.name}}</h1>
+            {{!-- `character-details` is the selector the system binds its heritage context menu to. --}}
+            <div class="nice-heritage character-details">
+                <div class="nice-heritage-line">
+                    {{> heritage item=document.system.class.value key="classes" label=(localize "TYPES.Item.class")}}
+                    <span class="dot" inert>&#9670;</span>
+                    {{> heritage item=document.system.class.subclass key="subclasses" label=(localize "TYPES.Item.subclass")}}
+                    <span class="dot" inert>&#9670;</span>
+                    {{> heritage item=document.system.community key="communities" label=(localize "TYPES.Item.community")}}
+                    <span class="dot" inert>&#9670;</span>
+                    {{> heritage item=document.system.ancestry key="ancestries" label=(localize "TYPES.Item.ancestry")}}
+                </div>
+                {{#if (or document.system.multiclass.value document.system.multiclass.subclass)}}
+                    <div class="nice-heritage-line multiclass">
+                        {{> heritage item=document.system.multiclass.value key="classes" label=(localize "DAGGERHEART.GENERAL.multiclass")}}
+                        <span class="dot" inert>&#9670;</span>
+                        {{> heritage item=document.system.multiclass.subclass key="subclasses" label=(localize "TYPES.Item.subclass")}}
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+
+        {{!-- Domains sit in the dead space beside the name as medallions, so the Hope row has room
+             to grow. The caption mirrors the level badge's. --}}
+        {{#if nice.domains.length}}
+            <div class="nice-domains">
+                {{#each nice.domains as |domain|}}
+                    <span class="nice-domain" style="--domain-color: {{domain.color}}" data-tooltip="{{domain.description}}">
+                        <span class="nice-domain-coin"><img src="{{domain.src}}" alt="" /></span>
+                        <span class="nice-domain-caption">{{domain.label}}</span>
+                    </span>
+                {{/each}}
+            </div>
+        {{/if}}
+
+        <div class="nice-level">
+            {{#if nice.needsSetup}}
+                {{#if @root.editable}}
+                    <button type="button" class="nice-setup-button" data-action="levelManagement">
+                        <i class="fa-solid fa-wand-sparkles" inert></i>
+                        {{localize "DAGGERHEART.APPLICATIONS.CharacterCreation.buttonTitle"}}
+                    </button>
+                {{/if}}
+            {{else}}
+                {{!-- Read-only medal: the level only changes through the system's level-up manager,
+                     which the click opens after a confirmation. --}}
+                <a class="nice-level-badge {{#if nice.canLevelUp}}ready{{/if}}"
+                   {{#if (and @root.editable nice.canRaiseLevel)}}data-action="niceLevelUp"{{/if}}
+                   {{#if nice.canLevelUp}}data-tooltip="DAGGERHEART.ACTORS.Character.levelUp"{{/if}}>
+                    <span class="nice-level-coin"><span class="nice-level-number">{{nice.level}}</span></span>
+                    <span class="nice-level-caption">{{localize "DAGGERHEART.GENERAL.level"}}</span>
+                </a>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="nice-status-row">
+        <div class="nice-hope">
+            <span class="nice-hope-label">{{localize "DAGGERHEART.GENERAL.hope"}}</span>
+            <div class="nice-hope-gems">
+                {{#each nice.hope.pips as |pip|}}
+                    <a class="nice-gem {{#if pip.filled}}lit{{/if}}" data-action="toggleHope" data-value="{{pip.index}}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path class="gem-body" d="M12 1.5 22.5 12 12 22.5 1.5 12Z" />
+                            <path class="gem-facet" d="M12 1.5 22.5 12H1.5Z" />
+                            <path class="gem-spark" d="M12 5.5 15 12l-3 6.5L9 12Z" />
+                        </svg>
+                    </a>
+                {{/each}}
+                {{#each nice.scars}}
+                    <span class="nice-gem scar" data-tooltip="DAGGERHEART.GENERAL.scars"><i class="fa-regular fa-ban" inert></i></span>
+                {{/each}}
+            </div>
+            <span class="nice-hope-count">{{nice.hope.value}}<span class="sep">/</span>{{nice.hope.max}}</span>
+            {{!-- A reminder, not automation: it lights while the character can afford a Tag Team and a
+                 click only announces the wish in chat. The header is hidden while collapsed, so it is
+                 too. aria-disabled rather than disabled, so the tooltip still shows. --}}
+            <button type="button" class="nice-tag-team {{#if nice.tagTeam.ready}}lit{{/if}}"
+                    {{#if (and @root.editable nice.tagTeam.ready)}}data-action="niceTagTeam"{{else}}aria-disabled="true"{{/if}}
+                    aria-label="{{localize "DH_NICE_SHEETS.TagTeam.label"}}" data-tooltip="{{nice.tagTeam.tooltip}}">
+                <i class="fa-solid fa-people-arrows" inert></i>
+            </button>
+        </div>
+
+        <div class="nice-rest">
+            {{#if nice.hasParties}}
+                <button type="button" data-action="viewParty" data-tooltip="DAGGERHEART.ACTORS.Character.viewParty">
+                    <i class="fa-solid fa-fw fa-users" inert></i>
+                </button>
+            {{/if}}
+            {{#if @root.editable}}
+                <button type="button" data-action="useDowntime" data-type="shortRest" data-tooltip="DAGGERHEART.APPLICATIONS.Downtime.shortRest.title">
+                    <i class="fa-solid fa-fw fa-campground" inert></i>
+                </button>
+                <button type="button" data-action="useDowntime" data-type="longRest" data-tooltip="DAGGERHEART.APPLICATIONS.Downtime.longRest.title">
+                    <i class="fa-solid fa-fw fa-moon" inert></i>
+                </button>
+            {{/if}}
+        </div>
+    </div>
+
+    <div class="nice-traits">
+        {{#each nice.traits as |trait|}}
+            <a class="nice-trait nice-mat-{{trait.material}}"
+               data-action="rollAttribute" data-attribute="{{trait.key}}" data-value="{{trait.value}}">
+                {{!-- Block params do not reach a partial, so the trait is passed by name. --}}
+                {{> "modules/dh-nice-sheets/templates/trait-fx.hbs" trait=trait}}
+                {{#if trait.crowned}}<span class="nice-trait-crest" inert></span>{{/if}}
+                <span class="nice-trait-name">{{trait.label}}</span>
+                <span class="nice-trait-value">{{trait.signed}}</span>
+                {{#if trait.isSpellcasting}}<span class="nice-trait-tag">{{localize "DH_NICE_SHEETS.Spellcast"}}</span>{{/if}}
+            </a>
+        {{/each}}
+    </div>
+
+    <nav class="nice-tabs sheet-tabs tabs" data-group="primary">
+        {{#each tabs as |tab|}}
+            <a class="nice-tab {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+                <span>{{localize tab.label}}</span>
+            </a>
+        {{/each}}
+        <div class="nice-tab-tools">
+            <button type="button" class="nice-tab-settings" data-action="openSettings" data-tooltip="DAGGERHEART.UI.Tooltip.openSheetSettings">
+                <i class="fa-solid fa-wrench" inert></i>
+            </button>
+        </div>
+    </nav>
+</header>
+
+{{#*inline "heritage"}}
+    {{#if item}}
+        <span class="nice-chip" data-action="editDoc" data-item-uuid="{{item.uuid}}" {{#if (or (eq item.type "ancestry") (eq item.type "community") (eq item.type "subclass"))}}data-tooltip="#item#{{item.uuid}}"{{/if}}>{{item.name}}</span>
+    {{else}}
+        <span class="nice-chip missing-header-feature" data-action="openPack" data-key="{{key}}">{{label}}</span>
+    {{/if}}
+{{/inline}}

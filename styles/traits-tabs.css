@@ -1,0 +1,398 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The trait plaques and their materials, and the tab strip, from templates/header.hbs (the
+   settings window and the collapsed sheet reuse the plaques). */
+
+.dh-nice-sheets {
+  /* ---- Traits ------------------------------------------------------------------------ */
+  /* Each trait is a plaque whose material follows its rank within this character (#traits in
+     character-sheet.js). Every material holds the same text contrast — names about 8.5:1, values
+     13:1 — so a low trait is never harder to read; the emphasis lives in the border, the outer
+     glow, the crest and the sigil. */
+  .nice-traits {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px 2px 0;
+  }
+
+  .nice-trait {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    height: 56px;
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.25s var(--nice-ease), filter 0.25s var(--nice-ease);
+
+    &:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.12);
+    }
+
+    &:active {
+      transform: translateY(-1px) scale(0.97);
+    }
+
+    &:focus-visible {
+      outline: 1px solid var(--nice-gold-bright);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Clips the sheen, sigil, motes, crack and tier notch to the plaque; the crest sits outside. */
+  .nice-trait-fx {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .nice-trait-name {
+    position: relative;
+    z-index: 1;
+    max-width: calc(100% - 8px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-family: var(--nice-font-display);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .nice-trait-value {
+    position: relative;
+    z-index: 1;
+    font-family: var(--nice-font-display);
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    text-box: trim-both cap alphabetic;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+  }
+
+  .nice-trait-tag {
+    position: relative;
+    z-index: 1;
+    margin-top: 2px;
+    font-family: var(--nice-font-display);
+    font-size: 6.5px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--nice-gold-bright);
+  }
+
+  .nice-tier-mark {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-top: 11px solid var(--nice-gold);
+    border-left: 11px solid transparent;
+    filter: drop-shadow(0 0 4px rgba(var(--nice-gold-rgb), 0.9));
+  }
+
+  .nice-trait-crest {
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    transform: rotate(45deg);
+    background: var(--nice-diamond-fill);
+    border: 1px solid var(--nice-gold-deep);
+    z-index: 3;
+    box-shadow: 0 0 6px var(--nice-gold);
+
+    /* The pulse: a brighter glow on a layer of its own whose opacity rises and falls. Animating
+       the box-shadow itself repainted the plaque every frame. */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      box-shadow: 0 0 14px var(--nice-gold-bright), 0 0 4px #fff;
+      opacity: 0;
+      animation: nice-crest 5s ease-in-out infinite;
+    }
+  }
+
+  .nice-trait-crack {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .nice-trait-sigil {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    margin: -50px 0 0 -50px;
+    color: var(--nice-arcane-light);
+    opacity: 0.22;
+    animation: nice-turn 40s linear infinite;
+  }
+
+  .nice-trait-mote {
+    position: absolute;
+    bottom: -4px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: #efe1ff;
+    box-shadow: 0 0 6px var(--nice-arcane-light);
+    opacity: 0;
+    animation: nice-mote 3.2s ease-in infinite;
+
+    &:nth-of-type(1) { left: 18%; }
+    &:nth-of-type(2) { left: 42%; animation-delay: 0.9s; }
+    &:nth-of-type(3) { left: 66%; animation-delay: 1.7s; }
+    &:nth-of-type(4) { left: 84%; animation-delay: 2.4s; }
+  }
+
+  /* Each material below sets its value colour in --nice-trait-value-color, read here and by the
+     settings window's value input. */
+  :is(.nice-trait, .nice-compact-trait) .nice-trait-value {
+    color: var(--nice-trait-value-color);
+  }
+
+  /* Lowest value: cracked cold iron. */
+  .nice-mat-iron {
+    background: linear-gradient(180deg, #2e3442, #1a1e29);
+    border: 1px solid rgba(160, 176, 200, 0.5);
+    box-shadow: inset 0 1px 0 rgba(214, 228, 247, 0.14), inset 0 -2px 6px rgba(0, 0, 0, 0.5);
+    --nice-trait-value-color: #e9eff8;
+
+    .nice-trait-name { color: #c2ccdb; }
+  }
+
+  /* The values between the lowest and the highest climb slate, bronze, brass. */
+  .nice-mat-slate {
+    background: linear-gradient(180deg, #3a3550, #221f33);
+    border: 1px solid rgba(201, 184, 232, 0.5);
+    box-shadow: inset 0 1px 0 rgba(234, 226, 250, 0.16), inset 0 -2px 6px rgba(0, 0, 0, 0.45);
+    --nice-trait-value-color: #f6f3fc;
+
+    .nice-trait-name { color: #d8cbee; }
+  }
+
+  .nice-mat-bronze {
+    background: linear-gradient(180deg, #4a2f26, #2b1a15);
+    border: 1px solid rgba(214, 142, 106, 0.6);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 214, 192, 0.18),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.45),
+      0 0 8px rgba(214, 142, 106, 0.08);
+    --nice-trait-value-color: #fff3ec;
+
+    .nice-trait-name { color: #ecbfa8; }
+  }
+
+  .nice-mat-brass {
+    background: linear-gradient(180deg, #45382a, #2a2119);
+    border: 1px solid rgba(224, 184, 106, 0.75);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 232, 180, 0.2),
+      inset 0 -2px 6px rgba(0, 0, 0, 0.45),
+      0 0 10px rgba(var(--nice-gold-rgb), 0.14);
+    --nice-trait-value-color: #fff5df;
+
+    .nice-trait-name { color: #ead09c; }
+  }
+
+  /* Highest value: live gold, kept dark at the center so the white value holds 13:1. */
+  .nice-mat-gold {
+    background:
+      radial-gradient(120% 70% at 50% 100%, rgba(255, 214, 130, 0.4), transparent 70%),
+      linear-gradient(180deg, #3a2b1d, #1f160e);
+    border: 1.5px solid var(--nice-gold-bright);
+    box-shadow:
+      inset 0 0 10px rgba(255, 214, 130, 0.3),
+      0 0 24px rgba(var(--nice-gold-rgb), 0.55),
+      0 0 50px rgba(var(--nice-gold-rgb), 0.2);
+    --nice-trait-value-color: #fff;
+
+    .nice-trait-name { color: #e3bd7a; }
+    .nice-trait-value { font-size: 25px; }
+  }
+
+  .nice-mat-gold .nice-trait-fx::after,
+  .nice-mat-spell-top .nice-trait-fx::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(110deg, transparent 35%, rgba(255, 244, 214, 0.4) 50%, transparent 65%);
+    animation: nice-sheen 10s ease-in-out infinite;
+  }
+
+  /* Spellcast trait: arcane violet behind a rotating conic ring. The ring is an element of its
+     own (`.nice-trait-ring`, in trait-fx.hbs and the compact traits), so its spin never competes
+     with the plaque's entrance animation (`nice-rise`, which owns the `animation` property until
+     the sheet settles). It is masked down to the border, and inside it a square twice its width
+     carries the gradient and turns: only `transform` animates, which the compositor handles,
+     where spinning the gradient's angle repainted the plaque every frame. */
+  .nice-mat-spell,
+  .nice-mat-spell-top {
+    gap: 2px;
+    border: 1.5px solid transparent;
+  }
+
+  .nice-trait-ring {
+    position: absolute;
+    inset: -1.5px;
+    padding: 1.5px;
+    border-radius: inherit;
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 200%;
+      aspect-ratio: 1;
+      translate: -50% -50%;
+      animation: nice-turn 9s linear infinite;
+    }
+  }
+
+  .nice-mat-spell {
+    background: radial-gradient(90% 90% at 50% 25%, #3a2a72, #171430 72%) padding-box;
+    box-shadow: 0 0 18px rgba(139, 79, 214, 0.55), 0 0 40px rgba(139, 79, 214, 0.2);
+    --nice-trait-value-color: #f5ecff;
+
+    .nice-trait-ring::before {
+      background: conic-gradient(var(--nice-arcane), var(--nice-gold-bright) 14%, var(--nice-arcane) 30%, #2a1d55 55%, var(--nice-arcane-light) 78%, var(--nice-arcane));
+    }
+
+    .nice-trait-name { color: #dccbf3; }
+  }
+
+  /* Spellcast trait that is also the highest: the arcane plaque threaded with gold. */
+  .nice-mat-spell-top {
+    background:
+      radial-gradient(100% 70% at 50% 100%, rgba(255, 214, 130, 0.3), transparent 60%) padding-box,
+      radial-gradient(90% 90% at 50% 25%, #3a2a72, #171430 72%) padding-box;
+    box-shadow:
+      0 0 20px rgba(139, 79, 214, 0.65),
+      0 0 44px rgba(139, 79, 214, 0.25),
+      0 8px 24px rgba(var(--nice-gold-rgb), 0.5);
+    --nice-trait-value-color: #fff;
+
+    .nice-trait-ring::before {
+      background: conic-gradient(var(--nice-gold-bright), var(--nice-arcane) 18%, #fff6dc 38%, var(--nice-arcane-light) 58%, var(--nice-gold) 78%, var(--nice-gold-bright));
+      animation-duration: 8s;
+    }
+
+    .nice-trait-name { color: #ebcf9d; }
+    .nice-trait-value { font-size: 25px; }
+    .nice-trait-sigil { color: var(--nice-gold-bright); }
+    .nice-trait-mote { background: #fff3d6; box-shadow: 0 0 6px #ffc860; }
+  }
+
+  /* ---- Tabs ------------------------------------------------------------------------- */
+  .nice-tabs {
+    display: flex;
+    align-items: stretch;
+    gap: 2px;
+    margin: 4px 0 0;
+    padding: 0;
+    border: none;
+    border-bottom: 1px solid var(--nice-line);
+    background: none;
+  }
+
+  .nice-tab {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    padding: 0 4px;
+    overflow: hidden;
+    color: var(--nice-text-muted);
+    font-family: var(--nice-font-display);
+    font-size: clamp(10px, 1.25cqi, var(--font-size-12));
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 6px 6px 0 0;
+    transition: color 0.2s var(--nice-ease), background 0.2s var(--nice-ease);
+
+    &:hover {
+      color: var(--nice-text);
+      background: var(--nice-accent-soft);
+      text-shadow: none;
+    }
+
+    &.active {
+      color: var(--nice-accent);
+      background: linear-gradient(180deg, transparent, var(--nice-accent-soft));
+      text-shadow: none;
+
+      /* A gem marker sitting on the baseline. */
+      &::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        bottom: -5px;
+        width: 8px;
+        height: 8px;
+        transform: translateX(-50%) rotate(45deg);
+        background: var(--nice-gold);
+        box-shadow: 0 0 8px var(--nice-gold);
+      }
+    }
+  }
+
+  .nice-tab-tools {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+  }
+
+  .nice-tab-settings {
+    width: 26px;
+    height: 26px;
+    min-height: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--nice-text-muted);
+    font-size: var(--font-size-12);
+    transition: color 0.2s, border-color 0.2s, transform 0.3s var(--nice-ease), filter 0.3s var(--nice-ease);
+
+    &:hover {
+      color: var(--nice-accent);
+      border-color: var(--nice-line);
+      transform: rotate(45deg);
+    }
+  }
+}

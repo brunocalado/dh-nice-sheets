@@ -1,0 +1,42 @@
+<div class="nice-lu-tiers">
+    {{#each tiers as |tier|}}
+        <article class="nice-lu-tier {{#if tier.current}}current{{/if}} {{#if tier.locked}}locked{{/if}}">
+            <header class="nice-lu-tier-head">
+                <h3 class="nice-lu-tier-name">{{tier.name}}</h3>
+                {{#if tier.levels}}
+                    <span class="nice-lu-tier-levels">{{localize "DH_NICE_SHEETS.LevelUp.levels" start=tier.levels.start end=tier.levels.end}}</span>
+                {{/if}}
+            </header>
+            <ul class="nice-lu-options">
+                {{#each tier.options as |option|}}
+                    <li class="nice-lu-option {{#if option.taken}}taken{{/if}} {{#if option.closed}}closed{{/if}} {{#if option.target}}open{{/if}}">
+                        <label class="nice-lu-option-text" {{#if option.target}}for="{{option.target}}"{{/if}}>{{option.label}}</label>
+                        <span class="nice-lu-gems">
+                            {{#each option.gems as |gem|}}
+                                <label class="nice-lu-gem {{#if gem.multi}}double{{/if}} {{#if gem.selected}}selected{{/if}} {{#if gem.spent}}spent{{/if}} {{#if gem.blocked}}blocked{{/if}}"
+                                    {{#if gem.clickable}}for="{{gem.id}}"{{/if}}>
+                                    {{#if gem.multi}}<span class="nice-lu-gem-cost">2</span>{{/if}}
+                                    {{#if gem.clickable}}
+                                        {{#each gem.inputs as |box|}}
+                                            <input type="checkbox" class="selection-checkbox" {{#if @first}}id="{{box.id}}"{{/if}} {{checked box.selected}}
+                                                data-tier="{{box.tier}}"
+                                                data-level="{{box.level}}"
+                                                data-option="{{box.option}}"
+                                                data-checkbox-nr="{{box.checkboxNr}}"
+                                                data-cost="{{box.minCost}}"
+                                                data-amount="{{box.amount}}"
+                                                data-value="{{box.value}}"
+                                                data-type="{{box.type}}"
+                                                data-sub-type="{{box.subType}}"
+                                            />
+                                        {{/each}}
+                                    {{/if}}
+                                </label>
+                            {{/each}}
+                        </span>
+                    </li>
+                {{/each}}
+            </ul>
+        </article>
+    {{/each}}
+</div>

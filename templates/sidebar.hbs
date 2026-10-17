@@ -1,0 +1,221 @@
+<aside class="nice-sidebar {{#if isDeath}}death{{/if}}">
+    {{!-- The character art sits behind the whole sheet as a faint backdrop; it is positioned against
+         `.window-content`, so it is not confined to the sidebar. --}}
+    {{#if nice.backdrop}}
+        <div class="nice-backdrop" style="background-image: url('{{nice.backdrop}}')" inert></div>
+        <div class="nice-backdrop-hope" style="background-image: url('{{nice.backdrop}}')" inert></div>
+    {{/if}}
+    <div class="nice-hope-glow" inert></div>
+
+    {{!-- Shown only while the sheet is collapsed, when the header holding the trait plaques is hidden. --}}
+    <div class="nice-compact-traits">
+        {{#each nice.traits as |trait|}}
+            <a class="nice-compact-trait nice-mat-{{trait.material}}" data-tooltip="{{trait.label}}"
+               data-action="rollAttribute" data-attribute="{{trait.key}}" data-value="{{trait.value}}">
+                {{#if trait.isSpellcasting}}<span class="nice-trait-ring" inert></span>{{/if}}
+                <span class="nice-trait-name">{{trait.short}}</span>
+                <span class="nice-trait-value">{{trait.signed}}</span>
+            </a>
+        {{/each}}
+    </div>
+
+    {{#if isDeath}}
+        <a class="nice-death-banner" data-action="makeDeathMove">
+            <i class="fa-solid fa-skull" inert></i>
+            <span>{{localize "DAGGERHEART.APPLICATIONS.DeathMove.takeMove"}}</span>
+            <i class="fa-solid fa-skull" inert></i>
+        </a>
+    {{/if}}
+
+    <section class="nice-vitals">
+        {{!-- Sits in the strip under the window's drag bar, which nothing interactive can use. --}}
+        <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.Resource.plural"}}</span></h3>
+
+        {{> track track=nice.hitPoints kind="hp" label=(localize "DAGGERHEART.GENERAL.HitPoints.short") action="toggleHitPoints" name="system.resources.hitPoints.value"}}
+        {{> track track=nice.stress kind="stress" label=(localize "DAGGERHEART.GENERAL.stress") action="toggleStress" name="system.resources.stress.value"}}
+
+        {{!-- Collapsed sheets only: stands in for the header's Hope row, which is hidden then. --}}
+        <div class="nice-track hope">
+            <header>
+                <span class="nice-track-label">{{localize "DAGGERHEART.GENERAL.hope"}}</span>
+                <span class="nice-track-rule"></span>
+                <span class="nice-track-count">{{nice.hope.value}}<span class="max"><span class="sep">/</span>{{nice.hope.max}}</span></span>
+            </header>
+            <div class="nice-pips">
+                {{#each nice.hope.pips as |pip|}}
+                    <a class="nice-gem {{#if pip.filled}}lit{{/if}}" data-action="toggleHope" data-value="{{pip.index}}">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path class="gem-body" d="M12 1.5 22.5 12 12 22.5 1.5 12Z" />
+                            <path class="gem-facet" d="M12 1.5 22.5 12H1.5Z" />
+                            <path class="gem-spark" d="M12 5.5 15 12l-3 6.5L9 12Z" />
+                        </svg>
+                    </a>
+                {{/each}}
+                {{#each nice.scars}}
+                    <span class="nice-gem scar" data-tooltip="DAGGERHEART.GENERAL.scars"><i class="fa-regular fa-ban" inert></i></span>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="nice-track armor">
+            <header>
+                {{!-- The system's action id carries this spelling; it opens the per-source armor tooltip. --}}
+                <a class="nice-track-label" data-action="toggleArmorMangement">
+                    {{localize "DAGGERHEART.GENERAL.armorSlots"}}
+                    {{#if (and @root.editable nice.armor.max)}}<i class="fa-solid fa-gear" inert></i>{{/if}}
+                </a>
+                <span class="nice-track-rule"></span>
+                <span class="nice-track-count">{{nice.armor.value}}<span class="max"><span class="sep">/</span>{{nice.armor.max}}</span></span>
+            </header>
+            <div class="nice-pips">
+                {{#each nice.armor.pips as |pip|}}
+                    <a class="nice-pip shield {{#if pip.filled}}filled{{/if}}" data-action="toggleArmor" data-value="{{pip.index}}">
+                        <i class="fa-solid {{#if pip.filled}}fa-shield{{else}}fa-shield-halved{{/if}}" inert></i>
+                    </a>
+                {{/each}}
+                {{#unless nice.armor.max}}<span class="nice-track-empty">{{localize "DAGGERHEART.GENERAL.armor"}} &mdash;</span>{{/unless}}
+            </div>
+        </div>
+
+        {{#each nice.extraResources as |resource|}}
+            <div class="nice-track extra">
+                <header>
+                    <span class="nice-track-label" data-tooltip-text="{{resource.label}}">{{resource.label}}</span>
+                    <span class="nice-track-rule"></span>
+                    <span class="nice-track-count">{{resource.value}}<span class="max"><span class="sep">/</span>{{resource.max}}</span></span>
+                </header>
+                <div class="nice-pips">
+                    {{#each resource.pips as |pip|}}
+                        <a class="nice-pip {{#if pip.filled}}filled{{/if}}" data-action="niceToggleResource" data-resource="{{resource.key}}" data-value="{{pip.index}}">
+                            {{#if pip.filled}}{{> resourceIcon icon=resource.fullIcon}}{{else}}{{> resourceIcon icon=resource.emptyIcon}}{{/if}}
+                        </a>
+                    {{/each}}
+                </div>
+            </div>
+        {{/each}}
+
+        <div class="nice-defense">
+            <div class="nice-stat evasion">
+                <span class="label">{{localize "DAGGERHEART.GENERAL.evasion"}}</span>
+                <span class="value">{{document.system.evasion}}</span>
+            </div>
+            <div class="nice-stat proficiency">
+                <span class="label">{{localize "DAGGERHEART.GENERAL.proficiency"}}</span>
+                <span class="value">{{document.system.proficiency}}</span>
+            </div>
+        </div>
+
+        {{!-- Thresholds and the Massive band form one block, so the column's gap doesn't split them. --}}
+        <div class="nice-damage">
+            {{!-- Damage below the Major mark is Minor (1 HP), from Major up to Severe is Major (2 HP),
+                 and from Severe up is Severe (3 HP); the marks sit on the borders between the bands. --}}
+            <div class="nice-thresholds">
+                <span class="band minor">
+                    <span class="name">{{localize "DAGGERHEART.GENERAL.DamageThresholds.minor"}}</span>
+                    <span class="cost">1 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                </span>
+                <span class="mark">{{nice.thresholds.major}}</span>
+                <span class="band major">
+                    <span class="name">{{localize "DAGGERHEART.GENERAL.DamageThresholds.major"}}</span>
+                    <span class="cost">2 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                </span>
+                <span class="mark">{{nice.thresholds.severe}}</span>
+                <span class="band severe">
+                    <span class="name">{{localize "DAGGERHEART.GENERAL.DamageThresholds.severe"}}</span>
+                    <span class="cost">3 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                </span>
+            </div>
+            {{#if nice.massiveDamage}}
+                <div class="nice-massive">
+                    <span class="mark">{{nice.massiveDamage}}</span>
+                    <span class="name">{{localize "DAGGERHEART.SETTINGS.VariantRules.FIELDS.massiveDamage.title"}}</span>
+                    <span class="cost">4 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                </div>
+            {{/if}}
+        </div>
+    </section>
+
+    <div class="shortcut-items-section nice-scroll">
+        {{#if nice.favorites.length}}
+            <div class="nice-side-section favorites-section">
+                <h3 class="nice-section-title"><span>{{localize "DH_NICE_SHEETS.Favorite.section"}}</span></h3>
+                <ul class="items-sidebar-list">
+                    {{#each nice.favorites as |item|}}
+                        {{> 'daggerheart.inventory-item-compact' item=item type=item.type}}
+                    {{/each}}
+                </ul>
+            </div>
+        {{/if}}
+
+        <div class="nice-side-section equipment-section">
+            <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.equipment"}}</span></h3>
+            <ul class="items-sidebar-list">
+                {{#if document.system.usesUnarmed}}
+                    {{> 'daggerheart.inventory-item-compact' item=document.system.attack type='attack'}}
+                {{/if}}
+                {{#each equippedItems as |item|}}
+                    {{> 'daggerheart.inventory-item-compact' item=item type=item.type}}
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="nice-side-section loadout-section" data-in-vault="false">
+            <h3 class="nice-section-title">
+                <span>{{localize "DAGGERHEART.GENERAL.loadout"}}</span>
+                <small class="nice-slot-count">{{nice.loadoutSlot.current}}</small>
+            </h3>
+            <ul class="items-sidebar-list">
+                {{#each document.system.domainCards.loadout as |card|}}
+                    {{> 'daggerheart.inventory-item-compact' item=card type='domainCard'}}
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="nice-side-section experience-section">
+            <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.Experience.plural"}}</span></h3>
+            <div class="experience-list">
+                {{#each document.system.experiences as |experience id|}}
+                    <div class="experience-row" data-tooltip-text="{{experience.description}}">
+                        <span class="experience-value">{{numberFormat experience.value sign=true}}</span>
+                        <span class="experience-name">{{experience.name}}</span>
+                        <a class="experience-chat" data-action="sendExpToChat" data-type="experience" data-id="{{id}}" data-tooltip="DAGGERHEART.UI.Tooltip.sendToChat">
+                            <i class="fa-regular fa-message" inert></i>
+                        </a>
+                    </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</aside>
+
+{{#*inline "track"}}
+    <div class="nice-track {{kind}}">
+        <header>
+            <span class="nice-track-label">{{label}}</span>
+            <span class="nice-track-rule"></span>
+            <span class="nice-track-count">
+                {{#if @root.editable}}
+                    <input type="number" class="nice-track-input" name="{{name}}" value="{{track.value}}" min="0" max="{{track.max}}" />
+                {{else}}
+                    {{track.value}}
+                {{/if}}
+                <span class="max"><span class="sep">/</span>{{track.max}}</span>
+            </span>
+        </header>
+        <div class="nice-pips">
+            {{#each track.pips as |pip|}}
+                <a class="nice-pip {{#if pip.filled}}filled{{/if}}" data-action="{{../action}}" data-value="{{pip.index}}"></a>
+            {{/each}}
+        </div>
+    </div>
+{{/inline}}
+
+{{!-- An extra resource's icon as configured in the system's homebrew settings: a Font Awesome class
+     or an image, which the system tints gold unless "No Filter" is set. --}}
+{{#*inline "resourceIcon"}}
+    {{#if icon.isIcon}}
+        <i class="{{icon.value}}" style="opacity: {{icon.opacity}}" inert></i>
+    {{else}}
+        <img src="{{icon.value}}" class="{{#unless icon.noColorFilter}}tinted{{/unless}}" style="opacity: {{icon.opacity}}" alt="" inert />
+    {{/if}}
+{{/inline}}

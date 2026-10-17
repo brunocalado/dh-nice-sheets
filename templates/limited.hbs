@@ -1,0 +1,37 @@
+<div class="nice-limited">
+    <div class="nice-portrait">
+        <img src="{{document.img}}" alt="{{document.name}}" data-action="editImage" data-edit="img" />
+        <span class="nice-portrait-frame" inert></span>
+    </div>
+    <h1 class="nice-limited-name">{{document.name}}</h1>
+    <div class="nice-heritage">
+        <div class="nice-heritage-line">
+            {{#if document.system.class.value}}<span class="nice-chip">{{document.system.class.value.name}}</span>{{/if}}
+            {{#if document.system.class.subclass}}<span class="dot" inert>&#9670;</span><span class="nice-chip">{{document.system.class.subclass.name}}</span>{{/if}}
+            {{#if document.system.community}}<span class="dot" inert>&#9670;</span><span class="nice-chip">{{document.system.community.name}}</span>{{/if}}
+            {{#if document.system.ancestry}}<span class="dot" inert>&#9670;</span><span class="nice-chip">{{document.system.ancestry.name}}</span>{{/if}}
+        </div>
+    </div>
+    {{#unless nice.needsSetup}}
+        <span class="nice-level-badge">
+            <span class="nice-level-coin"><span class="nice-level-number">{{nice.level}}</span></span>
+            <span class="nice-level-caption">{{localize "DAGGERHEART.GENERAL.level"}}</span>
+        </span>
+    {{/unless}}
+    {{#if nice.domains.length}}
+        <div class="nice-domains">
+            {{#each nice.domains as |domain|}}
+                <span class="nice-domain" style="--domain-color: {{domain.color}}" data-tooltip="{{domain.description}}">
+                    <img src="{{domain.src}}" alt="" /><span>{{domain.label}}</span>
+                </span>
+            {{/each}}
+        </div>
+    {{/if}}
+    {{#if (or source.system.biography.characteristics.pronouns source.system.biography.characteristics.age source.system.biography.characteristics.faith)}}
+        <div class="nice-limited-bio">
+            {{#if source.system.biography.characteristics.pronouns}}<div><small>{{localize 'DAGGERHEART.ACTORS.Character.pronouns'}}</small><span>{{source.system.biography.characteristics.pronouns}}</span></div>{{/if}}
+            {{#if source.system.biography.characteristics.age}}<div><small>{{localize 'DAGGERHEART.ACTORS.Character.age'}}</small><span>{{source.system.biography.characteristics.age}}</span></div>{{/if}}
+            {{#if source.system.biography.characteristics.faith}}<div><small>{{localize 'DAGGERHEART.ACTORS.Character.faith'}}</small><span>{{source.system.biography.characteristics.faith}}</span></div>{{/if}}
+        </div>
+    {{/if}}
+</div>

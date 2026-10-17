@@ -1,0 +1,346 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The settings window (`.dh-nice-sheets-settings`, templates/settings-*.hbs) and the image
+   tips tooltip it opens. */
+
+/* ========================================================================== */
+/*  Settings window                                                             */
+/* ========================================================================== */
+/* The system's settings dialog in the sheet's dress. The window carries the module class, so the
+   tokens, panels, trait plaques and tabs come from the sheet's own rules, and the frame from
+   the shared window frame in sheet-frame.css; what follows is this window's own light and what only it has. `.dialog`
+   and the system classes stay on the window, so the extra class here outranks the system's
+   parchment. */
+.application.dialog.dh-style.dh-nice-sheets-settings {
+  background-image:
+    radial-gradient(120% 70% at 50% -10%, rgba(var(--nice-gold-rgb), 0.16), transparent 60%),
+    radial-gradient(90% 60% at 50% 110%, rgba(0, 0, 0, 0.35), transparent 60%);
+
+  .window-header {
+    position: relative;
+    z-index: 3;
+  }
+
+  .window-content {
+    position: relative;
+    z-index: 2;
+    gap: 0;
+    padding: 0 16px 16px;
+    font-family: var(--nice-font-body);
+    color: var(--nice-text);
+  }
+
+  /* ---- Header: a gold-ringed medallion over the name ------------------------ */
+  .nice-settings-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 2px 0 4px;
+  }
+
+  .nice-settings-medallion {
+    position: relative;
+    display: block;
+    width: 76px;
+    height: 76px;
+    padding: 3px;
+    border-radius: 50%;
+    background: conic-gradient(from 210deg, var(--nice-gold-deep), var(--nice-gold-bright) 25%, var(--nice-gold-dim) 50%, var(--nice-gold-bright) 75%, var(--nice-gold-deep));
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 6px 18px var(--nice-shadow), 0 0 24px rgba(var(--nice-gold-rgb), 0.18);
+
+    /* A diamond on the ring's base, like the crest on the highest trait. */
+    &::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -5px;
+      width: 10px;
+      height: 10px;
+      margin-left: -5px;
+      transform: rotate(45deg);
+      background: var(--nice-diamond-fill);
+      border: 1px solid var(--nice-gold-deep);
+      pointer-events: none;
+    }
+  }
+
+  .nice-settings-portrait {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 2px solid var(--nice-ink);
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: top center;
+    transition: transform 0.4s var(--nice-ease), filter 0.3s var(--nice-ease);
+
+    &[data-action] {
+      cursor: pointer;
+    }
+
+    &[data-action]:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+  }
+
+  /* Info badge on the ring, with the image recommendations in its tooltip. */
+  .nice-image-tips {
+    position: absolute;
+    right: -4px;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--nice-gold-dim);
+    border-radius: 50%;
+    background: var(--nice-ink);
+    color: var(--nice-gold);
+    font-size: 11px;
+    cursor: help;
+    transition: color 0.2s var(--nice-ease), border-color 0.2s var(--nice-ease);
+
+    &:hover {
+      color: var(--nice-gold-bright);
+      border-color: var(--nice-gold);
+    }
+  }
+
+  /* The sheet's name style; here it is a plain title, not an editable field. */
+  h1.actor-name {
+    max-width: 100%;
+    padding: 0;
+    font-size: var(--font-size-24);
+    text-align: center;
+
+    &:hover {
+      border-bottom-color: transparent;
+    }
+  }
+
+  /* ---- Tabs ------------------------------------------------------------------ */
+  .nice-tabs {
+    margin: 4px 0 14px;
+  }
+
+  .nice-tab {
+    font-size: var(--font-size-12);
+  }
+
+  .tab.active {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ---- Trait plaques: the sheet's, with an input for the value ---------------- */
+  .nice-traits {
+    padding: 6px 0 0;
+  }
+
+  .nice-trait {
+    height: 64px;
+    cursor: text;
+
+    .nice-trait-name {
+      max-width: calc(100% - 4px);
+      letter-spacing: 0.02em;
+    }
+
+    &:focus-within {
+      outline: 1px solid var(--nice-gold-bright);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Repeated class: outranks the system's dialog inputs and the panel input rule. */
+  input.nice-trait-value.nice-trait-value {
+    width: 100%;
+    height: 28px;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    outline: none;
+    text-align: center;
+    text-box: normal;
+    color: var(--nice-trait-value-color);
+
+    &:focus {
+      border: none;
+      box-shadow: none;
+    }
+  }
+
+  /* ---- Basics ---------------------------------------------------------------- */
+  .nice-settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px 14px;
+    padding: 4px 2px 2px;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 4px;
+      margin: 0;
+
+      > label {
+        flex: none;
+        font-family: var(--nice-font-display);
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.2;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--nice-accent);
+      }
+    }
+
+    input {
+      height: 32px;
+      text-align: center;
+      font-size: var(--font-size-16);
+    }
+  }
+
+  /* ---- Experiences ------------------------------------------------------------ */
+  .tab.experiences .nice-scroll {
+    max-height: 460px;
+    padding-top: 6px;
+  }
+
+  .nice-exp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 4px 0 2px;
+    list-style: none;
+
+    &:empty::after {
+      content: "\2014";
+      display: block;
+      text-align: center;
+      color: var(--nice-text-muted);
+    }
+  }
+
+  .nice-exp {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.18);
+    transition: border-color 0.2s var(--nice-ease), background 0.2s var(--nice-ease);
+
+    &:hover,
+    &:focus-within {
+      border-color: var(--nice-line);
+      background: var(--nice-accent-soft);
+    }
+  }
+
+  .nice-exp-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* The sidebar's gold pennant, editable. Repeated class: outranks the panel input rule. */
+  input.nice-exp-value.nice-exp-value {
+    flex: 0 0 auto;
+    width: 40px;
+    height: 30px;
+    padding: 0 0 4px;
+    border: none;
+    border-radius: 0;
+    clip-path: var(--nice-pennant-shape);
+    background: var(--nice-pennant-fill);
+    color: var(--nice-ink);
+    font-size: var(--font-size-14);
+    text-align: center;
+
+    &:focus {
+      box-shadow: none;
+      filter: brightness(1.12);
+    }
+  }
+
+  input.nice-exp-name {
+    flex: 1;
+    min-width: 0;
+    height: 30px;
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-14);
+  }
+
+  .nice-exp-delete {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    color: var(--nice-text-muted);
+    font-size: var(--font-size-12);
+    transition: color 0.2s, background 0.2s;
+
+    &:hover {
+      color: var(--nice-hp-glow);
+      background: rgba(200, 16, 46, 0.15);
+    }
+
+    &.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+
+      &:hover {
+        color: var(--nice-text-muted);
+        background: none;
+      }
+    }
+  }
+
+  textarea.nice-exp-description {
+    min-height: 44px;
+    padding: 6px 8px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 4px;
+    background: var(--nice-input-bg);
+    color: var(--nice-text);
+    font-family: var(--nice-font-body);
+    font-size: var(--font-size-12);
+    line-height: 1.4;
+    resize: vertical;
+
+    &:focus {
+      border-color: var(--nice-gold);
+      box-shadow: var(--nice-focus-glow);
+      outline: none;
+    }
+  }
+}
+
+/* The tooltip lives in core's #tooltip, outside the sheet's scope. */
+#tooltip.nice-image-tips-tooltip {
+  max-width: 280px;
+  text-align: left;
+
+  p { margin: 0 0 6px; }
+  ul { margin: 0 0 6px; padding-left: 18px; }
+  li { margin-bottom: 2px; }
+  > :last-child { margin-bottom: 0; }
+}

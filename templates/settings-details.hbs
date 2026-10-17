@@ -1,0 +1,35 @@
+<section class="tab {{tabs.details.cssClass}}" data-tab="{{tabs.details.id}}" data-group="{{tabs.details.group}}">
+    <fieldset class="nice-panel">
+        <legend>{{localize "DAGGERHEART.GENERAL.Trait.plural"}}</legend>
+        {{!-- The sheet's plaques, with the value as an input. Materials follow the base values, so
+             they shift as soon as a change is saved. --}}
+        <div class="nice-traits">
+            {{#each nice.traits as |trait|}}
+                <label class="nice-trait nice-mat-{{trait.material}}">
+                    {{> "modules/dh-nice-sheets/templates/trait-fx.hbs" trait=trait}}
+                    {{#if trait.crowned}}<span class="nice-trait-crest" inert></span>{{/if}}
+                    <span class="nice-trait-name">{{trait.label}}</span>
+                    <input class="nice-trait-value" type="text" inputmode="numeric" data-dtype="Number"
+                           name="system.traits.{{trait.key}}.value" value="{{trait.signed}}" />
+                    {{#if trait.isSpellcasting}}<span class="nice-trait-tag">{{localize "DH_NICE_SHEETS.Spellcast"}}</span>{{/if}}
+                </label>
+            {{/each}}
+        </div>
+    </fieldset>
+
+    <fieldset class="nice-panel">
+        <legend>{{localize "DAGGERHEART.GENERAL.basics"}}</legend>
+        <div class="nice-settings-grid">
+            {{#each resources as |resource|}}
+                <span {{#if resource.tooltip}}data-tooltip-text="{{resource.tooltip}}"{{/if}}>
+                    {{formGroup resource.field value=resource.value name=resource.name}}
+                </span>
+            {{/each}}
+            {{formGroup systemFields.scars value=document._source.system.scars localize=true}}
+            {{formGroup systemFields.proficiency value=document._source.system.proficiency localize=true}}
+            <span data-tooltip-text="{{localize "DAGGERHEART.UI.Tooltip.maxEvasionClassBound"}}">
+                {{formGroup systemFields.evasion value=document._source.system.evasion label="DAGGERHEART.ACTORS.Character.maxEvasionBonus" localize=true}}
+            </span>
+        </div>
+    </fieldset>
+</section>

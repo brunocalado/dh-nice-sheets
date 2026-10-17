@@ -1,0 +1,118 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The collapsed sheet (`.nice-collapsed`): the window shrinks to templates/sidebar.hbs. */
+
+/* ========================================================================== */
+/*  Collapsed sheet                                                             */
+/* ========================================================================== */
+/* The window shrinks to the sidebar. The header is hidden with the tabs, so the traits move to a
+   strip under the drag bar and Hope joins the resource tracks. Both always render in the sidebar
+   and only show here, so collapsing is a class change with no re-render. */
+.dh-nice-sheets {
+  .nice-compact-traits,
+  .nice-track.hope {
+    display: none;
+  }
+
+  .nice-compact-traits {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: var(--header-height);
+    padding: 2px 10px 10px;
+    border-bottom: 1px solid var(--nice-line);
+  }
+
+  /* Takes the trait plaque materials (`nice-mat-*`) at a smaller size. */
+  .nice-compact-trait {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 0;
+    height: 44px;
+    border-radius: 6px;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.2s var(--nice-ease), filter 0.2s var(--nice-ease);
+
+    &:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.12);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    .nice-trait-name {
+      font-family: var(--nice-font-display);
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* Repeated class: the gold materials enlarge the value with the same specificity. */
+    .nice-trait-value.nice-trait-value {
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-16);
+      font-weight: 700;
+      line-height: 1;
+    }
+  }
+
+  .nice-track.hope {
+    .nice-pips {
+      gap: 4px;
+    }
+  }
+}
+
+.application.sheet.daggerheart.dh-nice-sheets.nice-collapsed {
+  min-width: 0;
+
+  .window-content {
+    grid-template-columns: minmax(0, 1fr);
+
+    .nice-header,
+    .tab,
+    .tab.active {
+      display: none;
+    }
+
+    .nice-sidebar {
+      width: auto;
+      border-right: none;
+    }
+
+    .nice-compact-traits {
+      display: grid;
+    }
+
+    .nice-track.hope {
+      display: block;
+    }
+
+    /* The narrow, tall box would crop the art to its right edge; show its middle instead, fading
+       downwards only, since the whole box is now sidebar. */
+    .nice-backdrop,
+    .nice-backdrop-hope {
+      background-position: center top;
+      mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.6) 30%, transparent 65%);
+    }
+
+    /* The drag-bar strip now holds the traits, not the death banner. */
+    .nice-compact-traits + .nice-death-banner {
+      margin-top: 10px;
+    }
+  }
+}

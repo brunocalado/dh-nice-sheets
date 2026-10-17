@@ -1,0 +1,29 @@
+{{!-- A container: a loot item shown as a panel holding the items stored in it. The plaque is the
+     container item itself: it carries the item's data attributes, so the system's loot context
+     menu, item tooltip and drag-and-drop treat it like the container's own row. Dropping on any
+     part of the panel stores the item there (see NiceCharacterSheet#_onDropItem). --}}
+<fieldset class="nice-panel drop-section nice-container {{#if container.collapsed}}nice-group-collapsed{{/if}}" data-group-type="{{container.groupType}}" data-container-id="{{container.item.id}}">
+    <legend data-item-id="{{container.item.id}}" data-item-uuid="{{container.item.uuid}}" data-type="loot">
+        <span class="nice-container-seal" draggable="true" data-action="editDoc" data-tooltip="#item#{{container.item.uuid}}">
+            <img src="{{container.item.img}}" alt="" />
+        </span>
+        <span class="nice-container-name" draggable="true">{{container.item.name}}</span>
+        <span class="nice-container-count" data-tooltip="DH_NICE_SHEETS.Container.count">{{container.contents.length}}</span>
+        <a class="nice-legend-button" data-action="triggerContextMenu" data-tooltip="DAGGERHEART.UI.Tooltip.moreOptions">
+            <i class="fa-solid fa-ellipsis-vertical" inert></i>
+        </a>
+        {{> "modules/dh-nice-sheets/templates/group-toggle.hbs" collapsed=container.collapsed}}
+    </legend>
+    {{#if container.contents.length}}
+        <ul class="items-list">
+            {{#each container.contents as |row|}}
+                {{> 'daggerheart.inventory-item' item=row.item type=row.item.type actorType=@root.document.type isQuantifiable=row.isQuantifiable showActions=row.showActions}}
+            {{/each}}
+        </ul>
+    {{else}}
+        <p class="nice-container-hint">
+            <i class="fa-solid fa-box-open" inert></i>
+            {{localize "DH_NICE_SHEETS.Container.empty"}}
+        </p>
+    {{/if}}
+</fieldset>

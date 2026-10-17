@@ -1,0 +1,593 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The tab bodies (features.hbs, inventory.hbs, container.hbs, loadout.hbs, effects.hbs,
+   biography.hbs): toolbar and purse, overrides of the system's item partials, containers,
+   notes and biography. */
+
+.dh-nice-sheets {
+  /* ======================================================================== */
+  /*  Tab bodies                                                                */
+  /* ======================================================================== */
+  .nice-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 12px 12px 16px;
+  }
+
+  /* ---- Toolbar: search, purse -------------------------------------------------
+     The search field takes whatever the other tools leave; the currency chips keep a fixed
+     footprint and only show their text labels when the row is wide enough. */
+  .nice-toolbar {
+    container-type: inline-size;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px 0 16px;
+
+    .search-bar {
+      flex: 1 1 120px;
+      min-width: 100px;
+      position: relative;
+      padding: 0;
+
+      input {
+        width: 100%;
+        height: 28px;
+        padding: 0 10px 0 28px;
+        border: 1px solid var(--nice-panel-border);
+        border-radius: 14px;
+        background: var(--nice-input-bg);
+        color: var(--nice-text);
+        font-size: var(--font-size-12);
+        outline: 2px solid transparent;
+        transition: border-color 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+        &:hover, &:focus {
+          border-color: var(--nice-gold);
+          box-shadow: 0 0 10px rgba(var(--nice-gold-rgb), 0.25);
+          outline: none;
+        }
+      }
+
+      > i {
+        position: absolute;
+        left: 10px;
+        top: 0;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        color: var(--nice-text-muted);
+        font-size: var(--font-size-11);
+        pointer-events: none;
+      }
+    }
+  }
+
+  .nice-purse {
+    flex: 0 1 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .nice-coin {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 28px;
+    padding: 0 3px 0 9px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 14px;
+    background: var(--nice-input-bg);
+    color: var(--nice-accent);
+    font-size: var(--font-size-12);
+    transition: border-color 0.25s var(--nice-ease);
+
+    &:hover, &:focus-within {
+      border-color: var(--nice-gold);
+    }
+
+    .nice-coin-label {
+      display: none;
+      font-family: var(--nice-font-display);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    input {
+      width: 38px;
+      height: 22px;
+      min-height: 0;
+      padding: 0;
+      border: none;
+      border-radius: 11px;
+      background: rgba(0, 0, 0, 0.3);
+      color: var(--nice-text);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-12);
+      font-weight: 700;
+      text-align: center;
+
+      &:focus {
+        outline: none;
+        box-shadow: inset 0 0 0 1px var(--nice-gold);
+      }
+    }
+  }
+
+  @container (min-width: 720px) {
+    .nice-coin .nice-coin-label {
+      display: inline;
+    }
+  }
+
+  /* Inventory rows inside our panels get a gentle hover and gold rule between items. The
+     Loadout tab renders the system's own fieldset, which carries only `.drop-section`. */
+  fieldset:is(.nice-panel, .drop-section) .items-list {
+    gap: 4px;
+
+    > .inventory-item {
+      padding: 3px 4px;
+      border-radius: 5px;
+
+      .item-main {
+        margin: 0;
+        padding: 0;
+      }
+
+      .inventory-item-header .item-label .item-name {
+        font-weight: 600;
+      }
+
+      .item-tags .tag,
+      .item-labels .label {
+        border-color: var(--nice-panel-border);
+        background: var(--nice-accent-soft);
+      }
+    }
+  }
+
+  /* Long item names get two lines before the ellipsis, in every tab; the full name is in the
+     item tooltip. */
+  .inventory-item .inventory-item-header .item-label {
+    min-width: 0;
+
+    .item-name {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  /* The system's hover hint that a name opens the description is a four-corner "expand"
+     square; a small gold chevron reads better with the sheet. The system still decides when it
+     shows (on hover, not while the description is open), so only the glyph changes. */
+  .inventory-item .item-name .expanded-icon {
+    margin-left: 6px;
+    color: var(--nice-gold);
+    font-size: 9px;
+    vertical-align: middle;
+
+    i::before {
+      content: "\f078";
+    }
+  }
+
+  /* Row controls (equip, send to chat, menu): separated round buttons that reveal on hover. */
+  .inventory-item .inventory-item-header .controls,
+  .inventory-item-compact .controls {
+    gap: 4px;
+
+    > a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border: 1px solid transparent;
+      border-radius: 50%;
+      color: var(--nice-text-muted);
+      font-size: var(--font-size-11);
+      transition: color 0.2s var(--nice-ease), background 0.2s var(--nice-ease), border-color 0.2s var(--nice-ease), box-shadow 0.2s var(--nice-ease), transform 0.2s var(--nice-ease);
+
+      &:hover {
+        color: var(--nice-ink);
+        background: var(--nice-gold-lit);
+        border-color: transparent;
+        box-shadow: var(--nice-gold-glow), 0 1px 2px var(--nice-shadow);
+        transform: translateY(-1px);
+        text-shadow: none;
+      }
+
+      &.unequipped {
+        opacity: 1;
+      }
+
+      /* Rest and row-hover states skip the hovered button, or their colors land on the gold fill. */
+      &.unequipped:not(:hover) {
+        color: var(--nice-text-muted);
+        border-color: var(--nice-panel-border);
+        border-style: dashed;
+      }
+
+      /* Equipped marker stays lit so the state is readable at rest. */
+      &[data-action="toggleEquipItem"]:not(.unequipped, :hover),
+      &.nice-favorite.active:not(:hover) {
+        color: var(--nice-gold);
+        border-color: var(--nice-line);
+      }
+    }
+  }
+
+  .inventory-item:hover .inventory-item-header .controls > a:not(:hover) {
+    color: var(--nice-accent);
+    border-color: var(--nice-panel-border);
+  }
+
+  /* Hovering a usable item's icon: the system swaps in a white die; here the art dims, a glint of
+     light crosses it once and the two duality dice tumble in over it, Hope in gold and Fear in
+     violet. The markup is the system's, so the layers are the portrait's two pseudo-elements (one
+     die each, so each can spin on its own) and the system's roll image, reused for the glint. */
+  .inventory-item .img-portait:has(.roll-img) {
+    isolation: isolate;
+    border-radius: 4px;
+    transition: box-shadow 0.25s var(--nice-ease);
+
+    .item-img {
+      transition: filter 0.25s var(--nice-ease), transform 0.25s var(--nice-ease);
+    }
+
+    /* The die picture is shifted out of the box, where an image's content is clipped, so only
+       the background (the glint) shows. The system inverts and fades this image; both undone. */
+    .roll-img {
+      inset: 0;
+      z-index: 1;
+      object-position: -999px 0;
+      border-radius: inherit;
+      background: linear-gradient(115deg, transparent 32%, rgba(255, 238, 200, 0.95) 50%, transparent 68%) 150% 0 / 250% 100% no-repeat;
+      mix-blend-mode: screen;
+      filter: none;
+      opacity: 1;
+      pointer-events: none;
+    }
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: no-repeat;
+      background-size: 58%;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.85));
+      opacity: 0;
+      transition: opacity 0.2s var(--nice-ease), transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+
+    /* Each origin is its die's center, so the spin happens in place. */
+    &::before {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23f3c267' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5z' fill='%2318162e'/%3E%3Cpath d='M3.5 7.25L12 12l8.5-4.75M12 12v9.5'/%3E%3C/g%3E%3Ccircle cx='12' cy='7.2' r='1.5' fill='%23ffe3a3'/%3E%3C/svg%3E");
+      background-position: 18% 22%;
+      transform-origin: 37% 38%;
+      transform: translate(-25%, -15%) rotate(-140deg) scale(0.5);
+    }
+
+    &::after {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23c99bff' stroke-width='1.6' stroke-linejoin='round'%3E%3Cpath d='M12 2.5l8.5 4.75v9.5L12 21.5l-8.5-4.75v-9.5z' fill='%231b1430'/%3E%3Cpath d='M3.5 7.25L12 12l8.5-4.75M12 12v9.5'/%3E%3C/g%3E%3Ccircle cx='12' cy='7.2' r='1.5' fill='%23e6d2ff'/%3E%3C/svg%3E");
+      background-position: 82% 78%;
+      transform-origin: 63% 62%;
+      transform: translate(25%, 15%) rotate(140deg) scale(0.5);
+    }
+
+    &:hover {
+      box-shadow: 0 0 0 1px var(--nice-gold), 0 0 12px rgba(var(--nice-gold-rgb), 0.55);
+
+      .item-img {
+        opacity: 1;
+        filter: brightness(0.5) saturate(0.7);
+        transform: scale(1.06);
+      }
+
+      .roll-img {
+        animation: nice-glint 0.7s var(--nice-ease) both;
+      }
+
+      &::before,
+      &::after {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* Fear lands a beat after Hope. */
+      &::after {
+        transition-delay: 0.07s;
+      }
+    }
+  }
+
+  /* Feature action buttons (`item-buttons` from the system partial), cut like the legend plaques
+     whose palette they share. */
+  .inventory-item .item-buttons {
+    .item-button {
+      display: inline-flex;
+      gap: 0;
+    }
+
+    button {
+      height: 24px;
+      min-height: 0;
+      padding: 0 10px;
+      border: 1px solid var(--nice-line);
+      border-radius: 4px;
+      background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink));
+      color: var(--nice-gold);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-11);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      transition: background 0.2s var(--nice-ease), color 0.2s var(--nice-ease), transform 0.2s var(--nice-ease);
+
+      .action-icon {
+        margin-right: 4px;
+        font-size: 10px;
+      }
+
+      &:hover:not(:disabled) {
+        background: var(--nice-gold);
+        color: var(--nice-ink);
+        transform: translateY(-1px);
+      }
+
+      &.action-uses-button {
+        margin-left: -1px;
+        padding: 0 8px;
+        border-radius: 0 4px 4px 0;
+      }
+
+      &:has(+ .action-uses-button) {
+        border-radius: 4px 0 0 4px;
+      }
+    }
+  }
+
+  /* A collapsed Features or Inventory group keeps only its plaque: the panel box goes away with
+     the list. The inventory search hides non-matching rows but knows nothing of
+     collapsed groups, so while a search is typed every group opens. The `.tab fieldset` prefix
+     outranks the base panel rule in base.css. The side padding stays, because the legend sits
+     inside it and would otherwise jump left when the group collapses. */
+  .tab:not(:has(.search-inventory:not(:placeholder-shown))) fieldset.nice-panel.nice-group-collapsed {
+    padding: 0 10px;
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+
+    > .items-list {
+      display: none;
+    }
+  }
+
+  /* ---- Containers ------------------------------------------------------------------
+     A container panel reads as a satchel: a warmer fill and the container's own art as a
+     round seal on the plaque. While an item is dragged over it, the whole panel lights up and
+     the seal beckons. */
+  fieldset.nice-container {
+    background: linear-gradient(90deg, rgba(var(--nice-gold-rgb), 0.09), transparent 45%), var(--nice-panel);
+    transition: border-color 0.25s var(--nice-ease), background 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+    > legend {
+      padding-left: 6px;
+
+      .nice-container-seal {
+        flex: none;
+        display: flex;
+        width: 30px;
+        height: 30px;
+        /* Larger than the plaque: it overhangs top, bottom and left like a wax seal. */
+        margin: -7px 0 -7px -16px;
+        overflow: hidden;
+        border: 1px solid var(--nice-gold);
+        border-radius: 50%;
+        background: var(--nice-ink);
+        box-shadow: 0 0 0 2px var(--nice-ink-2), 0 2px 6px var(--nice-shadow);
+        cursor: pointer;
+        transition: transform 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border: none;
+        }
+
+        &:hover {
+          transform: scale(1.08);
+          box-shadow: 0 0 0 2px var(--nice-ink-2), var(--nice-gold-glow);
+        }
+      }
+
+      .nice-container-name {
+        max-width: 26ch;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        cursor: grab;
+      }
+
+      .nice-container-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 5px;
+        border: 1px solid var(--nice-panel-border);
+        border-radius: 9px;
+        background: var(--nice-accent-soft);
+        color: var(--nice-gold-bright);
+        font-family: var(--nice-font-body);
+        font-size: 10px;
+        letter-spacing: 0;
+      }
+    }
+
+    .nice-container-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 2px 0 0;
+      padding: 10px;
+      border: 1px dashed var(--nice-panel-border);
+      border-radius: 6px;
+      color: var(--nice-text-muted);
+      font-size: var(--font-size-12);
+      font-style: italic;
+      transition: border-color 0.25s var(--nice-ease), color 0.25s var(--nice-ease);
+    }
+
+    &.nice-drop-target {
+      border-color: var(--nice-gold);
+      background: linear-gradient(90deg, rgba(var(--nice-gold-rgb), 0.2), rgba(var(--nice-gold-rgb), 0.06));
+      box-shadow: 0 0 0 1px var(--nice-gold), 0 0 18px rgba(var(--nice-gold-rgb), 0.35);
+
+      > legend {
+        border-color: var(--nice-gold);
+        box-shadow: 0 0 12px rgba(var(--nice-gold-rgb), 0.5);
+      }
+
+      .nice-container-seal {
+        animation: nice-seal-beckon 0.8s var(--nice-ease) infinite alternate;
+      }
+
+      .nice-container-hint {
+        border-color: var(--nice-gold);
+        color: var(--nice-gold-bright);
+      }
+    }
+  }
+
+  /* Collapsed, a container keeps only its plaque, like any group; while searching it opens like
+     them too, and one with no matching item steps aside. */
+  .tab:not(:has(.search-inventory:not(:placeholder-shown))) fieldset.nice-container.nice-group-collapsed > .nice-container-hint {
+    display: none;
+  }
+
+  .tab:has(.search-inventory:not(:placeholder-shown)) fieldset.nice-container:not(:has(.inventory-item:not([hidden]))) {
+    display: none;
+  }
+
+  .inventory-item .item-resource input,
+  .inventory-item .inventory-item-quantity {
+    height: 26px;
+    min-height: 0;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 5px;
+    background: var(--nice-input-bg);
+    color: var(--nice-text);
+    font-family: var(--nice-font-display);
+    font-weight: 700;
+    text-align: center;
+
+    &:focus {
+      border-color: var(--nice-gold);
+      box-shadow: var(--nice-focus-glow);
+      outline: none;
+    }
+  }
+
+  /* ---- Notes ------------------------------------------------------------------------- */
+  /* The notes take the tab's whole visible height; the biography fields, when shown, are reached
+     by scrolling past them. */
+  .nice-notes {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 100%;
+
+    textarea {
+      flex: 1;
+      align-self: stretch;
+      width: auto;
+      min-height: 200px;
+      resize: none;
+      padding: 8px 10px;
+      border: 1px solid var(--nice-panel-border);
+      border-radius: 5px;
+      background: rgba(0, 0, 0, 0.2);
+      color: var(--nice-text);
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.5;
+      /* The system outlines every textarea in bright beige on hover and its `transition: 0.3s`
+         covers all properties; clicking then dropped the outline at once while the gold border
+         faded in, which read as a flash. The border alone carries hover and focus here. */
+      outline: none;
+      box-shadow: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        outline: none;
+        border-color: rgba(var(--nice-gold-rgb), 0.45);
+      }
+
+      &:focus {
+        border-color: rgba(var(--nice-gold-rgb), 0.7);
+        box-shadow: 0 0 6px rgba(var(--nice-gold-rgb), 0.15);
+        outline: none;
+      }
+    }
+  }
+
+  /* ---- Biography --------------------------------------------------------------------- */
+  .nice-characteristics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .nice-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    > span {
+      font-family: var(--nice-font-display);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--nice-accent);
+    }
+
+    input {
+      border-color: var(--nice-panel-border);
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .nice-story {
+    prose-mirror {
+      --min-height: 120px;
+    }
+  }
+
+  .tab.biography:has(prose-mirror.active) .nice-story:not(:has(prose-mirror.active)) {
+    display: none;
+  }
+
+  .tab.biography:has(prose-mirror.active) .nice-story:has(prose-mirror.active) {
+    flex: 1;
+  }
+}

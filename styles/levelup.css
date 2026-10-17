@@ -1,0 +1,956 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The level-up windows (`.dh-nice-sheets-levelup`, scripts/levelup.js): the tiers and choices
+   are our templates (templates/levelup-*.hbs); the tab strip, summary and footer are the
+   system's, restyled here. The frame comes from the shared window frame in sheet-frame.css. */
+
+/* ========================================================================== */
+/*  Window                                                                     */
+/* ========================================================================== */
+.application.dialog.dh-style.dh-nice-sheets-levelup {
+  background-image:
+    radial-gradient(90% 55% at 50% -12%, rgba(var(--nice-gold-rgb), 0.18), transparent 62%),
+    radial-gradient(90% 60% at 50% 115%, rgba(0, 0, 0, 0.4), transparent 60%);
+
+  /* The shared inner frame starts below the title bar, open at the top: no top edge and no
+     rounded corners left beside the title. */
+  &::after {
+    top: var(--header-height);
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .window-header {
+    position: relative;
+    z-index: 3;
+    letter-spacing: 0.06em;
+
+    .window-title {
+      color: var(--nice-gold);
+      font-family: var(--nice-font-display);
+      font-weight: 700;
+    }
+  }
+
+  .window-content {
+    position: relative;
+    z-index: 2;
+    gap: 4px;
+    padding: 4px 18px 16px;
+    font-family: var(--nice-font-body);
+    color: var(--nice-text);
+  }
+
+  .tab.active {
+    padding: 4px 2px;
+  }
+
+  /* ======================================================================== */
+  /*  Tab strip (system markup)                                               */
+  /* ======================================================================== */
+  /* The system frames the strip with two `line-div` rules; one gold hairline under the tabs
+     replaces both. */
+  .tab-navigation {
+    line-div {
+      display: none;
+    }
+
+    .levelup-navigation-container {
+      height: auto;
+      border-bottom: 1px solid var(--nice-line);
+    }
+
+    nav.tabs {
+      gap: 6px;
+    }
+
+    .levelup-tab-container {
+      flex: 1 1 0;
+      justify-content: center;
+    }
+
+    .levelup-tab-container a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      height: 38px;
+      border-radius: 8px 8px 0 0;
+      color: var(--nice-text-muted);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-13);
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-shadow: none;
+      transition: color 0.2s var(--nice-ease), background 0.2s var(--nice-ease);
+
+      /* The progress count becomes a small pill. */
+      span {
+        padding: 1px 8px;
+        border: 1px solid var(--nice-line);
+        border-radius: 999px;
+        background: var(--nice-input-bg);
+        color: inherit;
+        font-family: var(--nice-font-body);
+        font-size: var(--font-size-11);
+        letter-spacing: 0.04em;
+      }
+
+      &:hover {
+        color: var(--nice-text);
+        background: var(--nice-accent-soft);
+      }
+
+      &.active {
+        color: var(--nice-gold);
+        background: linear-gradient(180deg, transparent, var(--nice-accent-soft));
+
+        span {
+          border-color: var(--nice-gold-dim);
+          color: var(--nice-gold-bright);
+        }
+
+        /* The sheet's tab gem on the baseline. */
+        &::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          bottom: -5px;
+          width: 8px;
+          height: 8px;
+          transform: translateX(-50%) rotate(45deg);
+          background: var(--nice-gold);
+          box-shadow: 0 0 8px var(--nice-gold);
+        }
+      }
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Budget: the picks this level still has                                   */
+  /* ======================================================================== */
+  .nice-lu-budget {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 6px 0 12px;
+
+    .nice-lu-budget-level {
+      color: var(--nice-gold);
+      font-family: var(--nice-font-title);
+      font-size: var(--font-size-20);
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 12px rgba(var(--nice-gold-rgb), 0.35);
+    }
+
+    .nice-lu-budget-picks {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nice-lu-budget-pick {
+      width: 12px;
+      height: 12px;
+      transform: rotate(45deg);
+      border: 1px solid var(--nice-gold-dim);
+      background: var(--nice-input-bg);
+      transition: background 0.3s var(--nice-ease), box-shadow 0.3s var(--nice-ease);
+
+      &.taken {
+        border-color: var(--nice-gold-bright);
+        background: var(--nice-diamond-fill);
+        box-shadow: 0 0 8px rgba(var(--nice-gold-rgb), 0.6);
+      }
+    }
+
+    .nice-lu-budget-text {
+      color: var(--nice-text-muted);
+      font-size: var(--font-size-13);
+    }
+
+    &.done .nice-lu-budget-text {
+      color: var(--nice-gold-bright);
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Tiers                                                                    */
+  /* ======================================================================== */
+  .nice-lu-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    align-items: start;
+  }
+
+  .nice-lu-tier {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: var(--nice-radius);
+    background:
+      radial-gradient(120% 40% at 50% 0%, rgba(var(--nice-gold-rgb), 0.07), transparent 70%),
+      linear-gradient(180deg, var(--nice-ink-2), var(--nice-ink));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 6px 18px var(--nice-shadow);
+    overflow: hidden;
+
+    /* The tier the level falls in: a lit gold frame. */
+    &.current {
+      border-color: var(--nice-gold-dim);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 0 0 1px rgba(var(--nice-gold-rgb), 0.18),
+        0 0 24px rgba(var(--nice-gold-rgb), 0.16),
+        0 8px 22px var(--nice-shadow);
+
+      .nice-lu-tier-name {
+        color: var(--nice-gold-bright);
+        text-shadow: 0 0 12px rgba(var(--nice-gold-rgb), 0.5);
+      }
+    }
+
+    /* Tiers out of reach: drained of colour, still readable as what lies ahead. */
+    &.locked {
+      opacity: 0.45;
+      filter: grayscale(0.8);
+    }
+  }
+
+  .nice-lu-tier-head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 10px 12px 9px;
+    border-bottom: 1px solid var(--nice-line);
+    background: linear-gradient(180deg, rgba(var(--nice-gold-rgb), 0.1), transparent);
+  }
+
+  .nice-lu-tier-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    border: none;
+    color: var(--nice-gold);
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-18);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+
+    &::before,
+    &::after {
+      content: "";
+      width: 6px;
+      height: 6px;
+      transform: rotate(45deg);
+      background: var(--nice-diamond-fill);
+    }
+  }
+
+  .nice-lu-tier-levels {
+    color: var(--nice-text-muted);
+    font-size: var(--font-size-11);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ---- Option rows: the text and the gems both pick ------------------------- */
+  .nice-lu-options {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+  }
+
+  .nice-lu-option {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 8px 10px 8px 12px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    transition: background 0.2s var(--nice-ease), border-color 0.2s var(--nice-ease);
+
+    /* Gold bar on the left edge of a row with a pick. */
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      bottom: 8px;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      background: var(--nice-gold);
+      box-shadow: 0 0 8px rgba(var(--nice-gold-rgb), 0.6);
+      opacity: 0;
+      transition: opacity 0.2s var(--nice-ease);
+    }
+
+    &.open:hover {
+      border-color: var(--nice-line);
+      background: var(--nice-accent-soft);
+    }
+
+    &.taken {
+      border-color: rgba(var(--nice-gold-rgb), 0.28);
+      background: linear-gradient(90deg, rgba(var(--nice-gold-rgb), 0.14), rgba(var(--nice-gold-rgb), 0.03));
+
+      &::before { opacity: 1; }
+
+      .nice-lu-option-text { color: var(--nice-gold-bright); }
+    }
+
+    /* Nothing left to take here and none of it is this character's. */
+    &.closed:not(.taken) .nice-lu-option-text {
+      color: var(--nice-text-muted);
+      text-decoration: line-through rgba(239, 230, 216, 0.4);
+    }
+  }
+
+  .nice-lu-option-text {
+    color: var(--nice-text);
+    font-size: var(--font-size-13);
+    line-height: 1.45;
+    transition: color 0.2s var(--nice-ease);
+
+    &[for] {
+      cursor: pointer;
+    }
+  }
+
+  /* ---- Gems: one per pick; a pick that costs two is a long gem -------------- */
+  .nice-lu-gems {
+    display: flex;
+    gap: 6px;
+  }
+
+  /* The outline and the fill are two clipped layers, so the gem keeps a crisp rim at any
+     shape; the label itself is not clipped, which lets its drop-shadow glow around the gem. */
+  .nice-lu-gem {
+    --nice-gem-shape: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s var(--nice-ease), filter 0.2s var(--nice-ease);
+
+    &::before,
+    &::after {
+      content: "";
+      position: absolute;
+      clip-path: var(--nice-gem-shape);
+      transition: background 0.25s var(--nice-ease);
+    }
+
+    &::before {
+      inset: 0;
+      background: var(--nice-gold-dim);
+    }
+
+    &::after {
+      inset: 1.5px;
+      background: radial-gradient(circle at 50% 35%, var(--nice-ink-3), #07060f);
+    }
+
+    &.double {
+      --nice-gem-shape: polygon(22% 0, 78% 0, 100% 50%, 78% 100%, 22% 100%, 0 50%);
+      width: 36px;
+    }
+
+    &[for] {
+      cursor: pointer;
+    }
+
+    &[for]:hover {
+      transform: scale(1.12);
+      filter: drop-shadow(0 0 5px rgba(var(--nice-gold-rgb), 0.7));
+
+      &::before { background: var(--nice-gold); }
+    }
+
+    &.selected {
+      filter: drop-shadow(0 0 6px rgba(var(--nice-gold-rgb), 0.75));
+
+      &::before { background: var(--nice-gold-bright); }
+
+      &::after {
+        background:
+          linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, transparent 38%),
+          var(--nice-diamond-fill);
+      }
+    }
+
+    /* Taken at an earlier level: set in the past, no longer the player's to change. */
+    &.spent {
+      filter: none;
+
+      &::before { background: var(--nice-gold-dim); }
+      &::after { background: linear-gradient(135deg, var(--nice-gold-dim), var(--nice-gold-deep)); }
+    }
+
+    &.blocked {
+      opacity: 0.35;
+    }
+
+    /* Keyboard focus rides on the hidden checkbox. */
+    &:has(input:focus-visible) {
+      filter: drop-shadow(0 0 0 var(--nice-gold-bright)) drop-shadow(0 0 4px var(--nice-gold-bright));
+    }
+
+    input.selection-checkbox {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  .nice-lu-gem-cost {
+    position: relative;
+    z-index: 1;
+    color: var(--nice-gold);
+    font-family: var(--nice-font-display);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+
+    .selected > &,
+    .spent > & {
+      color: var(--nice-ink);
+    }
+  }
+
+  .nice-lu-view {
+    padding: 8px 0 4px;
+  }
+
+  /* ======================================================================== */
+  /*  Choices: one numbered step per thing to settle                           */
+  /* ======================================================================== */
+  .nice-lu-steps {
+    counter-reset: nice-step;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0;
+    padding: 10px 0 4px;
+    list-style: none;
+  }
+
+  .nice-lu-step {
+    counter-increment: nice-step;
+    display: grid;
+    grid-template-columns: 30px 200px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    margin: 0;
+    padding: 10px 14px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 8px;
+    background: var(--nice-panel);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 1px 2px var(--nice-shadow);
+    transition: border-color 0.3s var(--nice-ease), background 0.3s var(--nice-ease);
+
+    &.done {
+      border-color: rgba(var(--nice-gold-rgb), 0.4);
+      background: linear-gradient(90deg, rgba(var(--nice-gold-rgb), 0.1), var(--nice-panel) 40%);
+    }
+  }
+
+  /* The step number in a ring; a gold seal with a tick once the step is settled. */
+  .nice-lu-step-mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--nice-gold-dim);
+    border-radius: 50%;
+    background: var(--nice-input-bg);
+    color: var(--nice-gold);
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-13);
+    font-weight: 700;
+
+    &::before {
+      content: counter(nice-step);
+    }
+
+    .done > & {
+      border-color: var(--nice-gold-bright);
+      background: var(--nice-gold-lit);
+      box-shadow: var(--nice-gold-glow);
+
+      &::before {
+        content: "";
+        width: 6px;
+        height: 11px;
+        margin-top: -3px;
+        border: solid var(--nice-ink);
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+    }
+  }
+
+  .nice-lu-step-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--nice-gold);
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-13);
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .nice-lu-step-count {
+    padding: 1px 8px;
+    border: 1px solid var(--nice-line);
+    border-radius: 999px;
+    color: var(--nice-text);
+    font-family: var(--nice-font-body);
+    font-size: var(--font-size-11);
+    letter-spacing: 0.04em;
+  }
+
+  .nice-lu-step-body {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 0;
+
+    > input[type="text"] {
+      flex: 1;
+    }
+  }
+
+  .window-content input[type="text"] {
+    height: 34px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 6px;
+    background: var(--nice-input-bg);
+    color: var(--nice-text);
+    font-size: var(--font-size-14);
+
+    &:focus {
+      border-color: var(--nice-gold);
+      box-shadow: var(--nice-focus-glow);
+      outline: none;
+    }
+  }
+
+  .nice-lu-experience {
+    input[type="text"] {
+      flex: 1;
+    }
+
+    .nice-lu-experience-bonus {
+      padding: 4px 12px;
+      border: 1px solid var(--nice-gold-dim);
+      border-radius: 6px;
+      background: rgba(var(--nice-gold-rgb), 0.1);
+      color: var(--nice-gold-bright);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-14);
+      font-weight: 700;
+    }
+  }
+
+  /* The trait and experience pickers are Tagify fields; their chips take the gold. */
+  tags.tagify {
+    --tag-bg: var(--nice-gold);
+    --tag-hover: var(--nice-gold-bright);
+    --tag-text-color: var(--nice-ink);
+    --tag-remove-btn-color: var(--nice-ink);
+    flex: 1;
+    min-height: 34px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 6px;
+    background: var(--nice-input-bg);
+    transition: border-color 0.2s var(--nice-ease), box-shadow 0.2s var(--nice-ease);
+
+    &:hover,
+    &.tagify--focus {
+      border-color: var(--nice-gold);
+      box-shadow: var(--nice-focus-glow);
+    }
+
+    .tagify__tag {
+      font-family: var(--nice-font-display);
+      font-weight: 700;
+    }
+  }
+
+  /* ---- Card slots (the system's card preview partials) ---------------------- */
+  .levelup-card-selection {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .component.dh-style.card-preview-container {
+    width: 84px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 8px;
+    background: linear-gradient(180deg, var(--nice-ink-2), var(--nice-ink));
+    box-shadow: 0 4px 12px var(--nice-shadow);
+    overflow: hidden;
+    transition: transform 0.25s var(--nice-ease), border-color 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+    &[data-action]:not(.disabled):hover {
+      transform: translateY(-2px);
+      border-color: var(--nice-gold);
+      box-shadow: 0 8px 18px var(--nice-shadow), 0 0 14px rgba(var(--nice-gold-rgb), 0.3);
+    }
+
+    &[data-selected="true"] {
+      border-color: var(--nice-gold-bright);
+      box-shadow: 0 0 0 1px var(--nice-gold), 0 0 18px rgba(var(--nice-gold-rgb), 0.4);
+    }
+
+    &.disabled {
+      opacity: 0.45;
+      filter: grayscale(0.6);
+    }
+
+    .preview-empty-container {
+      margin: 6px;
+      border: 1px dashed var(--nice-line);
+      border-radius: 6px;
+    }
+
+    .preview-add-icon {
+      font-size: var(--font-size-24);
+      color: var(--nice-gold);
+    }
+
+    .preview-empty-subtext {
+      display: none;
+    }
+
+    .preview-selected-container {
+      border: none;
+      border-radius: 0;
+    }
+
+    .preview-text-container {
+      padding: 5px 4px;
+      background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink-2));
+      color: var(--nice-gold);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-11);
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .preview-selected-icon-container {
+      width: 34px;
+      height: 34px;
+      border-color: var(--nice-gold-bright);
+      background: var(--nice-gold-lit);
+      color: var(--nice-ink);
+      font-size: var(--font-size-18);
+    }
+  }
+
+  /* What the empty domain card slot accepts, beside it instead of squeezed into it. */
+  .nice-lu-card-hints {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--nice-text-muted);
+    font-size: var(--font-size-13);
+
+    li::before {
+      content: "";
+      display: inline-block;
+      width: 5px;
+      height: 5px;
+      margin-right: 8px;
+      vertical-align: middle;
+      transform: rotate(45deg);
+      background: var(--nice-gold-dim);
+    }
+  }
+
+  /* Multiclass domain and subclass picks. */
+  .nice-lu-picks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .nice-lu-pick {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: 84px;
+    padding: 6px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 8px;
+    background: var(--nice-input-bg);
+    color: var(--nice-text);
+    font-size: var(--font-size-11);
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s var(--nice-ease), box-shadow 0.2s var(--nice-ease);
+
+    img {
+      width: 40px;
+      height: 40px;
+      border: none;
+      object-fit: cover;
+
+      &.svg {
+        filter: brightness(0) saturate(100%) invert(84%) sepia(35%) saturate(700%) hue-rotate(345deg);
+      }
+    }
+
+    &:hover {
+      border-color: var(--nice-gold);
+    }
+
+    &.selected {
+      border-color: var(--nice-gold-bright);
+      box-shadow: 0 0 12px rgba(var(--nice-gold-rgb), 0.35);
+      color: var(--nice-gold-bright);
+    }
+
+    &.disabled {
+      opacity: 0.35;
+      pointer-events: none;
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Summary (system markup)                                                  */
+  /* ======================================================================== */
+  .summary-header {
+    gap: 12px;
+    margin: 6px 0 4px;
+
+    side-line-div {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--nice-line), transparent);
+
+      &.invert {
+        background: linear-gradient(90deg, transparent, var(--nice-line));
+      }
+    }
+
+    h3 {
+      color: var(--nice-gold);
+      font-family: var(--nice-font-title);
+      font-size: var(--font-size-24);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 14px rgba(var(--nice-gold-rgb), 0.35);
+    }
+  }
+
+  .levelup-summary-container {
+    gap: 14px;
+    padding: 12px 0 4px;
+
+    > fieldset {
+      flex: 1 1 100%;
+      margin: 0;
+      padding: 16px 14px 14px;
+      border: 1px solid var(--nice-panel-border);
+      border-radius: 8px;
+      background: var(--nice-panel);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 1px 2px var(--nice-shadow);
+
+      > legend {
+        margin-inline: auto;
+        padding: 2px 14px 1px;
+        border: 1px solid var(--nice-line);
+        border-radius: 4px;
+        background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink-2));
+        color: var(--nice-gold);
+        font-family: var(--nice-font-display);
+        font-size: var(--font-size-13);
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        line-height: 1.4;
+        box-shadow: 0 2px 6px var(--nice-shadow);
+      }
+    }
+
+    .level-achievements-container,
+    .level-advancements-container {
+      gap: 10px;
+
+      h5 {
+        color: var(--nice-gold);
+      }
+    }
+
+    h5.summary-section {
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-12);
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    /* Each change as a row: old value, a gold arrow, the new value lit. */
+    .increase-container {
+      gap: 10px;
+      width: fit-content;
+      padding: 4px 12px;
+      border: 1px solid var(--nice-panel-border);
+      border-radius: 6px;
+      background: var(--nice-input-bg);
+      color: var(--nice-text);
+
+      & + .increase-container {
+        margin-top: 4px;
+      }
+
+      i {
+        color: var(--nice-gold);
+      }
+
+      > span:last-child {
+        color: var(--nice-gold-bright);
+        font-family: var(--nice-font-display);
+        font-weight: 700;
+        text-shadow: 0 0 8px rgba(var(--nice-gold-rgb), 0.4);
+      }
+    }
+
+    .summary-selection-container {
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .summary-selection {
+      padding: 2px 10px;
+      border: 1px solid var(--nice-gold-dim);
+      border-radius: 999px;
+      background: rgba(var(--nice-gold-rgb), 0.1);
+      color: var(--nice-text);
+
+      /* A card slot not filled yet renders a nameless chip. */
+      &:empty {
+        display: none;
+      }
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Footer: what is left on the left, the way forward on the right            */
+  /* ======================================================================== */
+  .nice-lu-footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    padding: 10px 4px 0;
+    border-top: 1px solid var(--nice-line);
+
+    .levelup-navigation-actions,
+    .levelup-footer {
+      display: flex;
+      gap: 10px;
+      margin: 0 0 0 auto;
+    }
+  }
+
+  .nice-lu-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--nice-text-muted);
+    font-size: var(--font-size-13);
+
+    .nice-lu-status-gem {
+      flex: none;
+      width: 9px;
+      height: 9px;
+      transform: rotate(45deg);
+      border: 1px solid var(--nice-gold-dim);
+      background: var(--nice-input-bg);
+    }
+
+    &.ready {
+      color: var(--nice-gold-bright);
+
+      .nice-lu-status-gem {
+        border-color: var(--nice-gold-bright);
+        background: var(--nice-diamond-fill);
+        box-shadow: 0 0 8px rgba(var(--nice-gold-rgb), 0.7);
+      }
+    }
+  }
+
+  .tab-footer {
+
+    button {
+      height: 36px;
+      padding: 0 20px;
+      border: 1px solid var(--nice-gold-dim);
+      border-radius: 6px;
+      background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink-2));
+      color: var(--nice-gold);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-13);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px var(--nice-shadow);
+      transition: filter 0.2s var(--nice-ease), box-shadow 0.2s var(--nice-ease), transform 0.2s var(--nice-ease);
+
+      &:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px var(--nice-shadow), var(--nice-gold-glow);
+      }
+
+      /* The step forward is the gold one. */
+      &:last-child {
+        border-color: var(--nice-gold-bright);
+        background: var(--nice-gold-lit);
+        color: var(--nice-ink);
+      }
+
+      &:disabled {
+        opacity: 0.4;
+        filter: grayscale(0.6);
+        cursor: default;
+      }
+    }
+  }
+}

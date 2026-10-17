@@ -1,0 +1,31 @@
+<section class="tab {{tabs.features.cssClass}} {{tabs.features.id}}" data-tab="{{tabs.features.id}}" data-group="{{tabs.features.group}}">
+    <div class="nice-scroll nice-sections">
+        {{#each featureGroups as |category|}}
+            <fieldset class="nice-panel drop-section {{#if (lookup @root.nice.collapsedGroups category.type)}}nice-group-collapsed{{/if}}" data-group-type="{{category.type}}">
+                <legend {{#if category.anchorItem}}data-tooltip="#item#{{category.anchorItem.uuid}}"{{/if}}>
+                    {{#if category.anchorItem}}
+                        <a data-action="editDoc" data-item-uuid="{{category.anchorItem.uuid}}">{{category.title}}</a>
+                    {{else}}
+                        <span>{{category.title}}</span>
+                    {{/if}}
+                    {{#if (and category.canCreate @root.editable)}}
+                        <a class="nice-legend-button" data-action="addNewItem" data-document-class="Item" data-type="feature" data-tooltip="{{localize 'DOCUMENT.Create' type=''}}">
+                            <i class="fa-solid fa-plus" inert></i>
+                        </a>
+                    {{/if}}
+                    {{#if category.deleteUuid}}
+                        <a class="nice-legend-button" data-action="deleteDoc" data-item-uuid="{{category.deleteUuid}}" data-tooltip="CONTROLS.CommonDelete">
+                            <i class="fa-solid fa-trash" inert></i>
+                        </a>
+                    {{/if}}
+                    {{> "modules/dh-nice-sheets/templates/group-toggle.hbs" collapsed=(lookup @root.nice.collapsedGroups category.type)}}
+                </legend>
+                <ul class="items-list">
+                    {{#each category.values as |item|}}
+                        {{> 'daggerheart.inventory-item' item=item type="feature" actorType=@root.document.type showActions=@root.editable}}
+                    {{/each}}
+                </ul>
+            </fieldset>
+        {{/each}}
+    </div>
+</section>
