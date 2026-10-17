@@ -1105,7 +1105,8 @@ export function defineNiceCharacterSheet() {
 
     /**
      * Compare the rendered vitals with the previous render and trigger the CSS flash animations:
-     * red when a track gets worse (damage, stress, an armor slot spent), green when it recovers.
+     * a red jolt when a vital gets worse (damage, stress, an armor slot spent, Hope spent), a green
+     * lift when it recovers.
      * The classes are removed on `animationend`, so a track can flash again on the next change.
      * @param {object} nice  The `nice` context block of this render.
      */
@@ -1128,11 +1129,19 @@ export function defineNiceCharacterSheet() {
           element.addEventListener("animationend", () => element.classList.remove(cls), { once: true });
         }
       };
+      // The ring segments between the old and the new value are the slots that just filled or
+      // emptied; they flare with the card's flash.
+      const markSlots = (selector, from, to) => {
+        const segments = this.element.querySelectorAll(`${selector} .seg`);
+        for (let i = Math.min(from, to); i < Math.max(from, to); i++) segments[i]?.classList.add("changed");
+      };
       // HP, stress and armor slots fill up as things get worse, so "more" means a loss.
       for (const [key, selector] of [["hitPoints", ".nice-ring-card.hp"], ["stress", ".nice-ring-card.stress"], ["armor", ".nice-ring-card.armor"]]) {
-        if (current[key] > previous[key]) flash(selector, "flash-worse");
-        else if (current[key] < previous[key]) flash(selector, "flash-better");
+        if (current[key] === previous[key]) continue;
+        markSlots(selector, previous[key], current[key]);
+        flash(selector, current[key] > previous[key] ? "flash-worse" : "flash-better");
       }
+      if (current.hope !== previous.hope) markSlots(".nice-ring-card.hope", previous.hope, current.hope);
       // Hope shows in the header and, while collapsed, as a sidebar card; both flash. A gain also
       // lights up the art and the sheet behind it.
       if (current.hope > previous.hope) flash(".nice-hope, .nice-ring-card.hope, .nice-backdrop, .nice-backdrop-hope, .nice-hope-glow", "flash-gain");

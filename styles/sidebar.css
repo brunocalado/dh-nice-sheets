@@ -100,6 +100,7 @@
   .nice-ring-card {
     --nice-ring-hue: var(--nice-gold);
     --nice-ring-glow: var(--nice-gold-bright);
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -126,15 +127,47 @@
     &.stress { --nice-ring-hue: var(--nice-stress); --nice-ring-glow: var(--nice-stress-glow); }
     &.armor { --nice-ring-hue: var(--nice-armor); --nice-ring-glow: var(--nice-armor-glow); }
 
-    &.flash-worse { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
-    &.flash-better { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
-
     /* Hope keeps the default gold. Expanded, the header shows it, so the card only appears in the
-       collapsed sheet (collapsed.css), where the header is hidden. Hope fills as it is gained, so
-       a gain flashes like a recovery. */
+       collapsed sheet (collapsed.css), where the header is hidden. */
     &.hope { display: none; }
-    &.hope.flash-gain { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
-    &.hope.flash-spend { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
+
+    /* The flash wash: a layer over the whole card, so it shows over the card's own hue and
+       shadows instead of replacing them. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      border: 2px solid var(--nice-flash);
+      border-radius: inherit;
+      background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--nice-flash) 40%, transparent), transparent 75%);
+      box-shadow: 0 0 18px var(--nice-flash), inset 0 0 16px color-mix(in srgb, var(--nice-flash) 60%, transparent);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Flashes set by #flashVitals in character-sheet.js. HP, Stress and Armor get worse as they
+       fill; Hope gets better. Every animation in a flash lasts the same 0.9s: the class comes off
+       on the first `animationend` that bubbles up, which would cut a longer one short. */
+    &.flash-worse,
+    &.hope.flash-spend {
+      --nice-flash: var(--nice-hp-glow);
+      animation: nice-card-hit 0.9s var(--nice-ease) 1;
+
+      .nice-ring-icon { animation: nice-icon-hit 0.9s var(--nice-ease) 1; }
+    }
+
+    &.flash-better,
+    &.hope.flash-gain {
+      --nice-flash: #8af0b0;
+      animation: nice-card-lift 0.9s var(--nice-ease) 1;
+
+      .nice-ring-icon { animation: nice-icon-pop 0.9s var(--nice-ease) 1; }
+    }
+
+    &:is(.flash-worse, .flash-better, .flash-gain, .flash-spend) {
+      &::after { animation: nice-card-wash 0.9s var(--nice-ease) 1; }
+      .seg.changed { animation: nice-seg-flare 0.9s var(--nice-ease) 1; }
+    }
   }
 
   /* Armor spans both columns as a banner, ring left, label over count right. Placed by grid areas
