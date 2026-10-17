@@ -109,17 +109,17 @@
       display: none;
     }
 
+    /* No drag bar to clear: the traits strip sits above the vitals here. */
+    .nice-death-banner {
+      margin-top: 0;
+    }
+
     /* The narrow, tall box would crop the art to its right edge; show its middle instead, fading
        downwards only, since the whole box is now sidebar. */
     .nice-backdrop,
     .nice-backdrop-hope {
       background-position: center top;
       mask-image: linear-gradient(180deg, #000 0%, rgba(0, 0, 0, 0.6) 30%, transparent 65%);
-    }
-
-    /* The drag-bar strip now holds the traits, not the death banner. */
-    .nice-compact-traits + .nice-death-banner {
-      margin-top: 10px;
     }
   }
 }

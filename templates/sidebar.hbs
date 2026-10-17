@@ -19,17 +19,18 @@
         {{/each}}
     </div>
 
-    {{#if isDeath}}
-        <a class="nice-death-banner" data-action="makeDeathMove">
-            <i class="fa-solid fa-skull" inert></i>
-            <span>{{localize "DAGGERHEART.APPLICATIONS.DeathMove.takeMove"}}</span>
-            <i class="fa-solid fa-skull" inert></i>
-        </a>
-    {{/if}}
-
     <section class="nice-vitals">
         {{!-- Sits in the strip under the window's drag bar, which nothing interactive can use. --}}
         <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.Resource.plural"}}</span></h3>
+
+        {{!-- Under the title rather than in the strip: the drag bar would take its clicks. --}}
+        {{#if isDeath}}
+            <a class="nice-death-banner" data-action="makeDeathMove">
+                <i class="fa-solid fa-skull" inert></i>
+                <span>{{localize "DAGGERHEART.APPLICATIONS.DeathMove.takeMove"}}</span>
+                <i class="fa-solid fa-skull" inert></i>
+            </a>
+        {{/if}}
 
         {{!-- One click target per card: left click adds, right click removes. The ring only shows the
              value; with 9 to 12 armor slots a segment is a few pixels wide, too small to aim at. --}}

@@ -33,13 +33,14 @@
     }
   }
 
-  /* Death-move ready: a breathing skull banner at the top of the sidebar. */
+  /* Death-move ready: a breathing skull banner under the Resources title. */
   .nice-death-banner {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin: calc(var(--header-height) + 6px) 10px -4px;
+    /* Clears the window's drag bar, which ends a few pixels below the title. */
+    margin-top: 6px;
     padding: 6px 10px;
     border: 1px solid var(--nice-death);
     border-radius: 6px;
@@ -65,11 +66,6 @@
   }
 
   /* ---- Vitals ------------------------------------------------------------------ */
-  /* With the death banner in the drag-bar strip, the section title has nowhere to go. */
-  .nice-death-banner + .nice-vitals > .nice-section-title {
-    display: none;
-  }
-
   .nice-vitals {
     position: relative;
     z-index: 1;
