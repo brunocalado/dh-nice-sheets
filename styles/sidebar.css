@@ -86,9 +86,11 @@
     }
   }
 
-  /* ---- Ring cards (HP, Stress, Armor) ----------------------------------------------
+  /* ---- Ring cards (HP, Stress, Armor, and Hope while collapsed) ----------------------
      Each vital is a card in its own hue: a segmented ring, one segment per slot, around a core
-     icon. The whole card is the click target (left +1, right −1); the ring is only an indicator. */
+     icon. The whole card is the click target (left +1, right −1); the ring is only an indicator,
+     since at 9 to 12 slots a segment is too thin to aim at. That made the typed number input
+     redundant too: one way to change a vital, on a target the size of the card. */
   .nice-rings {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -126,6 +128,13 @@
 
     &.flash-worse { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
     &.flash-better { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
+
+    /* Hope keeps the default gold. Expanded, the header shows it, so the card only appears in the
+       collapsed sheet (collapsed.css), where the header is hidden. Hope fills as it is gained, so
+       a gain flashes like a recovery. */
+    &.hope { display: none; }
+    &.hope.flash-gain { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
+    &.hope.flash-spend { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
   }
 
   /* Armor spans both columns as a banner, ring left, label over count right. Placed by grid areas
@@ -235,7 +244,7 @@
     .sep { margin: 0 2px; }
   }
 
-  /* ---- Pip tracks (extra resources, and Hope while collapsed) ---------------------- */
+  /* ---- Pip tracks (homebrew and feature-granted resources) -------------------------- */
   .nice-track {
     /* The label, the leader rule, the count and the pips all take the track's hue, so the row
        reads as one unit. */

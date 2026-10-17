@@ -12,11 +12,10 @@
 /*  Collapsed sheet                                                             */
 /* ========================================================================== */
 /* The window shrinks to the sidebar. The header is hidden with the tabs, so the traits move to a
-   strip under the drag bar and Hope joins the resource tracks. Both always render in the sidebar
-   and only show here, so collapsing is a class change with no re-render. */
+   strip under the drag bar and Hope joins the vitals as a fourth ring card. Both always render in
+   the sidebar and only show here, so collapsing is a class change with no re-render. */
 .dh-nice-sheets {
-  .nice-compact-traits,
-  .nice-track.hope {
+  .nice-compact-traits {
     display: none;
   }
 
@@ -69,12 +68,6 @@
       line-height: 1;
     }
   }
-
-  .nice-track.hope {
-    .nice-pips {
-      gap: 4px;
-    }
-  }
 }
 
 .application.sheet.daggerheart.dh-nice-sheets.nice-collapsed {
@@ -98,8 +91,23 @@
       display: grid;
     }
 
-    .nice-track.hope {
-      display: block;
+    /* HP, Stress / Armor, Hope: the Armor banner becomes a card like the others. */
+    .nice-ring-card.hope {
+      display: flex;
+    }
+
+    .nice-ring-card.armor {
+      --nice-ring-size: 88px;
+      --nice-ring-icon: 44px;
+      grid-column: auto;
+      display: flex;
+      gap: 0;
+      padding: 6px 4px 7px;
+
+      .nice-ring-label,
+      .nice-ring-count {
+        align-self: auto;
+      }
     }
 
     /* The narrow, tall box would crop the art to its right edge; show its middle instead, fading

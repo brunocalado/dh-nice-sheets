@@ -37,29 +37,9 @@
             {{> ringCard card=nice.hitPoints kind="hp" resource="hitPoints" label=(localize "DAGGERHEART.GENERAL.HitPoints.short")}}
             {{> ringCard card=nice.stress kind="stress" resource="stress" label=(localize "DAGGERHEART.GENERAL.stress")}}
             {{> ringCard card=nice.armor kind="armor" resource="armor" label=(localize "DAGGERHEART.GENERAL.armor") gear=true}}
-        </div>
-
-        {{!-- Collapsed sheets only: stands in for the header's Hope row, which is hidden then. --}}
-        <div class="nice-track hope">
-            <header>
-                <span class="nice-track-label">{{localize "DAGGERHEART.GENERAL.hope"}}</span>
-                <span class="nice-track-rule"></span>
-                <span class="nice-track-count">{{nice.hope.value}}<span class="max"><span class="sep">/</span>{{nice.hope.max}}</span></span>
-            </header>
-            <div class="nice-pips">
-                {{#each nice.hope.pips as |pip|}}
-                    <a class="nice-gem {{#if pip.filled}}lit{{/if}}" data-action="toggleHope" data-value="{{pip.index}}">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path class="gem-body" d="M12 1.5 22.5 12 12 22.5 1.5 12Z" />
-                            <path class="gem-facet" d="M12 1.5 22.5 12H1.5Z" />
-                            <path class="gem-spark" d="M12 5.5 15 12l-3 6.5L9 12Z" />
-                        </svg>
-                    </a>
-                {{/each}}
-                {{#each nice.scars}}
-                    <span class="nice-gem scar" data-tooltip="DAGGERHEART.GENERAL.scars"><i class="fa-regular fa-ban" inert></i></span>
-                {{/each}}
-            </div>
+            {{!-- Collapsed sheets only, where it stands in for the header's Hope row and the four cards
+                 form a 2×2. Expanded, Hope stays in the header and this card is hidden. --}}
+            {{> ringCard card=nice.hope kind="hope" resource="hope" label=(localize "DAGGERHEART.GENERAL.hope")}}
         </div>
 
         {{#each nice.extraResources as |resource|}}

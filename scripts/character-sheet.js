@@ -459,7 +459,8 @@ export function defineNiceCharacterSheet() {
             ...NiceCharacterSheet.#track(value, max)
           };
         }),
-        hope: NiceCharacterSheet.#track(hope.value, hope.max),
+        // The header's Hope row reads `pips`, which the ring card passes through from its track.
+        hope: NiceCharacterSheet.#ringCard(hope.value, hope.max, RESOURCE_ICONS.hope, system.scars ?? 0),
         tagTeam: NiceCharacterSheet.#tagTeam(hope.value),
         scars: Array.fromRange(system.scars ?? 0),
         thresholds: system.damageThresholds,
@@ -721,7 +722,7 @@ export function defineNiceCharacterSheet() {
 
     /**
      * Collapse the sheet to its sidebar, or expand it back. Only the window class and width change,
-     * so nothing re-renders: the sidebar always carries the traits strip and the Hope track, and
+     * so nothing re-renders: the sidebar always carries the traits strip and the Hope card, and
      * the CSS shows them while collapsed. The choice is saved per actor in this browser.
      * @this {NiceCharacterSheet}
      * @type {ApplicationClickAction}
@@ -1132,10 +1133,10 @@ export function defineNiceCharacterSheet() {
         if (current[key] > previous[key]) flash(selector, "flash-worse");
         else if (current[key] < previous[key]) flash(selector, "flash-better");
       }
-      // Hope shows in the header and, while collapsed, as a sidebar track; both flash. A gain also
+      // Hope shows in the header and, while collapsed, as a sidebar card; both flash. A gain also
       // lights up the art and the sheet behind it.
-      if (current.hope > previous.hope) flash(".nice-hope, .nice-track.hope, .nice-backdrop, .nice-backdrop-hope, .nice-hope-glow", "flash-gain");
-      else if (current.hope < previous.hope) flash(".nice-hope, .nice-track.hope", "flash-spend");
+      if (current.hope > previous.hope) flash(".nice-hope, .nice-ring-card.hope, .nice-backdrop, .nice-backdrop-hope, .nice-hope-glow", "flash-gain");
+      else if (current.hope < previous.hope) flash(".nice-hope, .nice-ring-card.hope", "flash-spend");
     }
   };
 }

@@ -320,12 +320,9 @@
     }
   }
 
-  /* A Hope gain or spend flashes the gems, in this pill and in the collapsed sheet's Hope track
-     alike (#flashVitals in character-sheet.js). */
-  .nice-hope.flash-gain .nice-gem.lit,
-  .nice-track.hope.flash-gain .nice-gem.lit { animation: nice-gem-gain 0.7s var(--nice-ease) 1; }
-  .nice-hope.flash-spend .nice-gem,
-  .nice-track.hope.flash-spend .nice-gem { animation: nice-gem-spend 0.5s var(--nice-ease) 1; }
+  /* A Hope gain or spend flashes the gems (#flashVitals in character-sheet.js). */
+  .nice-hope.flash-gain .nice-gem.lit { animation: nice-gem-gain 0.7s var(--nice-ease) 1; }
+  .nice-hope.flash-spend .nice-gem { animation: nice-gem-spend 0.5s var(--nice-ease) 1; }
 
   /* Tag Team: a bare icon closing the Hope pill, past a thin divider. Dim until the character
      can afford one; lit, only the glyph glows gold, nothing is filled. */
