@@ -34,3 +34,11 @@ export const FLAGS = Object.freeze({
 
 /** Item types that can be stored in a container, in the order a container lists them. */
 export const STORABLE_TYPES = Object.freeze(["weapon", "armor", "consumable", "loot"]);
+
+/** Core icons drawn at the centre of the resource rings, by resource key. Every install has them. */
+export const RESOURCE_ICONS = Object.freeze({
+  hitPoints: "icons/commodities/biological/organ-heart-red.webp",
+  stress: "icons/commodities/biological/organ-brain-pink-purple.webp",
+  hope: "icons/magic/light/explosion-star-glow-yellow.webp",
+  armor: "icons/equipment/shield/heater-embossed-gold.webp"
+});

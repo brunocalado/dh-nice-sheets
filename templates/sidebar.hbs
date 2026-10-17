@@ -31,8 +31,13 @@
         {{!-- Sits in the strip under the window's drag bar, which nothing interactive can use. --}}
         <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.Resource.plural"}}</span></h3>
 
-        {{> track track=nice.hitPoints kind="hp" label=(localize "DAGGERHEART.GENERAL.HitPoints.short") action="toggleHitPoints" name="system.resources.hitPoints.value"}}
-        {{> track track=nice.stress kind="stress" label=(localize "DAGGERHEART.GENERAL.stress") action="toggleStress" name="system.resources.stress.value"}}
+        {{!-- One click target per card: left click adds, right click removes. The ring only shows the
+             value; with 9 to 12 armor slots a segment is a few pixels wide, too small to aim at. --}}
+        <div class="nice-rings">
+            {{> ringCard card=nice.hitPoints kind="hp" resource="hitPoints" label=(localize "DAGGERHEART.GENERAL.HitPoints.short")}}
+            {{> ringCard card=nice.stress kind="stress" resource="stress" label=(localize "DAGGERHEART.GENERAL.stress")}}
+            {{> ringCard card=nice.armor kind="armor" resource="armor" label=(localize "DAGGERHEART.GENERAL.armor") gear=true}}
+        </div>
 
         {{!-- Collapsed sheets only: stands in for the header's Hope row, which is hidden then. --}}
         <div class="nice-track hope">
@@ -54,26 +59,6 @@
                 {{#each nice.scars}}
                     <span class="nice-gem scar" data-tooltip="DAGGERHEART.GENERAL.scars"><i class="fa-regular fa-ban" inert></i></span>
                 {{/each}}
-            </div>
-        </div>
-
-        <div class="nice-track armor">
-            <header>
-                {{!-- The system's action id carries this spelling; it opens the per-source armor tooltip. --}}
-                <a class="nice-track-label" data-action="toggleArmorMangement">
-                    {{localize "DAGGERHEART.GENERAL.armorSlots"}}
-                    {{#if (and @root.editable nice.armor.max)}}<i class="fa-solid fa-gear" inert></i>{{/if}}
-                </a>
-                <span class="nice-track-rule"></span>
-                <span class="nice-track-count">{{nice.armor.value}}<span class="max"><span class="sep">/</span>{{nice.armor.max}}</span></span>
-            </header>
-            <div class="nice-pips">
-                {{#each nice.armor.pips as |pip|}}
-                    <a class="nice-pip shield {{#if pip.filled}}filled{{/if}}" data-action="toggleArmor" data-value="{{pip.index}}">
-                        <i class="fa-solid {{#if pip.filled}}fa-shield{{else}}fa-shield-halved{{/if}}" inert></i>
-                    </a>
-                {{/each}}
-                {{#unless nice.armor.max}}<span class="nice-track-empty">{{localize "DAGGERHEART.GENERAL.armor"}} &mdash;</span>{{/unless}}
             </div>
         </div>
 
@@ -188,25 +173,30 @@
     </div>
 </aside>
 
-{{#*inline "track"}}
-    <div class="nice-track {{kind}}">
-        <header>
-            <span class="nice-track-label">{{label}}</span>
-            <span class="nice-track-rule"></span>
-            <span class="nice-track-count">
-                {{#if @root.editable}}
-                    <input type="number" class="nice-track-input" name="{{name}}" value="{{track.value}}" min="0" max="{{track.max}}" />
-                {{else}}
-                    {{track.value}}
-                {{/if}}
-                <span class="max"><span class="sep">/</span>{{track.max}}</span>
-            </span>
-        </header>
-        <div class="nice-pips">
-            {{#each track.pips as |pip|}}
-                <a class="nice-pip {{#if pip.filled}}filled{{/if}}" data-action="{{../action}}" data-value="{{pip.index}}"></a>
-            {{/each}}
+{{!-- A vital as a card: its label, a ring with one segment per slot around a core icon, and the
+     count. The armor card is laid out as a banner by CSS alone, so the collapsed sheet can stack it
+     like the others without a re-render. --}}
+{{#*inline "ringCard"}}
+    <div class="nice-ring-card {{kind}}" data-action="niceStepResource" data-resource="{{resource}}"
+         {{#if @root.editable}}data-tooltip="DH_NICE_SHEETS.Resource.step"{{/if}}>
+        <span class="nice-ring-label">
+            {{label}}
+            {{!-- The system's action id carries this spelling. The click handler resolves the closest
+                 [data-action], so the gear opens the armor tooltip without also stepping the card. --}}
+            {{#if (and gear @root.editable card.max)}}
+                <a class="nice-ring-gear" data-action="toggleArmorMangement"><i class="fa-solid fa-gear" inert></i></a>
+            {{/if}}
+        </span>
+        <div class="nice-ring">
+            <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle class="well" cx="50" cy="50" r="35" />
+                <circle class="rim" cx="50" cy="50" r="48" />
+                <circle class="rim" cx="50" cy="50" r="34.5" />
+                {{#each card.ring}}<path class="seg {{state}}" d="{{d}}" />{{/each}}
+            </svg>
+            <img class="nice-ring-icon" src="{{card.icon}}" alt="" inert />
         </div>
+        <span class="nice-ring-count">{{card.value}}<span class="max"><span class="sep">/</span>{{card.max}}</span></span>
     </div>
 {{/inline}}
 

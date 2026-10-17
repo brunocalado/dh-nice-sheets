@@ -178,7 +178,7 @@
 
   /* Observer view: the system adds `.viewMode`; soften interactive affordances. */
   .window-content.viewMode {
-    .nice-pip, .nice-gem, .nice-trait, .nice-compact-trait, .nice-level-badge { cursor: default; pointer-events: none; }
+    .nice-pip, .nice-gem, .nice-ring-card, .nice-trait, .nice-compact-trait, .nice-level-badge { cursor: default; pointer-events: none; }
   }
 }
 

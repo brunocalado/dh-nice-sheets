@@ -6,7 +6,7 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-import { FLAGS, MODULE_ID, SETTINGS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
+import { FLAGS, MODULE_ID, RESOURCE_ICONS, SETTINGS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
 import { releaseContents, unsetFlagData } from "./helpers.js";
 import { defineNiceLevelUp } from "./levelup.js";
 
@@ -31,6 +31,8 @@ import { defineNiceLevelUp } from "./levelup.js";
  *   [data-action="triggerContextMenu"]`, `.item-name`, `.img-portait` (the system's spelling);
  *   and `.character-details`, the heritage context menu's selector.
  * - Action names in the templates, among them `toggleArmorMangement` (the system's spelling).
+ * - `system.updateArmorValue({ value })`, which spreads a signed armor change over the armor
+ *   sources (#onStepResource).
  * - What `_onDropItem` and `Actor#transferItem` return and create on drops from another actor.
  */
 
@@ -240,6 +242,8 @@ export function defineNiceCharacterSheet() {
         niceToggleCollapse: NiceCharacterSheet.#onToggleCollapse,
         niceToggleGroup: NiceCharacterSheet.#onToggleGroup,
         niceToggleResource: NiceCharacterSheet.#onToggleResource,
+        // A right click reaches actions as an `auxclick` with button 2 only when it is listed.
+        niceStepResource: { handler: NiceCharacterSheet.#onStepResource, buttons: [0, 2] },
         niceTagTeam: NiceCharacterSheet.#onTagTeam
       }
     };
@@ -440,11 +444,11 @@ export function defineNiceCharacterSheet() {
         },
         showBiography: game.settings.get(MODULE_ID, SETTINGS.showBiography),
         traits: describeTraits(context.attributes),
-        hitPoints: NiceCharacterSheet.#track(hitPoints.value, hitPoints.max),
-        stress: NiceCharacterSheet.#track(stress.value, stress.max),
-        armor: NiceCharacterSheet.#track(armor.value, armor.max),
+        hitPoints: NiceCharacterSheet.#ringCard(hitPoints.value, hitPoints.max, RESOURCE_ICONS.hitPoints),
+        stress: NiceCharacterSheet.#ringCard(stress.value, stress.max, RESOURCE_ICONS.stress),
+        armor: NiceCharacterSheet.#ringCard(armor.value, armor.max, RESOURCE_ICONS.armor),
         // Homebrew resources (game settings) and feature-granted ones; the system only shows them
-        // in a locked tooltip off the Hope row, here they sit as tracks under Armor.
+        // in a locked tooltip off the Hope row, here they sit as tracks under the vitals.
         extraResources: Object.entries(system.availableExtraResources).map(([key, resource]) => {
           const { value, max } = system.resources[key] ?? {};
           return {
@@ -536,6 +540,23 @@ export function defineNiceCharacterSheet() {
     }
 
     /**
+     * Step a vital by one from its ring card: left click adds, right click removes. Armor goes
+     * through the system, so the change is spread over the armor sources the way its own sheet does.
+     * @this {NiceCharacterSheet}
+     * @param {PointerEvent} event
+     * @param {HTMLElement} target
+     */
+    static async #onStepResource(event, target) {
+      if (!this.isEditable) return;
+      const delta = event.button === 2 ? -1 : 1;
+      const key = target.dataset.resource;
+      if (key === "armor") return this.document.system.updateArmorValue({ value: delta });
+      const { value, max } = this.document.system.resources[key];
+      const next = Math.clamp(value + delta, 0, max);
+      if (next !== value) await this.document.update({ [`system.resources.${key}.value`]: next });
+    }
+
+    /**
      * Highest level a character can reach: the end of the last tier in the system's Level Tiers
      * setting, the same cap the system's `Actor#updateLevel` applies.
      * @type {number}
@@ -611,6 +632,34 @@ export function defineNiceCharacterSheet() {
         percent: max ? Math.round((value / max) * 100) : 0,
         pips: Array.fromRange(max, 1).map(index => ({ index, filled: value >= index }))
       };
+    }
+
+    /**
+     * Describe a ring card: the track plus one arc per slot, filling clockwise from the bottom.
+     * Scars, when given, take the last segments and are drawn as lost slots.
+     * @param {number} value
+     * @param {number} max
+     * @param {string} icon     Image drawn inside the ring.
+     * @param {number} [scars]
+     */
+    static #ringCard(value, max, icon, scars = 0) {
+      const track = NiceCharacterSheet.#track(value, max);
+      const total = track.max + scars;
+      // Degrees left between segments; narrower past 9 so a 12-slot ring still reads as filled.
+      const gap = total > 9 ? 4 : 6;
+      const step = 360 / total;
+      // A point on the segments' centre line (radius 41 in the 100×100 viewBox), 0° at the top.
+      const point = deg => {
+        const rad = (deg * Math.PI) / 180;
+        return `${(50 + 41 * Math.sin(rad)).toFixed(2)} ${(50 - 41 * Math.cos(rad)).toFixed(2)}`;
+      };
+      const ring = Array.fromRange(total).map(i => {
+        const from = 180 + i * step + gap / 2;
+        const to = 180 + (i + 1) * step - gap / 2;
+        const state = i >= track.max ? "scar" : i < track.value ? "filled" : "empty";
+        return { state, d: `M${point(from)} A41 41 0 ${to - from > 180 ? 1 : 0} 1 ${point(to)}` };
+      });
+      return { ...track, ring, icon };
     }
 
     /* -------------------------------------------- */
@@ -1079,7 +1128,7 @@ export function defineNiceCharacterSheet() {
         }
       };
       // HP, stress and armor slots fill up as things get worse, so "more" means a loss.
-      for (const [key, selector] of [["hitPoints", ".nice-track.hp"], ["stress", ".nice-track.stress"], ["armor", ".nice-track.armor"]]) {
+      for (const [key, selector] of [["hitPoints", ".nice-ring-card.hp"], ["stress", ".nice-ring-card.stress"], ["armor", ".nice-ring-card.armor"]]) {
         if (current[key] > previous[key]) flash(selector, "flash-worse");
         else if (current[key] < previous[key]) flash(selector, "flash-better");
       }

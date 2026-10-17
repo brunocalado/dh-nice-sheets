@@ -86,19 +86,165 @@
     }
   }
 
+  /* ---- Ring cards (HP, Stress, Armor) ----------------------------------------------
+     Each vital is a card in its own hue: a segmented ring, one segment per slot, around a core
+     icon. The whole card is the click target (left +1, right −1); the ring is only an indicator. */
+  .nice-rings {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .nice-ring-card {
+    --nice-ring-hue: var(--nice-gold);
+    --nice-ring-glow: var(--nice-gold-bright);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+    padding: 6px 4px 7px;
+    border: 1px solid color-mix(in srgb, var(--nice-ring-hue) 70%, transparent);
+    border-radius: 8px;
+    background:
+      radial-gradient(circle at 50% 45%, color-mix(in srgb, var(--nice-ring-hue) 22%, transparent), transparent 70%),
+      linear-gradient(180deg, color-mix(in srgb, var(--nice-ring-hue) 10%, var(--nice-ink-2)), var(--nice-ink));
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(0, 0, 0, 0.6),
+      0 0 10px color-mix(in srgb, var(--nice-ring-hue) 18%, transparent);
+    cursor: pointer;
+    user-select: none;
+    transition: border-color 0.15s var(--nice-ease), box-shadow 0.15s var(--nice-ease);
+
+    &:hover {
+      border-color: var(--nice-ring-glow);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(0, 0, 0, 0.6),
+        0 0 14px color-mix(in srgb, var(--nice-ring-hue) 40%, transparent);
+    }
+
+    &.hp { --nice-ring-hue: var(--nice-hp); --nice-ring-glow: var(--nice-hp-glow); }
+    &.stress { --nice-ring-hue: var(--nice-stress); --nice-ring-glow: var(--nice-stress-glow); }
+    &.armor { --nice-ring-hue: var(--nice-armor); --nice-ring-glow: var(--nice-armor-glow); }
+
+    &.flash-worse { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
+    &.flash-better { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
+  }
+
+  /* Armor spans both columns as a banner, ring left, label over count right. Placed by grid areas
+     rather than a wrapper, so the same markup stacks like the other cards where it has to. */
+  .nice-ring-card.armor {
+    --nice-ring-size: 64px;
+    --nice-ring-icon: 34px;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-areas: "ring label" "ring count";
+    grid-template-columns: auto auto;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    column-gap: 14px;
+    row-gap: 4px;
+    padding: 6px 12px;
+
+    .nice-ring { grid-area: ring; }
+    .nice-ring-label { grid-area: label; align-self: end; }
+    .nice-ring-count { grid-area: count; align-self: start; }
+  }
+
+  .nice-ring-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-11);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--nice-text);
+  }
+
+  .nice-ring-gear {
+    display: inline-grid;
+    place-items: center;
+    font-size: 9px;
+    color: var(--nice-text-muted);
+    transition: color 0.15s var(--nice-ease);
+
+    &:hover { color: var(--nice-ring-glow); }
+  }
+
+  .nice-ring {
+    position: relative;
+    flex: none;
+    width: var(--nice-ring-size, 88px);
+    height: var(--nice-ring-size, 88px);
+    margin: 3px 0 4px;
+
+    svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .seg {
+      fill: none;
+      stroke-width: 9;
+      transition: stroke 0.2s var(--nice-ease), filter 0.2s var(--nice-ease);
+
+      &.empty { stroke: rgba(255, 255, 255, 0.11); }
+      &.filled { stroke: var(--nice-ring-hue); filter: drop-shadow(0 0 2.5px var(--nice-ring-glow)); }
+      &.scar { stroke: rgba(0, 0, 0, 0.75); stroke-dasharray: 2 2; }
+    }
+
+    .rim {
+      fill: none;
+      stroke: color-mix(in srgb, var(--nice-ring-hue) 35%, transparent);
+      stroke-width: 0.8;
+    }
+
+    .well { fill: rgba(0, 0, 0, 0.45); }
+  }
+
+  /* Core icons are opaque squares; a radial mask fades their corners into the ring's well. */
+  .nice-ring-icon {
+    position: absolute;
+    inset: 0;
+    width: calc(var(--nice-ring-icon, 44px) + 6px);
+    height: calc(var(--nice-ring-icon, 44px) + 6px);
+    margin: auto;
+    border: none;
+    mask: radial-gradient(circle, #000 52%, transparent 70%);
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--nice-ring-glow) 50%, transparent));
+  }
+
+  .nice-ring-count {
+    font-family: var(--nice-font-title);
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--nice-text);
+    text-shadow: 0 1px 2px #000;
+
+    .max {
+      font-size: 0.8em;
+      color: var(--nice-text-muted);
+    }
+
+    .sep { margin: 0 2px; }
+  }
+
+  /* ---- Pip tracks (extra resources, and Hope while collapsed) ---------------------- */
   .nice-track {
-    /* Each track has its own hue — red hit points, violet stress, steel armor — and the label,
-       the leader rule, the count and the pips all take it, so the row reads as one unit. */
+    /* The label, the leader rule, the count and the pips all take the track's hue, so the row
+       reads as one unit. */
     --nice-track-hue: var(--nice-gold);
     --nice-track-glow: var(--nice-gold-bright);
     --nice-track-ink: var(--nice-accent);
     border-radius: 6px;
     padding: 3px 6px 5px;
     transition: background 0.3s var(--nice-ease);
-
-    &.hp { --nice-track-hue: var(--nice-hp); --nice-track-glow: var(--nice-hp-glow); --nice-track-ink: var(--nice-hp-glow); }
-    &.stress { --nice-track-hue: var(--nice-stress); --nice-track-glow: var(--nice-stress-glow); --nice-track-ink: var(--nice-stress-glow); }
-    &.armor { --nice-track-hue: var(--nice-armor); --nice-track-glow: var(--nice-armor-glow); --nice-track-ink: var(--nice-armor-glow); }
 
     > header {
       display: flex;
@@ -120,15 +266,6 @@
       text-transform: uppercase;
       color: var(--nice-track-ink);
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
-
-      i {
-        font-size: 10px;
-        opacity: 0.7;
-      }
-    }
-
-    a.nice-track-label:hover {
-      color: var(--nice-track-glow);
     }
 
     /* Leader rule: ties the label to its count across the empty middle of the row. */
@@ -164,40 +301,6 @@
       }
     }
 
-    .nice-track-input {
-      /* Size to the digits, so the leader rule ends the same distance from the number as on the
-         armor row, which has no input. */
-      field-sizing: content;
-      min-width: 1ch;
-      height: 1.2em;
-      min-height: 0;
-      padding: 0;
-      border: none;
-      border-bottom: 1px solid transparent;
-      border-radius: 0;
-      background: transparent;
-      /* The system frosts every input (blur + shadow); here the count must read as plain text. */
-      box-shadow: none;
-      backdrop-filter: none;
-      color: inherit;
-      font: inherit;
-      text-align: right;
-      -moz-appearance: textfield;
-      transition: border-color 0.2s;
-
-      &::-webkit-outer-spin-button,
-      &::-webkit-inner-spin-button {
-        appearance: none;
-        margin: 0;
-      }
-
-      &:hover, &:focus {
-        border-bottom-color: var(--nice-track-glow);
-        outline: none;
-        box-shadow: none;
-      }
-    }
-
     .nice-pips {
       display: flex;
       flex-wrap: wrap;
@@ -223,25 +326,6 @@
         background: linear-gradient(180deg, var(--nice-track-glow), var(--nice-track-hue) 60%, color-mix(in srgb, var(--nice-track-hue) 70%, black));
         border-color: var(--nice-track-glow);
         box-shadow: 0 0 8px color-mix(in srgb, var(--nice-track-hue) 70%, transparent), inset 0 1px 0 rgba(255, 255, 255, 0.35);
-      }
-    }
-
-    /* Armor uses shield glyphs instead of bars. */
-    &.armor .nice-pip {
-      width: 20px;
-      height: 20px;
-      border: none;
-      background: none;
-      box-shadow: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      color: color-mix(in srgb, var(--nice-armor) 40%, transparent);
-      font-size: 15px;
-
-      &.filled {
-        color: var(--nice-armor-glow);
-        text-shadow: 0 0 8px color-mix(in srgb, var(--nice-armor) 80%, transparent);
       }
     }
 
@@ -287,14 +371,6 @@
       }
     }
 
-    .nice-track-empty {
-      font-size: var(--font-size-12);
-      color: var(--nice-text-muted);
-      font-style: italic;
-    }
-
-    &.flash-worse { animation: nice-flash-worse 0.9s var(--nice-ease) 1; }
-    &.flash-better { animation: nice-flash-better 0.9s var(--nice-ease) 1; }
   }
 
   /* ---- Evasion / Proficiency plaques -------------------------------------------- */
