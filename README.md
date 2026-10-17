@@ -85,7 +85,7 @@ The module ships in English. To translate it, open an [issue](https://github.com
 
 ## Installation
 
-Install it from the Foundry VTT module browser, or use this manifest link:
+Download the [latest release](https://github.com/brunocalado/dh-nice-sheets/releases/latest), or paste this manifest link in **Install Module**:
 
 ```
 https://github.com/brunocalado/dh-nice-sheets/releases/latest/download/module.json
