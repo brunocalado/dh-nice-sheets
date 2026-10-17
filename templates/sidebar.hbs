@@ -153,9 +153,10 @@
     </div>
 </aside>
 
-{{!-- A vital as a card: its label, a ring with one segment per slot around a core icon, and the
-     count. The armor card is laid out as a banner by CSS alone, so the collapsed sheet can stack it
-     like the others without a re-render. --}}
+{{!-- A vital as a card: its label over a ring with one segment per slot around a core icon. The ring
+     is open at the bottom and the count sits in the opening, which saves the card a line of its own.
+     The armor card is laid out as a banner by CSS alone, so the collapsed sheet can stack it like the
+     others without a re-render. --}}
 {{#*inline "ringCard"}}
     <div class="nice-ring-card {{kind}}" data-action="niceStepResource" data-resource="{{resource}}"
          {{#if @root.editable}}data-tooltip="DH_NICE_SHEETS.Resource.step"{{/if}}>
@@ -175,8 +176,8 @@
                 {{#each card.ring}}<path class="seg {{state}}" d="{{d}}" />{{/each}}
             </svg>
             <img class="nice-ring-icon" src="{{card.icon}}" alt="" inert />
+            <span class="nice-ring-count">{{card.value}}<span class="max"><span class="sep">/</span>{{card.max}}</span></span>
         </div>
-        <span class="nice-ring-count">{{card.value}}<span class="max"><span class="sep">/</span>{{card.max}}</span></span>
     </div>
 {{/inline}}
 

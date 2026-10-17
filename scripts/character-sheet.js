@@ -64,6 +64,9 @@ const COLLAPSED_WIDTH = 270;
 /** Height the sidebar's item list keeps; with less room left the whole sidebar scrolls instead. */
 const SIDEBAR_LIST_MIN_HEIGHT = 200;
 
+/** Degrees left open at the bottom of a resource ring, where its count sits (see #ringCard). */
+const RING_OPENING = 90;
+
 /** How long after a drop an item the GM transfers is still caught, in ms (see #awaitTransfer). */
 const TRANSFER_WAIT = 10000;
 
@@ -636,8 +639,9 @@ export function defineNiceCharacterSheet() {
     }
 
     /**
-     * Describe a ring card: the track plus one arc per slot, filling clockwise from the bottom.
-     * Scars, when given, take the last segments and are drawn as lost slots.
+     * Describe a ring card: the track plus one arc per slot, filling clockwise from the bottom left
+     * round to the bottom right, with RING_OPENING left free between them for the count. Scars,
+     * when given, take the last segments and are drawn as lost slots.
      * @param {number} value
      * @param {number} max
      * @param {string} icon     Image drawn inside the ring.
@@ -648,15 +652,16 @@ export function defineNiceCharacterSheet() {
       const total = track.max + scars;
       // Degrees left between segments; narrower past 9 so a 12-slot ring still reads as filled.
       const gap = total > 9 ? 4 : 6;
-      const step = 360 / total;
+      const step = (360 - RING_OPENING) / total;
+      const start = 180 + RING_OPENING / 2;
       // A point on the segments' centre line (radius 41 in the 100×100 viewBox), 0° at the top.
       const point = deg => {
         const rad = (deg * Math.PI) / 180;
         return `${(50 + 41 * Math.sin(rad)).toFixed(2)} ${(50 - 41 * Math.cos(rad)).toFixed(2)}`;
       };
       const ring = Array.fromRange(total).map(i => {
-        const from = 180 + i * step + gap / 2;
-        const to = 180 + (i + 1) * step - gap / 2;
+        const from = start + i * step + gap / 2;
+        const to = start + (i + 1) * step - gap / 2;
         const state = i >= track.max ? "scar" : i < track.value ? "filled" : "empty";
         return { state, d: `M${point(from)} A41 41 0 ${to - from > 180 ? 1 : 0} 1 ${point(to)}` };
       });

@@ -101,13 +101,7 @@
       --nice-ring-icon: 44px;
       grid-column: auto;
       display: flex;
-      gap: 0;
-      padding: 6px 4px 7px;
-
-      .nice-ring-label,
-      .nice-ring-count {
-        align-self: auto;
-      }
+      padding: 5px 4px 4px;
     }
 
     /* The narrow, tall box would crop the art to its right edge; show its middle instead, fading

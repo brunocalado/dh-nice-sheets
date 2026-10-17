@@ -105,7 +105,7 @@
     flex-direction: column;
     align-items: center;
     min-width: 0;
-    padding: 6px 4px 7px;
+    padding: 5px 4px 4px;
     border: 1px solid color-mix(in srgb, var(--nice-ring-hue) 70%, transparent);
     border-radius: 8px;
     background:
@@ -170,25 +170,22 @@
     }
   }
 
-  /* Armor spans both columns as a banner, ring left, label over count right. Placed by grid areas
-     rather than a wrapper, so the same markup stacks like the other cards where it has to. */
+  /* Armor spans both columns as a banner, ring left, label right. Placed by grid areas rather than
+     a wrapper, so the same markup stacks like the other cards where it has to. */
   .nice-ring-card.armor {
     --nice-ring-size: 64px;
     --nice-ring-icon: 34px;
     grid-column: 1 / -1;
     display: grid;
-    grid-template-areas: "ring label" "ring count";
+    grid-template-areas: "ring label";
     grid-template-columns: auto auto;
     justify-content: center;
-    align-content: center;
     align-items: center;
     column-gap: 14px;
-    row-gap: 4px;
     padding: 6px 12px;
 
     .nice-ring { grid-area: ring; }
-    .nice-ring-label { grid-area: label; align-self: end; }
-    .nice-ring-count { grid-area: count; align-self: start; }
+    .nice-ring-label { grid-area: label; }
   }
 
   .nice-ring-label {
@@ -220,7 +217,8 @@
     flex: none;
     width: var(--nice-ring-size, 88px);
     height: var(--nice-ring-size, 88px);
-    margin: 3px 0 4px;
+    /* The bottom margin makes room for the count, which hangs below the ring's opening. */
+    margin: 2px 0 8px;
 
     svg {
       position: absolute;
@@ -249,19 +247,27 @@
     .well { fill: rgba(0, 0, 0, 0.45); }
   }
 
-  /* Core icons are opaque squares; a radial mask fades their corners into the ring's well. */
+  /* Core icons are opaque squares; a radial mask fades their corners into the ring's well. Lifted a
+     little off the count. `translate` rather than `transform`, which the flash animations own. */
   .nice-ring-icon {
     position: absolute;
     inset: 0;
     width: calc(var(--nice-ring-icon, 44px) + 6px);
     height: calc(var(--nice-ring-icon, 44px) + 6px);
     margin: auto;
+    translate: 0 -4px;
     border: none;
     mask: radial-gradient(circle, #000 52%, transparent 70%);
     filter: drop-shadow(0 0 4px color-mix(in srgb, var(--nice-ring-glow) 50%, transparent));
   }
 
+  /* Centred in the ring's bottom opening, dropping a little below the ring. */
   .nice-ring-count {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    translate: -50% 6px;
+    white-space: nowrap;
     font-family: var(--nice-font-title);
     font-size: 20px;
     font-weight: 700;
