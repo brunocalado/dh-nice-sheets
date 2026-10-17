@@ -170,35 +170,13 @@
     }
   }
 
-  /* Armor spans both columns as a banner, ring left, label right. Placed by grid areas rather than
-     a wrapper, so the same markup stacks like the other cards where it has to. */
+  /* Armor spans both columns as a banner with a smaller ring, which keeps the expanded sheet's third
+     card short. The collapsed sheet turns it back into a card like the others. */
   .nice-ring-card.armor {
     --nice-ring-size: 64px;
     --nice-ring-icon: 34px;
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-areas: "ring label";
-    grid-template-columns: auto auto;
-    justify-content: center;
-    align-items: center;
-    column-gap: 14px;
     padding: 6px 12px;
-
-    .nice-ring { grid-area: ring; }
-    .nice-ring-label { grid-area: label; display: block; }
-  }
-
-  /* Shown on the armor banner only, where it sits beside the ring at no cost in height. */
-  .nice-ring-label {
-    display: none;
-    font-family: var(--nice-font-display);
-    font-size: var(--font-size-11);
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: var(--nice-text);
   }
 
   .nice-ring-gear {
@@ -217,10 +195,10 @@
   .nice-ring {
     position: relative;
     flex: none;
-    width: var(--nice-ring-size, 88px);
-    height: var(--nice-ring-size, 88px);
+    width: var(--nice-ring-size, 80px);
+    height: var(--nice-ring-size, 80px);
     /* The bottom margin makes room for the count, which hangs below the ring's opening. */
-    margin: 2px 0 8px;
+    margin: 2px 0 6px;
 
     svg {
       position: absolute;
@@ -249,15 +227,13 @@
     .well { fill: rgba(0, 0, 0, 0.45); }
   }
 
-  /* Core icons are opaque squares; a radial mask fades their corners into the ring's well. Lifted a
-     little off the count. `translate` rather than `transform`, which the flash animations own. */
+  /* Core icons are opaque squares; a radial mask fades their corners into the ring's well. */
   .nice-ring-icon {
     position: absolute;
     inset: 0;
     width: calc(var(--nice-ring-icon, 44px) + 6px);
     height: calc(var(--nice-ring-icon, 44px) + 6px);
     margin: auto;
-    translate: 0 -4px;
     border: none;
     mask: radial-gradient(circle, #000 52%, transparent 70%);
     filter: drop-shadow(0 0 4px color-mix(in srgb, var(--nice-ring-glow) 50%, transparent));
@@ -268,7 +244,7 @@
     position: absolute;
     bottom: 0;
     left: 50%;
-    translate: -50% 6px;
+    translate: -50% 2px;
     white-space: nowrap;
     font-family: var(--nice-font-title);
     font-size: 20px;

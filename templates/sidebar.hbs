@@ -155,13 +155,12 @@
 
 {{!-- A vital as a card: a ring with one segment per slot around a core icon. The ring is open at the
      bottom and the count sits in the opening, which saves the card a line of its own. The icon and
-     hue name the resource, so the name shows only where it costs no height (the armor banner) and is
-     otherwise in the tooltip and the aria-label. The armor card is laid out as a banner by CSS
-     alone, so the collapsed sheet can stack it like the others without a re-render. --}}
+     hue name the resource, so the name lives in the tooltip and the aria-label rather than on the
+     card. The armor card is laid out as a banner by CSS alone, so the collapsed sheet can stack it
+     like the others without a re-render. --}}
 {{#*inline "ringCard"}}
     <div class="nice-ring-card {{kind}}" data-action="niceStepResource" data-resource="{{resource}}" aria-label="{{label}}"
          data-tooltip-text="{{#if @root.editable}}{{localize "DH_NICE_SHEETS.Resource.step" name=label}}{{else}}{{label}}{{/if}}">
-        <span class="nice-ring-label">{{label}}</span>
         {{!-- The system's action id carries this spelling. The click handler resolves the closest
              [data-action], so the gear opens the armor tooltip without also stepping the card. --}}
         {{#if (and gear @root.editable card.max)}}

@@ -97,13 +97,10 @@
     }
 
     .nice-ring-card.armor {
-      --nice-ring-size: 88px;
+      --nice-ring-size: 80px;
       --nice-ring-icon: 44px;
       grid-column: auto;
-      display: flex;
       padding: 5px 4px 4px;
-
-      .nice-ring-label { display: none; }
     }
 
     /* The traits strip holds the drag-bar strip here, so the title would take a line of its own;
