@@ -67,6 +67,16 @@ The wrench at the end of the tabs opens the character's settings, in the same st
 
 A player with only Limited permission on a character sees a short card instead of the sheet: the portrait, the name, the heritage, the level, the domains, and the pronouns, age and faith when they are filled in.
 
+## The party sheet
+
+The party sheet puts every member on one page. Each character has a card with the heritage, Hope, Hit Points, Stress and Armor, Evasion, the damage thresholds and the six traits, ranked in the same materials as on the character sheet. The equipped weapons sit on the corner of the portrait, and a click on the portrait or the name opens the character. On the characters you own, Hope and the resource cards take the same clicks as on the character sheet. The traits only show values, so nothing is rolled from here. Companions and adversaries in the party are listed in groups of their own.
+
+<p align="center"><img width="686" src="docs/sheet-party.webp" alt="The party sheet with four character cards, each with Hope, the resource cards, Evasion, the damage thresholds and the trait plaques"></p>
+
+The buttons at the top start a Tag Team or a Group Roll, and light up while one is under way. The GM also gets buttons for a short and a long rest. When the system's **Hide Party Stats** setting hides the stats from you, the cards show only the portrait, the name and the heritage.
+
+The Inventory tab works like the character's, containers included, with the party's coins next to the search field. The party's Notes tab is hidden. The GM can show it with **Show the party Notes tab** in the module settings.
+
 ## How to use it
 
 Enable the module and open a character or a party. It opens in the Nice Sheet.
@@ -78,6 +88,8 @@ To use the system's sheet for one character:
 3. Pick the system's sheet in **This Sheet** and save.
 
 To change it for the whole world, the GM picks the sheet in **Default Sheet** in the same window. A character with its own choice in **This Sheet** keeps it. Disabling the module also brings back the system's sheet.
+
+The first time a player opens their character in another sheet, the module asks once whether to switch to the Nice Sheet. A player who says no is not asked again. The GM can turn this off with **Suggest the Nice Sheet to players** in the module settings.
 
 ## When Daggerheart updates
 
