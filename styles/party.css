@@ -90,23 +90,7 @@
     }
 
     .nice-tab {
-      gap: 7px;
       height: 28px;
-
-      .count {
-        display: inline-grid;
-        place-items: center;
-        min-width: 17px;
-        height: 17px;
-        padding: 0 4px;
-        border: 1px solid var(--nice-panel-border);
-        border-radius: 9px;
-        background: var(--nice-accent-soft);
-        color: var(--nice-gold-bright);
-        font-family: var(--nice-font-body);
-        font-size: 10px;
-        letter-spacing: 0;
-      }
     }
   }
 

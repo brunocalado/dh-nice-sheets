@@ -56,7 +56,6 @@
         {{#each tabs as |tab|}}
             <a class="nice-tab {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
                 <span>{{localize tab.label}}</span>
-                {{#if (and (eq tab.id "partyMembers") @root.nice.count)}}<span class="count">{{@root.nice.count}}</span>{{/if}}
             </a>
         {{/each}}
     </nav>
