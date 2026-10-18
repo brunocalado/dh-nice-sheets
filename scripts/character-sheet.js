@@ -187,7 +187,8 @@ export function defineNiceCharacterSheet() {
         niceToggleResource: NiceCharacterSheet.#onToggleResource,
         // A right click reaches actions as an `auxclick` with button 2 only when it is listed.
         niceStepResource: { handler: NiceCharacterSheet.#onStepResource, buttons: [0, 2] },
-        niceTagTeam: NiceCharacterSheet.#onTagTeam
+        niceTagTeam: NiceCharacterSheet.#onTagTeam,
+        niceViewParty: NiceCharacterSheet.#onViewParty
       }
     };
 
@@ -279,6 +280,12 @@ export function defineNiceCharacterSheet() {
      * @type {ResizeObserver}
      */
     #sidebarObserver = new ResizeObserver(([entry]) => NiceCharacterSheet.#fitSidebar(entry.target));
+
+    /**
+     * The open party menu, its button, and the controller of the document listeners that close it.
+     * @type {{menu: HTMLElement, button: HTMLElement, controller: AbortController}|null}
+     */
+    #partyMenu = null;
 
     /**
      * The system resolves this from the actor type's metadata and caches it in its own private
@@ -420,6 +427,7 @@ export function defineNiceCharacterSheet() {
         needsSetup: system.needsCharacterSetup,
         loadoutSlot: system.loadoutSlot,
         hasParties: this.document.parties.size > 0,
+        manyParties: this.document.parties.size > 1,
         // The art is a faint backdrop behind the whole sheet; the placeholder silhouette is skipped.
         backdrop: this.document.img !== CONST.DEFAULT_TOKEN ? this.document.img : null,
         currencies: Object.values(context.inventory?.currencies ?? {}).filter(c => c.enabled),
@@ -529,6 +537,92 @@ export function defineNiceCharacterSheet() {
     /* -------------------------------------------- */
     /*  Actions                                     */
     /* -------------------------------------------- */
+
+    /**
+     * Open the character's party. With more than one, a menu under the button lists them. It
+     * replaces the system's party list, a locked core tooltip that closes only once the pointer
+     * moves away from it; this one closes on a pick, a press outside it, or Escape.
+     * @this {NiceCharacterSheet}
+     * @type {ApplicationClickAction}
+     */
+    static #onViewParty(event, target) {
+      const parties = [...this.document.parties];
+      if (parties.length <= 1) {
+        parties[0]?.sheet.render({ force: true });
+        return;
+      }
+      const wasOpen = this.#partyMenu?.menu.isConnected;
+      this.#closePartyMenu();
+      if (!wasOpen) this.#openPartyMenu(target, parties);
+    }
+
+    /**
+     * Build the party menu after its button, inside the header part, so a re-render of the part
+     * takes it away too.
+     * @param {HTMLElement} button
+     * @param {Actor[]} parties
+     */
+    #openPartyMenu(button, parties) {
+      const menu = document.createElement("div");
+      menu.className = "nice-party-menu";
+      menu.setAttribute("role", "menu");
+      const activeId = game.actors.party?.id;
+      for (const party of parties) {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.setAttribute("role", "menuitem");
+        const img = document.createElement("img");
+        img.src = party.img;
+        img.alt = "";
+        const name = document.createElement("span");
+        name.className = "name";
+        name.textContent = party.name;
+        item.append(img, name);
+        if (party.id === activeId) {
+          const flag = document.createElement("i");
+          flag.className = "fa-solid fa-flag";
+          flag.dataset.tooltip = "DH_NICE_SHEETS.Party.active";
+          item.append(flag);
+        }
+        item.addEventListener("click", () => {
+          this.#closePartyMenu();
+          party.sheet.render({ force: true });
+        });
+        menu.append(item);
+      }
+      // Escape stops here, before core's keybindings on window would close the sheet.
+      menu.addEventListener("keydown", event => {
+        if (event.key !== "Escape") return;
+        event.preventDefault();
+        event.stopPropagation();
+        this.#closePartyMenu({ focus: true });
+      });
+      button.after(menu);
+      // The button's own tooltip would sit over the list.
+      game.tooltip.deactivate();
+
+      const controller = new AbortController();
+      this.#partyMenu = { menu, button, controller };
+      // A press on the button is left to its click, which toggles the menu.
+      document.addEventListener("pointerdown", event => {
+        if (!menu.isConnected || !(menu.contains(event.target) || button.contains(event.target))) this.#closePartyMenu();
+      }, { capture: true, signal: controller.signal });
+      menu.querySelector("button").focus();
+    }
+
+    /**
+     * Close the party menu, if one is open.
+     * @param {object} [options]
+     * @param {boolean} [options.focus=false]  Give the focus back to the menu's button.
+     */
+    #closePartyMenu({ focus = false } = {}) {
+      if (!this.#partyMenu) return;
+      const { menu, button, controller } = this.#partyMenu;
+      this.#partyMenu = null;
+      controller.abort();
+      menu.remove();
+      if (focus && button.isConnected) button.focus();
+    }
 
     /**
      * The level badge is read-only; clicking it asks before leveling up. On confirmation the level
@@ -681,6 +775,7 @@ export function defineNiceCharacterSheet() {
       this.#vitals.reset();
       this.#settled = false;
       this.#sidebarObserver.disconnect();
+      this.#closePartyMenu();
     }
 
     /**

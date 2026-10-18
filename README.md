@@ -14,7 +14,7 @@ The sidebar holds the numbers you check during a fight. Hit Points, Stress and A
 
 Further down the sidebar lists your favorites, your equipped weapons and armor, the domain cards in your loadout, and your experiences, each with a button that sends it to chat.
 
-The header has the character's class, subclass, community and ancestry, the domains, the level, and Hope. Click a heritage name to open its item. The Tag Team icon at the end of the Hope row lights up when the character has the Hope a Tag Team costs (3 in the system's default), and a click opens the system's Tag Team window for the character's party. A character in no party gets a chat card asking the table for one instead. Nothing is spent by the click. The buttons on the right start a short or a long rest, and open the party when the character is in one.
+The header has the character's class, subclass, community and ancestry, the domains, the level, and Hope. Click a heritage name to open its item. The Tag Team icon at the end of the Hope row lights up when the character has the Hope a Tag Team costs (3 in the system's default), and a click opens the system's Tag Team window for the character's party. A character in no party gets a chat card asking the table for one instead. Nothing is spent by the click. The buttons on the right start a short or a long rest, and open the party when the character is in one. A character in more than one party gets a small plus on that button, and a click lists the parties to pick from.
 
 <p align="center"><img width="648" src="docs/sheet-traits.webp" alt="The header with the domains, the level medal, the Hope row and the six trait plaques"></p>
 

@@ -493,12 +493,14 @@
   }
 
   .nice-rest {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 6px;
     margin-left: auto;
 
-    button {
+    /* Direct children only: the party menu's rows are buttons too. */
+    > button {
       width: 28px;
       height: 28px;
       min-height: 0;
@@ -518,6 +520,104 @@
         border-color: transparent;
         box-shadow: var(--nice-gold-glow), 0 4px 8px var(--nice-shadow);
       }
+    }
+
+    .nice-view-party {
+      position: relative;
+    }
+
+    /* More than one party: a small plus on the button's right edge. */
+    .nice-party-more {
+      position: absolute;
+      top: 50%;
+      right: -3px;
+      translate: 0 -50%;
+      display: grid;
+      place-items: center;
+      width: 11px;
+      height: 11px;
+      border: 1px solid var(--nice-gold-dim);
+      border-radius: 50%;
+      background: var(--nice-ink);
+      color: var(--nice-gold);
+      font-family: var(--nice-font-body);
+      font-size: 10px;
+      font-weight: 700;
+      line-height: 1;
+    }
+  }
+
+  /* The party list, opened under the party button when the character is in more than one. */
+  .nice-party-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 170px;
+    max-width: 260px;
+    padding: 5px;
+    border: 1px solid var(--nice-line);
+    border-radius: 8px;
+    background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink));
+    box-shadow: 0 8px 22px var(--nice-shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    animation: nice-menu-in 0.14s var(--nice-ease);
+
+    button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      margin: 0;
+      padding: 5px 8px 5px 5px;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      background: none;
+      box-shadow: none;
+      color: var(--nice-text);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-13);
+      text-align: left;
+      cursor: pointer;
+      transition: background 0.15s var(--nice-ease), border-color 0.15s var(--nice-ease);
+
+      &:hover,
+      &:focus-visible {
+        border-color: var(--nice-panel-border);
+        background: rgba(var(--nice-gold-rgb), 0.1);
+        color: var(--nice-gold-bright);
+        outline: none;
+      }
+    }
+
+    img {
+      flex: none;
+      width: 26px;
+      height: 26px;
+      border: 1px solid var(--nice-gold-dim);
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--nice-ink);
+    }
+
+    .name {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* The active party, marked as the party sheet marks it. */
+    .fa-flag {
+      flex: none;
+      color: var(--nice-gold-bright);
+      font-size: 10px;
+      text-shadow: 0 0 8px rgba(var(--nice-gold-rgb), 0.6);
     }
   }
 }

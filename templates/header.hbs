@@ -95,8 +95,11 @@
 
         <div class="nice-rest">
             {{#if nice.hasParties}}
-                <button type="button" data-action="viewParty" data-tooltip="DAGGERHEART.ACTORS.Character.viewParty">
+                {{!-- With more than one party, a small plus marks that the button opens a list. --}}
+                <button type="button" class="nice-view-party" data-action="niceViewParty" data-tooltip="DAGGERHEART.ACTORS.Character.viewParty"
+                        {{#if nice.manyParties}}aria-haspopup="menu"{{/if}}>
                     <i class="fa-solid fa-fw fa-users" inert></i>
+                    {{#if nice.manyParties}}<span class="nice-party-more" inert>+</span>{{/if}}
                 </button>
             {{/if}}
             {{#if @root.editable}}
