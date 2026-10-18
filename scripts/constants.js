@@ -14,6 +14,7 @@ export const TEMPLATE_PATH = `modules/${MODULE_ID}/templates`;
 /** Setting keys registered by main.js. */
 export const SETTINGS = Object.freeze({
   showBiography: "showBiography",
+  showPartyNotes: "showPartyNotes",
   collapsedSheets: "collapsedSheets",
   collapsedGroups: "collapsedGroups",
   suggestSheet: "suggestSheet",

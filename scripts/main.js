@@ -17,6 +17,7 @@ import { offerSheet } from "./sheet-offer.js";
 // before modules do, so defining the class inside our own init hook is safe.
 Hooks.once("init", () => {
   const NiceCharacterSheet = defineNiceCharacterSheet();
+  const NicePartySheet = defineNicePartySheet();
 
   // Stored on the user (not the browser) so the choice follows the player between devices.
   game.settings.register(MODULE_ID, SETTINGS.showBiography, {
@@ -49,6 +50,20 @@ Hooks.once("init", () => {
     config: false,
     type: new foundry.data.fields.ArrayField(new foundry.data.fields.StringField()),
     default: []
+  });
+
+  game.settings.register(MODULE_ID, SETTINGS.showPartyNotes, {
+    name: "DH_NICE_SHEETS.Settings.ShowPartyNotes.name",
+    hint: "DH_NICE_SHEETS.Settings.ShowPartyNotes.hint",
+    scope: "world",
+    config: true,
+    type: new foundry.data.fields.BooleanField(),
+    default: false,
+    onChange: () => {
+      for (const app of foundry.applications.instances.values()) {
+        if (app instanceof NicePartySheet) app.render();
+      }
+    }
   });
 
   game.settings.register(MODULE_ID, SETTINGS.suggestSheet, {
@@ -87,7 +102,7 @@ Hooks.once("init", () => {
   });
 
   // Not the default: the GM picks it for a party in Configure Sheet.
-  foundry.documents.collections.Actors.registerSheet(MODULE_ID, defineNicePartySheet(), {
+  foundry.documents.collections.Actors.registerSheet(MODULE_ID, NicePartySheet, {
     types: ["party"],
     makeDefault: false,
     label: "DH_NICE_SHEETS.PartySheetLabel",

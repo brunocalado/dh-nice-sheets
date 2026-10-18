@@ -52,6 +52,10 @@
         "name": "Show the biography under Notes",
         "hint": "Shows the system's biography fields (pronouns, age, faith, background, connections) below the notes in the Notes tab. Hidden by default; this choice is saved on your user."
       },
+      "ShowPartyNotes": {
+        "name": "Show the party Notes tab",
+        "hint": "Shows the Notes tab on the Nice Party Sheet. Hidden by default."
+      },
       "SuggestSheet": {
         "name": "Suggest the Nice Sheet to players",
         "hint": "The first time a player opens their character in another sheet, ask once whether to switch to the Nice Sheet. A player who says no is not asked again."

@@ -6,7 +6,7 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-import { MODULE_ID, RESOURCE_ICONS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
+import { MODULE_ID, RESOURCE_ICONS, SETTINGS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
 import { ContainerSheetMixin } from "./containers.js";
 import {
   collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track
@@ -134,8 +134,19 @@ export function defineNicePartySheet() {
     /* -------------------------------------------- */
 
     /** @inheritdoc */
+    _configureRenderParts(options) {
+      const parts = super._configureRenderParts(options);
+      if (game.settings.get(MODULE_ID, SETTINGS.showPartyNotes)) return parts;
+      delete parts.notes;
+      // Turning the setting off while Notes is open would leave no tab active.
+      if (this.tabGroups.primary === "notes") this.tabGroups.primary = "partyMembers";
+      return parts;
+    }
+
+    /** @inheritdoc */
     async _prepareContext(options) {
       const context = await super._prepareContext(options);
+      if (!game.settings.get(MODULE_ID, SETTINGS.showPartyNotes)) delete context.tabs?.notes;
       // What the sheet adds reads system internals (see the list at the top of this file). When an
       // update breaks one, the sheet still opens with what the system provides, and the user is told.
       try {
