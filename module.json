@@ -2,7 +2,7 @@
   "id": "dh-nice-sheets",
   "title": "Daggerheart: Nice Sheets",
   "description": "An alternative, selectable character sheet for the Daggerheart system with a richer visual design. Reuses every native roll and action of the system.",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "compatibility": {
     "minimum": "14",
     "verified": "14",
