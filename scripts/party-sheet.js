@@ -374,6 +374,12 @@ export function defineNicePartySheet() {
     /** @inheritdoc */
     async _onRender(context, options) {
       await super._onRender(context, options);
+      // AppV2 swaps only the parts it renders: a Notes section drawn before the setting went off
+      // would stay in the window, still active, beside Members. Removed after the render rather than
+      // in _configureRenderParts, so a failed render never leaves the window without it.
+      if (!game.settings.get(MODULE_ID, SETTINGS.showPartyNotes)) {
+        this.element.querySelector('[data-application-part="notes"]')?.remove();
+      }
       if (this.#settled) this.element.classList.add("nice-settled");
       this.#settled = true;
       syncLoopingAnimations(this.element);
