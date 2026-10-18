@@ -101,10 +101,10 @@ Hooks.once("init", () => {
     themes: null
   });
 
-  // Not the default: the GM picks it for a party in Configure Sheet.
+  // Default on the same terms as the character sheet above.
   foundry.documents.collections.Actors.registerSheet(MODULE_ID, NicePartySheet, {
     types: ["party"],
-    makeDefault: false,
+    makeDefault: true,
     label: "DH_NICE_SHEETS.PartySheetLabel",
     themes: null
   });

@@ -1,6 +1,6 @@
 # Daggerheart: Nice Sheets
 
-Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Once the module is enabled, characters open in it by default, unless the GM has already chosen another **Default Sheet**. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
+Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Once the module is enabled, characters and parties open in it by default, unless the GM has already chosen another **Default Sheet**. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
 
 What changes is the layout. Hit Points, Stress and Armor stay in view in a sidebar, with Hope in the header above the traits. The six traits sit on plaques ranked from cracked iron to gold, and the character's art fills the background of the whole sheet.
 
@@ -69,7 +69,7 @@ A player with only Limited permission on a character sees a short card instead o
 
 ## How to use it
 
-Enable the module and open a character. It opens in the Nice Sheet.
+Enable the module and open a character or a party. It opens in the Nice Sheet.
 
 To use the system's sheet for one character:
 
