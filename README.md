@@ -2,15 +2,15 @@
 
 Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Each player picks it for their own character in **Configure Sheet**, and the system's sheet stays the default. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
 
-What changes is the layout. Hit Points, Stress, Armor and Hope stay in view in a sidebar, the six traits sit on plaques ranked from cracked iron to gold, and the character's art fills the background of the whole sheet.
+What changes is the layout. Hit Points, Stress and Armor stay in view in a sidebar, with Hope in the header above the traits. The six traits sit on plaques ranked from cracked iron to gold, and the character's art fills the background of the whole sheet.
 
-<p align="center"><img width="900" src="docs/preview.webp" alt="Clicking the Hope row: the new Hope gem lights up and the character's art glows behind the sheet"></p>
+<p align="center"><img width="900" src="docs/preview.webp" alt="Clicking the Hit Points and Stress cards, which flash as they change, then the Hope row and the Inventory tab"></p>
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-Donate-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/mestredigital) [![More Modules](https://img.shields.io/badge/Foundry%20VTT-More%20Modules-red?style=for-the-badge&logo=gamepad)](https://mestredigital.online/pages/projetos-en)
 
 ## What the sheet shows
 
-The sidebar holds the numbers you check during a fight. Hit Points, Stress and Armor Slots are rows of pips that you click to mark, and Hit Points and Stress also take a typed value next to the label. Extra resources, the ones the GM adds in the homebrew settings and the ones a feature grants, appear under Armor as tracks of their own. Below them are Evasion, Proficiency and the damage thresholds, with the Hit Points each band costs. When the Massive Damage variant rule is on, a fourth band shows the value that marks 4 Hit Points.
+The sidebar holds the numbers you check during a fight. Hit Points, Stress and Armor Slots are cards with a ring around an icon, one segment per slot and the count in the gap at the bottom. A left click on a card marks one, and a right click clears one. Extra resources, the ones the GM adds in the homebrew settings and the ones a feature grants, appear under Armor as tracks of their own. Below them are Evasion, Proficiency and the damage thresholds, with the Hit Points each band costs. When the Massive Damage variant rule is on, a fourth band shows the value that marks 4 Hit Points.
 
 Further down the sidebar lists your favorites, your equipped weapons and armor, the domain cards in your loadout, and your experiences, each with a button that sends it to chat.
 
@@ -20,7 +20,7 @@ The header has the character's class, subclass, community and ancestry, the doma
 
 Each trait plaque takes its material from where the value ranks among the character's own traits. The lowest is cracked iron, the highest is gold with a crest on top, and the values between are slate, bronze and brass. Equal values always get the same material. The spellcasting trait is violet, with a ring of light turning around its border. Click a plaque to roll that trait.
 
-When Hit Points, Stress or Armor change, the track flashes red for a loss and green for a recovery. Gaining Hope lights up the character's art for a moment.
+When Hit Points, Stress or Armor change, the card shakes and turns red for a loss, and lifts and turns green for a recovery. Gaining Hope lights up the character's art for a moment.
 
 <p align="center"><img width="900" src="docs/sheet-features.webp" alt="The Nice Sheet on the Features tab, with the resources sidebar on the left and the traits, Hope and tabs on the right"></p>
 
@@ -55,9 +55,9 @@ The Biography tab is now Notes: a text field that saves as you type. The system'
 
 ## Collapsing to the sidebar
 
-The arrows button in the window header shrinks the sheet to the sidebar alone, with the traits in a strip at the top and Hope among the tracks. Click it again to bring the full sheet back. The sheet remembers it per character, on that computer.
+The arrows button in the window header shrinks the sheet to the sidebar alone, with the traits in a strip at the top and Hope as a fourth card next to Hit Points, Stress and Armor. Click it again to bring the full sheet back. The sheet remembers it per character, on that computer.
 
-<p align="center"><img width="270" src="docs/sheet-collapsed.webp" alt="The sheet collapsed to its sidebar, with the trait strip, the resource tracks and the favorites"></p>
+<p align="center"><img width="270" src="docs/sheet-collapsed.webp" alt="The sheet collapsed to its sidebar, with the trait strip, the four resource cards and the favorites"></p>
 
 ## The settings window
 
