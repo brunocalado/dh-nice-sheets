@@ -47,7 +47,8 @@
     }
   }
 
-  /* The party art, anchored top-right behind the header and fading out before the cards. */
+  /* The party art, anchored top-right and covering the window like the character's, so a group
+     picture or a symbol reads behind the cards too; it fades out towards the left and the bottom. */
   .nice-backdrop {
     position: absolute;
     inset: 0;
@@ -55,11 +56,11 @@
     z-index: -1;
     pointer-events: none;
     background-position: right top;
-    background-size: 70% auto;
+    background-size: cover;
     background-repeat: no-repeat;
     mask-image:
-      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 35%, #000 60%),
-      linear-gradient(180deg, #000 10%, rgba(0, 0, 0, 0.35) 30%, transparent 55%);
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 22%, #000 45%),
+      linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
     mask-composite: intersect;
     opacity: 0.14;
     mix-blend-mode: luminosity;
@@ -94,8 +95,14 @@
     }
   }
 
-  img.nice-party-emblem {
+  /* Positions the image tips badge against the emblem. */
+  .nice-party-emblem-ring {
+    position: relative;
     flex: none;
+  }
+
+  img.nice-party-emblem {
+    display: block;
     width: 54px;
     height: 54px;
     border: 1.5px solid var(--nice-gold);

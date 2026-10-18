@@ -6,8 +6,7 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-/* The settings window (`.dh-nice-sheets-settings`, templates/settings-*.hbs) and the image
-   tips tooltip it opens. */
+/* The settings window (`.dh-nice-sheets-settings`, templates/settings-*.hbs). */
 
 /* ========================================================================== */
 /*  Settings window                                                             */
@@ -88,29 +87,6 @@
     &[data-action]:hover {
       transform: scale(1.05);
       filter: brightness(1.1);
-    }
-  }
-
-  /* Info badge on the ring, with the image recommendations in its tooltip. */
-  .nice-image-tips {
-    position: absolute;
-    right: -4px;
-    bottom: 0;
-    display: grid;
-    place-items: center;
-    width: 20px;
-    height: 20px;
-    border: 1px solid var(--nice-gold-dim);
-    border-radius: 50%;
-    background: var(--nice-ink);
-    color: var(--nice-gold);
-    font-size: 11px;
-    cursor: help;
-    transition: color 0.2s var(--nice-ease), border-color 0.2s var(--nice-ease);
-
-    &:hover {
-      color: var(--nice-gold-bright);
-      border-color: var(--nice-gold);
     }
   }
 
@@ -332,15 +308,4 @@
       outline: none;
     }
   }
-}
-
-/* The tooltip lives in core's #tooltip, outside the sheet's scope. */
-#tooltip.nice-image-tips-tooltip {
-  max-width: 280px;
-  text-align: left;
-
-  p { margin: 0 0 6px; }
-  ul { margin: 0 0 6px; padding-left: 18px; }
-  li { margin-bottom: 2px; }
-  > :last-child { margin-bottom: 0; }
 }

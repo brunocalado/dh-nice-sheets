@@ -217,6 +217,41 @@
       letter-spacing: 0;
     }
   }
+
+  /* ---- Image tips: info badge on a picture's ring, its tips in a tooltip ---- */
+  /* Used by the character's settings window and the party emblem; the parent is positioned. */
+  .nice-image-tips {
+    position: absolute;
+    right: -4px;
+    bottom: 0;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border: 1px solid var(--nice-gold-dim);
+    border-radius: 50%;
+    background: var(--nice-ink);
+    color: var(--nice-gold);
+    font-size: 11px;
+    cursor: help;
+    transition: color 0.2s var(--nice-ease), border-color 0.2s var(--nice-ease);
+
+    &:hover {
+      color: var(--nice-gold-bright);
+      border-color: var(--nice-gold);
+    }
+  }
+}
+
+/* The tooltip lives in core's #tooltip, outside the sheet's scope. */
+#tooltip.nice-image-tips-tooltip {
+  max-width: 280px;
+  text-align: left;
+
+  p { margin: 0 0 6px; }
+  ul { margin: 0 0 6px; padding-left: 18px; }
+  li { margin-bottom: 2px; }
+  > :last-child { margin-bottom: 0; }
 }
 
 /* ---- Keyframes (global names, prefixed to avoid collisions) ------------------ */

@@ -5,6 +5,7 @@
     "Failure": "Nice Sheets ran into an error with Daggerheart {version}, so parts of the sheet may be missing, or the system's sheet opens in its place. Until Nice Sheets is updated, switch to the system's sheet with Configure Sheet, in the sheet window's menu. The details are in the browser console (F12).",
     "ChangeImage": "Change character image",
     "ImageTips": "<p><strong>Best art for the sheet</strong></p><p>The image also fills the sheet's background, faint and cropped to fit.</p><ul><li>Portrait shape, taller than wide.</li><li>Transparent background (PNG or WebP), so only the character shows.</li><li>Face in the upper third.</li><li>About 1000 px tall or more.</li></ul><p>Wide images lose their sides, and token art shows its round frame.</p>",
+    "PartyImageTips": "<p><strong>Best art for the party</strong></p><p>The image also fills the sheet's background, faint, anchored to the top right and cropped to fit.</p><ul><li>A group picture, a place or a symbol: it sits behind the member cards.</li><li>Wider than tall, or square, so little of it is cropped.</li><li>The main subject in the upper right, where the art shows most.</li><li>About 1000 px wide or more.</li></ul><p>The system's default party icon leaves the background plain.</p>",
     "Spellcast": "Spellcast",
     "Resource": {
       "step": "{name} · Left click: +1 · Right click: −1"

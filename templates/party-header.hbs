@@ -7,7 +7,14 @@
 
     <div class="nice-title-row">
         {{!-- `img.profile` is what the system's artwork context menu binds to. --}}
-        <img class="profile nice-party-emblem" src="{{source.img}}" data-action="editImage" data-edit="img" alt="" />
+        <span class="nice-party-emblem-ring">
+            <img class="profile nice-party-emblem" src="{{source.img}}" data-action="editImage" data-edit="img" alt="" />
+            {{#if editable}}
+                {{!-- The art also becomes the sheet's backdrop, which some image shapes suit better. --}}
+                <i class="nice-image-tips fa-solid fa-circle-info" data-tooltip="DH_NICE_SHEETS.PartyImageTips"
+                   data-tooltip-class="nice-image-tips-tooltip" data-tooltip-direction="RIGHT"></i>
+            {{/if}}
+        </span>
         <div class="nice-name-block">
             <h1
                 class="actor-name input"
