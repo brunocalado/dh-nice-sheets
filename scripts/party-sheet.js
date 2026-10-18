@@ -9,9 +9,10 @@
 import { MODULE_ID, RESOURCE_ICONS, SETTINGS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
 import { ContainerSheetMixin } from "./containers.js";
 import {
-  collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track
+  collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track,
+  traitAttributes
 } from "./helpers.js";
-import { VitalCards } from "./vital-cards.js";
+import { RING_FLASHES, VitalCards } from "./vital-cards.js";
 
 /*
  * What this sheet relies on from the Daggerheart system, checked against 2.10.13 (same role as the
@@ -38,9 +39,7 @@ import { VitalCards } from "./vital-cards.js";
  * art is not a member's, so a Hope gain lights no backdrop here.
  */
 const MEMBER_FLASHES = Object.freeze({
-  hitPoints: { card: ".nice-ring-card.hp", up: "flash-worse", down: "flash-better" },
-  stress: { card: ".nice-ring-card.stress", up: "flash-worse", down: "flash-better" },
-  armor: { card: ".nice-ring-card.armor", up: "flash-worse", down: "flash-better" },
+  ...RING_FLASHES,
   hope: { card: ".nice-hope", up: "flash-gain", down: "flash-spend" }
 });
 
@@ -275,14 +274,7 @@ export function defineNicePartySheet() {
         const thresholds = ["character", "adversary"].includes(actor.type) ? system.damageThresholds : null;
 
         let traits = null;
-        if (isCharacter) {
-          const spellcastKey = system.spellcastModifierTrait?.key;
-          traits = describeTraits(Object.fromEntries(Object.entries(system.traits).map(([key, trait]) => [key, {
-            value: trait.value,
-            label: game.i18n.localize(CONFIG.DH.ACTOR.abilities[key].label),
-            isSpellcasting: key === spellcastKey
-          }])));
-        }
+        if (isCharacter) traits = describeTraits(traitAttributes(actor));
 
         group.members.push({
           uuid: actor.uuid,
@@ -319,18 +311,17 @@ export function defineNicePartySheet() {
      * @returns {import("@client/applications/ux/context-menu.mjs").ContextMenuEntry[]}
      */
     static #getItemContextOptions() {
-      const itemOf = target => this.document.items.get(target.closest("[data-item-id]")?.dataset.itemId);
       return [
         {
           label: "CONTROLS.CommonEdit",
           icon: "fa-solid fa-pen-to-square",
-          onClick: (_, target) => itemOf(target)?.sheet.render({ force: true })
+          onClick: (_, target) => this.itemFromTarget(target)?.sheet.render({ force: true })
         },
         {
           label: "CONTROLS.CommonDelete",
           icon: "fa-solid fa-trash",
           visible: () => this.isEditable,
-          onClick: (_, target) => itemOf(target)?.deleteDialog()
+          onClick: (_, target) => this.itemFromTarget(target)?.deleteDialog()
         }
       ];
     }

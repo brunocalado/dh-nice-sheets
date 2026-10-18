@@ -77,6 +77,15 @@ export function ContainerSheetMixin(Base) {
     }
 
     /**
+     * The item of the inventory row an element sits in, on this sheet's actor.
+     * @param {HTMLElement} target
+     * @returns {Item|undefined}
+     */
+    itemFromTarget(target) {
+      return this.document.items.get(target.closest("[data-item-id]")?.dataset.itemId);
+    }
+
+    /**
      * Every item menu of the sheet gets the container entries; each entry shows only on the rows
      * it applies to, so one wrapper covers the loot, consumable and equipment menus alike.
      * @inheritdoc
@@ -91,19 +100,18 @@ export function ContainerSheetMixin(Base) {
      * @returns {import("@client/applications/ux/context-menu.mjs").ContextMenuEntry[]}
      */
     #containerContextOptions() {
-      const itemOf = target => this.document.items.get(target.closest("[data-item-id]")?.dataset.itemId);
       const containerOf = item => this.document.items.get(item?.getFlag(MODULE_ID, FLAGS.storedIn));
       return [
         {
           label: "DH_NICE_SHEETS.Container.make",
           icon: "fa-solid fa-box-open",
           visible: target => {
-            const item = itemOf(target);
+            const item = this.itemFromTarget(target);
             return this.isEditable && item?.type === "loot" && !item.getFlag(MODULE_ID, FLAGS.container);
           },
           // A loot item can be held by a container; becoming one takes it out, since containers
           // do not nest.
-          onClick: (_, target) => itemOf(target)?.update(foundry.utils.mergeObject(
+          onClick: (_, target) => this.itemFromTarget(target)?.update(foundry.utils.mergeObject(
             unsetFlagData(FLAGS.storedIn),
             { flags: { [MODULE_ID]: { [FLAGS.container]: true } } }
           ))
@@ -111,9 +119,9 @@ export function ContainerSheetMixin(Base) {
         {
           label: "DH_NICE_SHEETS.Container.unmake",
           icon: "fa-solid fa-box",
-          visible: target => this.isEditable && !!itemOf(target)?.getFlag(MODULE_ID, FLAGS.container),
+          visible: target => this.isEditable && !!this.itemFromTarget(target)?.getFlag(MODULE_ID, FLAGS.container),
           onClick: (_, target) => {
-            const container = itemOf(target);
+            const container = this.itemFromTarget(target);
             if (!container) return;
             return this.document.updateEmbeddedDocuments("Item", [
               { _id: container.id, ...unsetFlagData(FLAGS.container) },
@@ -124,8 +132,8 @@ export function ContainerSheetMixin(Base) {
         {
           label: "DH_NICE_SHEETS.Container.takeOut",
           icon: "fa-solid fa-arrow-up-from-bracket",
-          visible: target => this.isEditable && !!containerOf(itemOf(target))?.getFlag(MODULE_ID, FLAGS.container),
-          onClick: (_, target) => itemOf(target)?.unsetFlag(MODULE_ID, FLAGS.storedIn)
+          visible: target => this.isEditable && !!containerOf(this.itemFromTarget(target))?.getFlag(MODULE_ID, FLAGS.container),
+          onClick: (_, target) => this.itemFromTarget(target)?.unsetFlag(MODULE_ID, FLAGS.storedIn)
         }
       ];
     }

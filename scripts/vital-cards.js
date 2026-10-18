@@ -21,6 +21,13 @@ const BURST_WINDOW = 900;
  * @property {string} [alsoDown]  More elements flashing on a fall.
  */
 
+/** What the HP, Stress and Armor ring cards flash, on every sheet; each sheet adds its own Hope. */
+export const RING_FLASHES = Object.freeze({
+  hitPoints: { card: ".nice-ring-card.hp", up: "flash-worse", down: "flash-better" },
+  stress: { card: ".nice-ring-card.stress", up: "flash-worse", down: "flash-better" },
+  armor: { card: ".nice-ring-card.armor", up: "flash-worse", down: "flash-better" }
+});
+
 /**
  * The ring cards' click queue and flashes, for any number of actors in one window. Every vital is
  * tracked under `<actor uuid>.<key>`, so a party sheet's members never share a queue or a flash.

@@ -9,10 +9,11 @@
 import { FLAGS, MODULE_ID, RESOURCE_ICONS, SETTINGS, TEMPLATE_PATH } from "./constants.js";
 import { ContainerSheetMixin } from "./containers.js";
 import {
-  collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track
+  collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track,
+  traitAttributes
 } from "./helpers.js";
 import { defineNiceLevelUp } from "./levelup.js";
-import { VitalCards } from "./vital-cards.js";
+import { RING_FLASHES, VitalCards } from "./vital-cards.js";
 
 /*
  * What this sheet relies on from the Daggerheart system beyond its document data, checked against
@@ -54,9 +55,7 @@ const SIDEBAR_LIST_MIN_HEIGHT = 200;
  * "up" is a loss for them and a gain for Hope.
  */
 const VITAL_FLASHES = Object.freeze({
-  hitPoints: { card: ".nice-ring-card.hp", up: "flash-worse", down: "flash-better" },
-  stress: { card: ".nice-ring-card.stress", up: "flash-worse", down: "flash-better" },
-  armor: { card: ".nice-ring-card.armor", up: "flash-worse", down: "flash-better" },
+  ...RING_FLASHES,
   hope: {
     card: ".nice-ring-card.hope",
     up: "flash-gain",
@@ -125,15 +124,7 @@ export function defineNiceCharacterSheet() {
       try {
         // The plaques edit the base values, so they are ranked on those rather than on the
         // prepared ones that include bonuses.
-        const spellcastKey = this.document.system.spellcastModifierTrait?.key;
-        const attributes = Object.fromEntries(
-          Object.entries(this.document._source.system.traits).map(([key, trait]) => [key, {
-            ...trait,
-            label: game.i18n.localize(CONFIG.DH.ACTOR.abilities[key].label),
-            isSpellcasting: key === spellcastKey
-          }])
-        );
-        context.nice = { traits: describeTraits(attributes) };
+        context.nice = { traits: describeTraits(traitAttributes(this.document, this.document._source.system.traits)) };
       } catch (error) {
         reportSheetFailure(error);
         context.nice = {};
@@ -671,7 +662,7 @@ export function defineNiceCharacterSheet() {
      * @type {ApplicationClickAction}
      */
     static async #onToggleFavorite(event, target) {
-      const item = this.document.items.get(target.closest("[data-item-id]")?.dataset.itemId);
+      const item = this.itemFromTarget(target);
       if (!item) return;
       if (item.getFlag(MODULE_ID, FLAGS.favorite)) await item.unsetFlag(MODULE_ID, FLAGS.favorite);
       else await item.setFlag(MODULE_ID, FLAGS.favorite, true);

@@ -76,6 +76,22 @@ export function describeTraits(attributes) {
 }
 
 /**
+ * The system's traits of a character, labelled and marked for the spellcast trait, as
+ * describeTraits takes them. Reads `CONFIG.DH.ACTOR.abilities` and `system.spellcastModifierTrait`,
+ * which are Daggerheart internals (checked against 2.10.13).
+ * @param {Actor} actor
+ * @param {Record<string, object>} [traits]  Defaults to the prepared traits; pass `_source.system.traits` for base values.
+ */
+export function traitAttributes(actor, traits = actor.system.traits) {
+  const spellcastKey = actor.system.spellcastModifierTrait?.key;
+  return Object.fromEntries(Object.entries(traits).map(([key, trait]) => [key, {
+    ...trait,
+    label: game.i18n.localize(CONFIG.DH.ACTOR.abilities[key].label),
+    isSpellcasting: key === spellcastKey
+  }]));
+}
+
+/**
  * Pin the sheet's looping CSS animations to the document timeline. A re-render replaces the parts'
  * elements, and new elements start their animations from zero, so every pip click would restart
  * the sheens, orbits and pulses. With a shared start time, a replacement picks up the loop at the
