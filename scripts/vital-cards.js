@@ -24,6 +24,8 @@ const BURST_WINDOW = 900;
 /**
  * The ring cards' click queue and flashes, for any number of actors in one window. Every vital is
  * tracked under `<actor uuid>.<key>`, so a party sheet's members never share a queue or a flash.
+ * The character and party sheets share this rather than each keeping a copy, so a fix to the
+ * module's subtlest code lands in both.
  */
 export class VitalCards {
   /**

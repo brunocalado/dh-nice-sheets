@@ -6,8 +6,11 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-import { MODULE_ID, RESOURCE_ICONS, TEMPLATE_PATH } from "./constants.js";
-import { describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, track } from "./helpers.js";
+import { MODULE_ID, RESOURCE_ICONS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
+import { ContainerSheetMixin } from "./containers.js";
+import {
+  collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track
+} from "./helpers.js";
 import { VitalCards } from "./vital-cards.js";
 
 /*
@@ -21,7 +24,10 @@ import { VitalCards } from "./vital-cards.js";
  *   groupRollActive, notes, inventory, source.
  * - Actions: tagTeamRoll, groupRoll, triggerRest (data-type), openDocument (data-uuid),
  *   deletePartyMember (closest [data-uuid]), toggleHope (data-actor-id, data-value), editImage,
- *   tempBrowser.
+ *   tempBrowser, addNewItem.
+ * - The inventory: search on `input.search-inventory` inside
+ *   `[data-application-part="inventory"] .items-section`; coins drag from
+ *   `.currency[data-currency] .drag-handle` (the base actor sheet's `dragDrop` and `_onDragStart`).
  * - The contextmenu listener `_attachPartListeners` puts on `img.profile` (shows the artwork).
  * - Settings and schema: `variantRules.massiveDamage`, the party's `DEFAULT_ICON` and `active`;
  *   `system.updateArmorValue({ value })` on members.
@@ -44,25 +50,44 @@ const MEMBER_GROUPS = ["character", "companion", "adversary", "npc"];
 /**
  * Build the party sheet class. Like the character sheet, it extends the system's own PartySheet,
  * so the Tag Team and Group Roll dialogs, the rest trigger, actor drops, the inventory filters and
- * item transfers stay the system's; the templates, their context and the CSS scope are ours.
+ * item transfers stay the system's; the templates, their context and the CSS scope are ours. A
+ * sheet written from scratch on ActorSheetV2 would have to re-implement all of those.
  *
  * @returns {typeof foundry.applications.sheets.ActorSheetV2}
  */
 export function defineNicePartySheet() {
   const SystemPartySheet = game.system.api.applications.sheets.actors.Party;
 
-  return class NicePartySheet extends SystemPartySheet {
+  return class NicePartySheet extends ContainerSheetMixin(SystemPartySheet) {
     /** @inheritdoc */
     static DEFAULT_OPTIONS = {
       // Pinned dark like the character sheet; the second class scopes what only this window needs.
       classes: [MODULE_ID, `${MODULE_ID}-party`, "themed", "theme-dark"],
-      // The system's party sheet is resizable and 600×900; this one keeps a smaller designed size.
+      // The system's party sheet is resizable and 600×900; this one keeps a smaller designed size,
+      // smaller than the character's 900×720 too, so the party takes less room on screen.
       window: { resizable: false },
       position: { width: 760, height: 640 },
       actions: {
         // A right click reaches actions as an `auxclick` with button 2 only when it is listed.
-        niceStepResource: { handler: NicePartySheet.#onStepResource, buttons: [0, 2] }
-      }
+        niceStepResource: { handler: NicePartySheet.#onStepResource, buttons: [0, 2] },
+        niceToggleGroup: toggleGroup
+      },
+      // Concatenated onto the system's menus (effects, actions, features), not replacing them. The
+      // system's party rows carry no menu of their own; this one hosts the container entries the
+      // mixin appends.
+      contextMenus: [{
+        handler: NicePartySheet.#getItemContextOptions,
+        selector: STORABLE_TYPES.map(type => `[data-item-uuid][data-type="${type}"]`).join(", "),
+        options: { parentClassHooks: false, fixed: true }
+      }]
+    };
+
+    /** What templates/party-inventory.hbs passes per section: everything stacks, gear hides its resources. */
+    static CONTAINER_ROWS = {
+      weapon: { isQuantifiable: true, hideResources: true },
+      armor: { isQuantifiable: true, hideResources: true },
+      consumable: { isQuantifiable: true },
+      loot: { isQuantifiable: true }
     };
 
     /** @inheritdoc */
@@ -77,11 +102,11 @@ export function defineNicePartySheet() {
         template: `${TEMPLATE_PATH}/party-members.hbs`,
         templates: [`${TEMPLATE_PATH}/ring-card.hbs`]
       },
-      // TODO: our own inventory, with containers. The system's part until then, so its filters
-      // keep their markup.
       inventory: {
-        template: "systems/daggerheart/templates/sheets/actors/party/inventory.hbs",
-        scrollable: [".tab.inventory .items-section"]
+        id: "inventory",
+        scrollable: [".items-section"],
+        template: `${TEMPLATE_PATH}/party-inventory.hbs`,
+        templates: [`${TEMPLATE_PATH}/group-toggle.hbs`, `${TEMPLATE_PATH}/container.hbs`]
       },
       notes: {
         id: "notes",
@@ -118,12 +143,19 @@ export function defineNicePartySheet() {
         const count = party.system.partyMembers.length;
         const plural = new Intl.PluralRules(game.i18n.lang).select(count);
         const membersKey = `DH_NICE_SHEETS.Party.members.${game.i18n.has(`DH_NICE_SHEETS.Party.members.${plural}`) ? plural : "other"}`;
+        const collapsedGroups = collapsedGroupsOf(party);
         context.nice = {
           // The party's art is a faint backdrop; the system's default icon is skipped.
           backdrop: party.img !== party.system.constructor.DEFAULT_ICON ? party.img : null,
           memberCount: game.i18n.format(membersKey, { count }),
           count,
-          active: party.system.active
+          active: party.system.active,
+          collapsedGroups,
+          inventory: this.containerInventory(context.inventory, collapsedGroups),
+          // Keyed, unlike the character's purse: the drag reads the currency key off the chip.
+          currencies: Object.entries(context.inventory?.currencies ?? {})
+            .filter(([, currency]) => currency.enabled)
+            .map(([key, currency]) => ({ key, ...currency }))
         };
       } catch (error) {
         reportSheetFailure(error);
@@ -224,6 +256,28 @@ export function defineNicePartySheet() {
     /* -------------------------------------------- */
     /*  Actions                                     */
     /* -------------------------------------------- */
+
+    /**
+     * Edit and Delete, the two controls the system's party rows show as buttons.
+     * @this {NicePartySheet}
+     * @returns {import("@client/applications/ux/context-menu.mjs").ContextMenuEntry[]}
+     */
+    static #getItemContextOptions() {
+      const itemOf = target => this.document.items.get(target.closest("[data-item-id]")?.dataset.itemId);
+      return [
+        {
+          label: "CONTROLS.CommonEdit",
+          icon: "fa-solid fa-pen-to-square",
+          onClick: (_, target) => itemOf(target)?.sheet.render({ force: true })
+        },
+        {
+          label: "CONTROLS.CommonDelete",
+          icon: "fa-solid fa-trash",
+          visible: () => this.isEditable,
+          onClick: (_, target) => itemOf(target)?.deleteDialog()
+        }
+      ];
+    }
 
     /**
      * Step a member's vital by one from its ring card: left click adds, right click removes. The

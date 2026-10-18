@@ -6,7 +6,7 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-import { FLAGS, MODULE_ID } from "./constants.js";
+import { FLAGS, MODULE_ID, SETTINGS } from "./constants.js";
 
 /** Whether this session has already told the user that the sheet failed. */
 let failureReported = false;
@@ -154,4 +154,40 @@ export function releaseContents(container) {
   return (container.parent?.items ?? [])
     .filter(item => item.getFlag(MODULE_ID, FLAGS.storedIn) === container.id)
     .map(item => ({ _id: item.id, ...unsetFlagData(FLAGS.storedIn) }));
+}
+
+/**
+ * The Features and Inventory groups this browser saved as collapsed on an actor's sheet, keyed by
+ * group type.
+ * @param {foundry.documents.Actor} actor
+ * @returns {Record<string, boolean>}
+ */
+export function collapsedGroupsOf(actor) {
+  const prefix = `${actor.uuid}.`;
+  return Object.fromEntries(
+    game.settings.get(MODULE_ID, SETTINGS.collapsedGroups)
+      .filter(key => key.startsWith(prefix))
+      .map(key => [key.slice(prefix.length), true])
+  );
+}
+
+/**
+ * The `niceToggleGroup` action: collapse a group to its plaque, or expand it back. Only classes
+ * change, so nothing re-renders; the next render reads the saved state again.
+ * @this {foundry.applications.sheets.ActorSheetV2}
+ * @param {PointerEvent} event
+ * @param {HTMLElement} target
+ */
+export async function toggleGroup(event, target) {
+  const fieldset = target.closest("fieldset[data-group-type]");
+  const collapsed = fieldset.classList.toggle("nice-group-collapsed");
+  target.firstElementChild.classList.toggle("fa-chevron-down", collapsed);
+  target.firstElementChild.classList.toggle("fa-chevron-up", !collapsed);
+  target.dataset.tooltip = `DH_NICE_SHEETS.Group.${collapsed ? "expand" : "collapse"}`;
+
+  const key = `${this.document.uuid}.${fieldset.dataset.groupType}`;
+  const keys = new Set(game.settings.get(MODULE_ID, SETTINGS.collapsedGroups));
+  if (collapsed) keys.add(key);
+  else keys.delete(key);
+  await game.settings.set(MODULE_ID, SETTINGS.collapsedGroups, [...keys]);
 }

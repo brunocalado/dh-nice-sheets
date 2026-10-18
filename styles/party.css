@@ -6,10 +6,11 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-/* The party sheet (party-header.hbs, party-members.hbs, party-notes.hbs). It shares the module
-   class, so the tokens, panels, ring cards, Hope gems, thresholds and trait materials of the
-   character sheet apply here too; this file holds the window layout and the sizes of the member
-   cards, which fit four characters and a companion into 760×640. */
+/* The party sheet (party-header.hbs, party-members.hbs, party-inventory.hbs, party-notes.hbs).
+   It shares the module class, so the tokens, panels, ring cards, Hope gems, thresholds, trait
+   materials and inventory of the character sheet apply here too; this file holds the window
+   layout and the sizes of the member cards, which fit four characters and a companion into
+   760×640. */
 
 /* ========================================================================== */
 /*  Window                                                                      */
@@ -292,7 +293,8 @@
   }
 
   /* A character: portrait and identity on top, the ring cards beside the defense column, the
-     traits strip at the bottom. */
+     traits strip at the bottom. Cards two to a row rather than a roster of one row per member: a
+     roster compares HP down a column more easily, but is about 30% taller for the same party. */
   .nice-party-member {
     position: relative;
     display: grid;
@@ -556,6 +558,8 @@
       }
     }
 
+    /* The character sheet's band under the thresholds. A fourth, red diamond closing the bar
+       would add no height, but squeezed the bands and shrank the diamonds to 22px. */
     .nice-massive {
       height: 22px;
 
@@ -698,6 +702,42 @@
       font-size: 38px;
       color: var(--nice-gold);
       animation: nice-breathe 2.6s ease-in-out infinite;
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Inventory                                                                */
+  /* ======================================================================== */
+  /* The coin's icon is the system's drag handle: coins go from the party to a character. */
+  .nice-coin .drag-handle {
+    display: inline-flex;
+    cursor: grab;
+  }
+
+  .nice-tool-button {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    min-height: 0;
+    padding: 0;
+    border: 1px solid var(--nice-line);
+    border-radius: 50%;
+    background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink));
+    color: var(--nice-accent);
+    font-size: var(--font-size-12);
+    box-shadow: 0 2px 6px var(--nice-shadow);
+    transition: transform 0.2s var(--nice-ease), background 0.2s var(--nice-ease), color 0.2s var(--nice-ease), box-shadow 0.2s var(--nice-ease);
+
+    i { margin: 0; }
+
+    &:hover {
+      transform: translateY(-2px);
+      background: var(--nice-gold-lit);
+      color: var(--nice-ink);
+      border-color: transparent;
+      box-shadow: var(--nice-gold-glow), 0 4px 8px var(--nice-shadow);
     }
   }
 

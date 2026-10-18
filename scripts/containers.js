@@ -138,7 +138,9 @@ export function ContainerSheetMixin(Base) {
      */
     async _onDropItem(event, item) {
       // A user who can't edit this sheet can't write the container flags; the drop is the
-      // system's alone and the item arrives loose.
+      // system's alone and the item arrives loose. Having the GM's client write the flags (a
+      // CONFIG.queries handler) would cover it, at the cost of a new trust boundary for a case
+      // tables rarely hit: players usually own their party.
       if (!this.isEditable) return super._onDropItem(event, item);
       const panel = event.target.closest("[data-container-id]");
       const container = this.document.items.get(panel?.dataset.containerId);

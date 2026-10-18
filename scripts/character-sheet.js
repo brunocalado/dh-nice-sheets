@@ -8,7 +8,9 @@
 
 import { FLAGS, MODULE_ID, RESOURCE_ICONS, SETTINGS, TEMPLATE_PATH } from "./constants.js";
 import { ContainerSheetMixin } from "./containers.js";
-import { describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, track } from "./helpers.js";
+import {
+  collapsedGroupsOf, describeTraits, reportSheetFailure, ringCard, syncLoopingAnimations, toggleGroup, track
+} from "./helpers.js";
 import { defineNiceLevelUp } from "./levelup.js";
 import { VitalCards } from "./vital-cards.js";
 
@@ -179,7 +181,7 @@ export function defineNiceCharacterSheet() {
         viewLevelups: NiceCharacterSheet.#onViewLevelUps,
         niceToggleFavorite: NiceCharacterSheet.#onToggleFavorite,
         niceToggleCollapse: NiceCharacterSheet.#onToggleCollapse,
-        niceToggleGroup: NiceCharacterSheet.#onToggleGroup,
+        niceToggleGroup: toggleGroup,
         niceToggleResource: NiceCharacterSheet.#onToggleResource,
         // A right click reaches actions as an `auxclick` with button 2 only when it is listed.
         niceStepResource: { handler: NiceCharacterSheet.#onStepResource, buttons: [0, 2] },
@@ -373,13 +375,7 @@ export function defineNiceCharacterSheet() {
       ]);
       this.#inSidebar = inSidebar;
 
-      // Features and Inventory groups this browser saved as collapsed, keyed by group type.
-      const groupPrefix = `${this.document.uuid}.`;
-      const collapsedGroups = Object.fromEntries(
-        game.settings.get(MODULE_ID, SETTINGS.collapsedGroups)
-          .filter(key => key.startsWith(groupPrefix))
-          .map(key => [key.slice(groupPrefix.length), true])
-      );
+      const collapsedGroups = collapsedGroupsOf(this.document);
 
       return {
         collapsedGroups,
@@ -597,26 +593,6 @@ export function defineNiceCharacterSheet() {
       if (collapsed) uuids.add(this.document.uuid);
       else uuids.delete(this.document.uuid);
       await game.settings.set(MODULE_ID, SETTINGS.collapsedSheets, [...uuids]);
-    }
-
-    /**
-     * Collapse a Features or Inventory group to its plaque, or expand it back. Like the sheet collapse, only
-     * classes change, so nothing re-renders; the next render reads the saved state again.
-     * @this {NiceCharacterSheet}
-     * @type {ApplicationClickAction}
-     */
-    static async #onToggleGroup(event, target) {
-      const fieldset = target.closest("fieldset[data-group-type]");
-      const collapsed = fieldset.classList.toggle("nice-group-collapsed");
-      target.firstElementChild.classList.toggle("fa-chevron-down", collapsed);
-      target.firstElementChild.classList.toggle("fa-chevron-up", !collapsed);
-      target.dataset.tooltip = `DH_NICE_SHEETS.Group.${collapsed ? "expand" : "collapse"}`;
-
-      const key = `${this.document.uuid}.${fieldset.dataset.groupType}`;
-      const keys = new Set(game.settings.get(MODULE_ID, SETTINGS.collapsedGroups));
-      if (collapsed) keys.add(key);
-      else keys.delete(key);
-      await game.settings.set(MODULE_ID, SETTINGS.collapsedGroups, [...keys]);
     }
 
     /**
