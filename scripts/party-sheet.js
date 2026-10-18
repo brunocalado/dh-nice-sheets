@@ -25,9 +25,8 @@ import { VitalCards } from "./vital-cards.js";
  * - Actions: tagTeamRoll, groupRoll, triggerRest (data-type), openDocument (data-uuid),
  *   deletePartyMember (closest [data-uuid]), toggleHope (data-actor-id, data-value), editImage,
  *   tempBrowser, addNewItem.
- * - The inventory: search on `input.search-inventory` inside
- *   `[data-application-part="inventory"] .items-section`; coins drag from
- *   `.currency[data-currency] .drag-handle` (the base actor sheet's `dragDrop` and `_onDragStart`).
+ * - The inventory: coins drag from `.currency[data-currency] .drag-handle` (the base actor sheet's
+ *   `dragDrop` and `_onDragStart`); `_createSearchFilter` tolerates the missing search input.
  * - The contextmenu listener `_attachPartListeners` puts on `img.profile` (shows the artwork).
  * - Settings and schema: `variantRules.massiveDamage`, the party's `DEFAULT_ICON` and `active`;
  *   `system.updateArmorValue({ value })` on members.

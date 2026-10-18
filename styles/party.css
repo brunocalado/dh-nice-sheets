@@ -698,6 +698,22 @@
     cursor: grab;
   }
 
+  /* No search field here, so the purse takes the toolbar and each amount gets room for big sums. */
+  .nice-purse {
+    flex: 1 1 auto;
+  }
+
+  .nice-coin {
+    flex: 1 1 0;
+
+    /* Zero basis: a text input's intrinsic width (~20 characters) would overflow the row. */
+    input {
+      flex: 1 1 0;
+      width: 0;
+      min-width: 38px;
+    }
+  }
+
   .nice-tool-button {
     flex: none;
     display: grid;

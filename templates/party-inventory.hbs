@@ -1,12 +1,8 @@
 <section class="tab {{tabs.inventory.cssClass}} {{tabs.inventory.id}}" data-tab="{{tabs.inventory.id}}" data-group="{{tabs.inventory.group}}">
-    {{!-- `search-inventory` is the input the system's SearchFilter binds to. Each coin is also the
-         system's `.currency[data-currency]` with its icon in a `.drag-handle`, the markup the
+    {{!-- No search field: the system's SearchFilter finds no input and binds nothing. Each coin is
+         the system's `.currency[data-currency]` with its icon in a `.drag-handle`, the markup the
          base sheet drags from, so coins still go from the party to a character. --}}
-    <div class="search-section nice-toolbar">
-        <div class="search-bar">
-            <input type="search" name="search" class="search-inventory" placeholder="{{localize "DAGGERHEART.GENERAL.searchPlaceholder"}}" />
-            <i class="fa-solid fa-magnifying-glass" inert></i>
-        </div>
+    <div class="nice-toolbar">
         {{#if nice.currencies.length}}
             <div class="nice-purse">
                 {{#each nice.currencies as |currency|}}
