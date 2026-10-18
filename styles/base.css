@@ -264,13 +264,6 @@
   0% { stroke: #fff; stroke-width: 15; filter: drop-shadow(0 0 8px var(--nice-flash)); }
   30% { stroke: var(--nice-flash); stroke-width: 12; filter: drop-shadow(0 0 6px var(--nice-flash)); }
 }
-
-/* The softer flare of the earlier slots in a run of clicks; the newest gets nice-seg-flare. */
-@keyframes nice-seg-glint {
-  0% { stroke: color-mix(in srgb, #fff 50%, var(--nice-flash)); stroke-width: 12; filter: drop-shadow(0 0 4px var(--nice-flash)); }
-  30% { stroke: var(--nice-flash); stroke-width: 10.5; filter: drop-shadow(0 0 3px var(--nice-flash)); }
-}
-
 @keyframes nice-seal-beckon {
   from { transform: scale(1); box-shadow: 0 0 0 2px var(--nice-ink-2), 0 0 4px rgba(243, 194, 103, 0.4); }
   to { transform: scale(1.14); box-shadow: 0 0 0 2px var(--nice-ink-2), 0 0 14px rgba(255, 227, 163, 0.85); }

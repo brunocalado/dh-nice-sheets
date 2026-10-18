@@ -464,6 +464,9 @@ export function defineNiceCharacterSheet() {
       const system = this.document.system;
       const { hitPoints, stress, hope } = system.resources;
       const armor = system.armorScore;
+      // A ring card click the server has not confirmed yet renders as clicked: the render that
+      // confirms an earlier click would otherwise show the older value until #flashVitals repaints.
+      const shown = key => this.#pendingVitals[key] ?? this.#savedVital(key).value;
 
       // Items the sidebar already lists on its own. A favorite among them stays out of the
       // Favorites section, and their rows get no star, so nothing shows up twice.
@@ -490,9 +493,9 @@ export function defineNiceCharacterSheet() {
         },
         showBiography: game.settings.get(MODULE_ID, SETTINGS.showBiography),
         traits: describeTraits(context.attributes),
-        hitPoints: NiceCharacterSheet.#ringCard(hitPoints.value, hitPoints.max, RESOURCE_ICONS.hitPoints),
-        stress: NiceCharacterSheet.#ringCard(stress.value, stress.max, RESOURCE_ICONS.stress),
-        armor: NiceCharacterSheet.#ringCard(armor.value, armor.max, RESOURCE_ICONS.armor),
+        hitPoints: NiceCharacterSheet.#ringCard(shown("hitPoints"), hitPoints.max, RESOURCE_ICONS.hitPoints),
+        stress: NiceCharacterSheet.#ringCard(shown("stress"), stress.max, RESOURCE_ICONS.stress),
+        armor: NiceCharacterSheet.#ringCard(shown("armor"), armor.max, RESOURCE_ICONS.armor),
         // Homebrew resources (game settings) and feature-granted ones; the system only shows them
         // in a locked tooltip off the Hope row, here they sit as tracks under the vitals.
         extraResources: Object.entries(system.availableExtraResources).map(([key, resource]) => {
@@ -506,8 +509,8 @@ export function defineNiceCharacterSheet() {
           };
         }),
         // The header's Hope row reads `pips`, which the ring card passes through from its track.
-        hope: NiceCharacterSheet.#ringCard(hope.value, hope.max, RESOURCE_ICONS.hope, system.scars ?? 0),
-        tagTeam: NiceCharacterSheet.#tagTeam(hope.value),
+        hope: NiceCharacterSheet.#ringCard(shown("hope"), hope.max, RESOURCE_ICONS.hope, system.scars ?? 0),
+        tagTeam: NiceCharacterSheet.#tagTeam(shown("hope")),
         scars: Array.fromRange(system.scars ?? 0),
         thresholds: system.damageThresholds,
         // The Massive Damage variant rule: at or above twice Severe marks 4 HP (see the system's
@@ -1278,19 +1281,9 @@ export function defineNiceCharacterSheet() {
       const { card, up, down, alsoUp, alsoDown } = VITAL_FLASHES[key];
       const rising = to > from;
       const cls = rising ? up : down;
-      // The slots flare as a wave in the order they were clicked, 60ms apart and spread over 300ms
-      // at most, and the newest one flares brightest. Toggled, not added: a slot left marked by an
-      // earlier run, the other way, must not flare.
-      const low = Math.min(from, to);
-      const count = Math.abs(to - from);
-      const step = Math.min(60, 300 / Math.max(count - 1, 1));
+      // Toggled, not added: a slot left marked by an earlier run, the other way, must not flare.
       this.element.querySelectorAll(`${card} .seg`).forEach((segment, i) => {
-        const order = rising ? i - low : low + count - 1 - i;
-        const changed = order >= 0 && order < count;
-        segment.classList.toggle("changed", changed);
-        segment.classList.toggle("newest", changed && order === count - 1);
-        if (changed) segment.style.setProperty("--nice-seg-delay", `${Math.round(order * step)}ms`);
-        else segment.style.removeProperty("--nice-seg-delay");
+        segment.classList.toggle("changed", i >= Math.min(from, to) && i < Math.max(from, to));
       });
 
       const elapsed = performance.now() - start;
