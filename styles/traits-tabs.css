@@ -260,6 +260,10 @@
     inset: -1.5px;
     padding: 1.5px;
     border-radius: inherit;
+    /* The turning square below is twice the plaque's width. The mask hides it, but only clipping
+       keeps it out of the scroll area: at a list's right edge it otherwise swells a scrollbar
+       that grows and shrinks with the spin. */
+    overflow: hidden;
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask-composite: exclude;
     pointer-events: none;
