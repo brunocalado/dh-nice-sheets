@@ -94,6 +94,12 @@
       border-color: var(--nice-gold);
     }
 
+    /* The coin's icon is the system's drag handle: coins go between characters and the party. */
+    .drag-handle {
+      display: inline-flex;
+      cursor: grab;
+    }
+
     .nice-coin-label {
       display: none;
       font-family: var(--nice-font-display);

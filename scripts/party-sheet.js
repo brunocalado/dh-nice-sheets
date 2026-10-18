@@ -166,7 +166,7 @@ export function defineNicePartySheet() {
           active: party.system.active,
           collapsedGroups,
           inventory: this.containerInventory(context.inventory, collapsedGroups),
-          // Keyed, unlike the character's purse: the drag reads the currency key off the chip.
+          // Keyed: the system's drag reads the currency key off the chip.
           currencies: Object.entries(context.inventory?.currencies ?? {})
             .filter(([, currency]) => currency.enabled)
             .map(([key, currency]) => ({ key, ...currency }))

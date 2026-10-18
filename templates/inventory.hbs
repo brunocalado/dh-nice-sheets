@@ -1,7 +1,9 @@
 <section class="tab {{tabs.inventory.cssClass}} {{tabs.inventory.id}}" data-tab="{{tabs.inventory.id}}" data-group="{{tabs.inventory.group}}">
     {{!-- `search-inventory` is the input the system's SearchFilter binds to. The purse shares the
          row: only the currencies enabled in the system's homebrew settings are rendered, and the
-         search field absorbs whatever width they leave. --}}
+         search field absorbs whatever width they leave. Each coin is the system's
+         `.currency[data-currency]` with its icon in a `.drag-handle`, the markup the base sheet
+         drags from, so coins go from here to the party or another character. --}}
     <div class="search-section nice-toolbar">
         <div class="search-bar">
             <input type="search" name="search" class="search-inventory" placeholder="{{localize "DAGGERHEART.GENERAL.searchPlaceholder"}}" />
@@ -10,8 +12,8 @@
         {{#if nice.currencies.length}}
             <div class="nice-purse">
                 {{#each nice.currencies as |currency|}}
-                    <label class="nice-coin" data-tooltip="{{localize currency.label}}">
-                        <i class="{{currency.icon}}" inert></i>
+                    <label class="nice-coin currency" data-currency="{{currency.key}}" data-tooltip="{{localize currency.label}}">
+                        <span class="drag-handle"><i class="{{currency.icon}}" inert></i></span>
                         <span class="nice-coin-label">{{localize currency.label}}</span>
                         <input type="text" name="{{currency.field.fieldPath}}" data-allow-delta value="{{currency.value}}" data-dtype="Number" min="0" step="1" />
                     </label>

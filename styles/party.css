@@ -702,12 +702,6 @@
   /* ======================================================================== */
   /*  Inventory                                                                */
   /* ======================================================================== */
-  /* The coin's icon is the system's drag handle: coins go from the party to a character. */
-  .nice-coin .drag-handle {
-    display: inline-flex;
-    cursor: grab;
-  }
-
   /* No search field here, so the purse takes the toolbar and each amount gets room for big sums. */
   .nice-purse {
     flex: 1 1 auto;

@@ -37,6 +37,8 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
  * - Markup of the system's item partials: `.inventory-item[data-item-id]`, `.controls >
  *   [data-action="triggerContextMenu"]`, `.item-name`, `.img-portait` (the system's spelling);
  *   and `.character-details`, the heritage context menu's selector.
+ * - Coins drag from `.currency[data-currency] .drag-handle` (the base actor sheet's `dragDrop` and
+ *   `_onDragStart`).
  * - Action names in the templates, among them `toggleArmorMangement` (the system's spelling).
  * - `system.updateArmorValue({ value })`, which spreads a signed armor change over the armor
  *   sources (VitalCards#step).
@@ -421,7 +423,10 @@ export function defineNiceCharacterSheet() {
         manyParties: this.document.parties.size > 1,
         // The art is a faint backdrop behind the whole sheet; the placeholder silhouette is skipped.
         backdrop: this.document.img !== CONST.DEFAULT_TOKEN ? this.document.img : null,
-        currencies: Object.values(context.inventory?.currencies ?? {}).filter(c => c.enabled),
+        // Keyed: the system's drag reads the currency key off the chip.
+        currencies: Object.entries(context.inventory?.currencies ?? {})
+          .filter(([, currency]) => currency.enabled)
+          .map(([key, currency]) => ({ key, ...currency })),
         favorites: this.document.items
           .filter(item => item.getFlag(MODULE_ID, FLAGS.favorite) && !inSidebar.has(item.id))
           .sort((a, b) => a.name.localeCompare(b.name, game.i18n.lang))
