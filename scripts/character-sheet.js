@@ -7,8 +7,11 @@
  */
 
 import { FLAGS, MODULE_ID, RESOURCE_ICONS, SETTINGS, STORABLE_TYPES, TEMPLATE_PATH } from "./constants.js";
-import { releaseContents, unsetFlagData } from "./helpers.js";
+import {
+  describeTraits, releaseContents, reportSheetFailure, ringCard, syncLoopingAnimations, track, unsetFlagData
+} from "./helpers.js";
 import { defineNiceLevelUp } from "./levelup.js";
+import { VitalCards } from "./vital-cards.js";
 
 /*
  * What this sheet relies on from the Daggerheart system beyond its document data, checked against
@@ -36,36 +39,11 @@ import { defineNiceLevelUp } from "./levelup.js";
  * - What `_onDropItem` and `Actor#transferItem` return and create on drops from another actor.
  */
 
-/** Whether this session has already told the user that the sheet failed. */
-let failureReported = false;
-
-/**
- * Log an error in the sheet's own additions and, once per session, tell the user how to keep
- * playing. Most such errors mean a Daggerheart update changed something listed above; the
- * system's sheet keeps working then, so the user is pointed to it.
- * @param {Error} error
- */
-function reportSheetFailure(error) {
-  console.error(`${MODULE_ID} | The sheet failed with Daggerheart ${game.system.version}.`, error);
-  if (failureReported) return;
-  failureReported = true;
-  ui.notifications.error(game.i18n.format("DH_NICE_SHEETS.Failure", { version: game.system.version }), { permanent: true });
-}
-
-/** Trait order used by the printed Daggerheart sheet; the system stores them as an object. */
-const TRAIT_ORDER = ["agility", "strength", "finesse", "instinct", "presence", "knowledge"];
-
-/** Trait plaque materials for the values between the lowest and the highest, lowest first. */
-const MIDDLE_MATERIALS = ["slate", "bronze", "brass"];
-
 /** Width of a collapsed sheet, which shows the sidebar alone. */
 const COLLAPSED_WIDTH = 270;
 
 /** Height the sidebar's item list keeps; with less room left the whole sidebar scrolls instead. */
 const SIDEBAR_LIST_MIN_HEIGHT = 200;
-
-/** Degrees left open at the bottom of a resource ring, where its count sits (see #ringCard). */
-const RING_OPENING = 90;
 
 /**
  * What flashes when a vital changes: its ring card, plus for Hope the header row and, on a gain,
@@ -85,71 +63,8 @@ const VITAL_FLASHES = Object.freeze({
   }
 });
 
-/** How long a flash can still be running, in ms: the longest one is the Hope glow (1.8s). */
-const FLASH_LIFETIME = 2000;
-
-/** How soon after a vital's last flash a click still adds to the same run, in ms: a ring card's 0.9s flash. */
-const BURST_WINDOW = 900;
-
 /** How long after a drop an item the GM transfers is still caught, in ms (see #awaitTransfer). */
 const TRANSFER_WAIT = 10000;
-
-/**
- * Describe the traits in sheet order and pick each plaque's material by the rank of its value
- * among this character's distinct values: the lowest is cracked iron, the highest gold, and
- * the ones between spread over slate, bronze and brass. Different values get different
- * materials and equal values always match, at level 1 (+2 to −1) as at level 10.
- * @param {Record<string, object>} attributes  Trait data keyed like the system's `context.attributes`.
- */
-function describeTraits(attributes) {
-  const traits = TRAIT_ORDER.filter(key => attributes[key]).map(key => ({
-    key,
-    ...attributes[key],
-    value: Number(attributes[key].value ?? 0)
-  }));
-  const ranks = [...new Set(traits.map(trait => trait.value))].sort((a, b) => a - b);
-  const top = ranks.length - 1;
-  // Middle values hold ranks 1 to top − 1. A single one takes the central material; more
-  // stretch from the first to the last, so two read as far apart as the scale allows.
-  const middle = top - 1;
-
-  return traits.map(trait => {
-    const rank = ranks.indexOf(trait.value);
-    const crowned = top > 0 && rank === top;
-    let material;
-    if (trait.isSpellcasting) material = crowned ? "spell-top" : "spell";
-    else if (crowned) material = "gold";
-    else if (top > 0 && rank === 0) material = "iron";
-    else {
-      const last = MIDDLE_MATERIALS.length - 1;
-      const index = middle > 1 ? Math.round(((rank - 1) * last) / (middle - 1)) : last / 2;
-      material = MIDDLE_MATERIALS[index];
-    }
-    return {
-      ...trait,
-      signed: trait.value.signedString(),
-      short: game.i18n.localize(`DAGGERHEART.CONFIG.Traits.${trait.key}.short`),
-      material,
-      crowned,
-      cracked: material === "iron"
-    };
-  });
-}
-
-/**
- * Pin the sheet's looping CSS animations to the document timeline. A re-render replaces the parts'
- * elements, and new elements start their animations from zero, so every pip click would restart
- * the sheens, orbits and pulses. With a shared start time, a replacement picks up the loop at the
- * phase the old element had reached. One-shot animations (entrance, flashes) are left alone.
- * @param {HTMLElement} element  The application's root element.
- */
-function syncLoopingAnimations(element) {
-  for (const animation of element.getAnimations({ subtree: true })) {
-    if (animation instanceof CSSAnimation && animation.effect.getTiming().iterations === Infinity) {
-      animation.startTime = 0;
-    }
-  }
-}
 
 /**
  * Build the sheet class. It extends the system's own CharacterSheet so that every action, context
@@ -285,7 +200,8 @@ export function defineNiceCharacterSheet() {
       sidebar: {
         id: "sidebar",
         scrollable: ["", ".shortcut-items-section"],
-        template: `${TEMPLATE_PATH}/sidebar.hbs`
+        template: `${TEMPLATE_PATH}/sidebar.hbs`,
+        templates: [`${TEMPLATE_PATH}/ring-card.hbs`]
       },
       header: {
         id: "header",
@@ -321,31 +237,8 @@ export function defineNiceCharacterSheet() {
       }
     };
 
-    /**
-     * Resource values seen on the previous render, used to play a one-shot flash on the track that
-     * changed (damage, healing, hope gained or spent).
-     * @type {{hitPoints?: number, stress?: number, hope?: number, armor?: number}}
-     */
-    #lastVitals = {};
-
-    /**
-     * Values a ring card click has shown but the server has not confirmed yet, by vital.
-     * @type {Record<string, number>}
-     */
-    #pendingVitals = {};
-
-    /**
-     * The #sendVital run saving each vital's clicks, while one is in flight.
-     * @type {Record<string, Promise<void>>}
-     */
-    #vitalSends = {};
-
-    /**
-     * Flashes started in the last FLASH_LIFETIME ms, by vital, so a render that replaces their
-     * elements can carry them on from where they were.
-     * @type {Record<string, {from: number, to: number, start: number}>}
-     */
-    #flashes = {};
+    /** The ring cards' click queue and flashes. */
+    #vitals = new VitalCards(VITAL_FLASHES, () => this.render());
 
     /**
      * Whether a full render has already completed. Entrance animations (shield rise, name shimmer)
@@ -464,9 +357,8 @@ export function defineNiceCharacterSheet() {
       const system = this.document.system;
       const { hitPoints, stress, hope } = system.resources;
       const armor = system.armorScore;
-      // A ring card click the server has not confirmed yet renders as clicked: the render that
-      // confirms an earlier click would otherwise show the older value until #flashVitals repaints.
-      const shown = key => this.#pendingVitals[key] ?? this.#savedVital(key).value;
+      // A ring card click the server has not confirmed yet renders as clicked.
+      const shown = key => this.#vitals.shown(this.document, key);
 
       // Items the sidebar already lists on its own. A favorite among them stays out of the
       // Favorites section, and their rows get no star, so nothing shows up twice.
@@ -493,9 +385,9 @@ export function defineNiceCharacterSheet() {
         },
         showBiography: game.settings.get(MODULE_ID, SETTINGS.showBiography),
         traits: describeTraits(context.attributes),
-        hitPoints: NiceCharacterSheet.#ringCard(shown("hitPoints"), hitPoints.max, RESOURCE_ICONS.hitPoints),
-        stress: NiceCharacterSheet.#ringCard(shown("stress"), stress.max, RESOURCE_ICONS.stress),
-        armor: NiceCharacterSheet.#ringCard(shown("armor"), armor.max, RESOURCE_ICONS.armor),
+        hitPoints: ringCard(shown("hitPoints"), hitPoints.max, RESOURCE_ICONS.hitPoints),
+        stress: ringCard(shown("stress"), stress.max, RESOURCE_ICONS.stress),
+        armor: ringCard(shown("armor"), armor.max, RESOURCE_ICONS.armor),
         // Homebrew resources (game settings) and feature-granted ones; the system only shows them
         // in a locked tooltip off the Hope row, here they sit as tracks under the vitals.
         extraResources: Object.entries(system.availableExtraResources).map(([key, resource]) => {
@@ -505,11 +397,11 @@ export function defineNiceCharacterSheet() {
             label: game.i18n.localize(resource.label),
             fullIcon: resource.images?.full ?? { value: "fa-solid fa-circle", isIcon: true, opacity: 1 },
             emptyIcon: resource.images?.empty ?? { value: "fa-regular fa-circle", isIcon: true, opacity: 1 },
-            ...NiceCharacterSheet.#track(value, max)
+            ...track(value, max)
           };
         }),
         // The header's Hope row reads `pips`, which the ring card passes through from its track.
-        hope: NiceCharacterSheet.#ringCard(shown("hope"), hope.max, RESOURCE_ICONS.hope, system.scars ?? 0),
+        hope: ringCard(shown("hope"), hope.max, RESOURCE_ICONS.hope, system.scars ?? 0),
         tagTeam: NiceCharacterSheet.#tagTeam(shown("hope")),
         scars: Array.fromRange(system.scars ?? 0),
         thresholds: system.damageThresholds,
@@ -591,85 +483,14 @@ export function defineNiceCharacterSheet() {
 
     /**
      * Step a vital by one from its ring card: left click adds, right click removes. The card shows
-     * the new value and plays its flash at once, without waiting for the server's round trip and
-     * the re-render that follows. Each click steps from the value shown, so quick clicks add up
-     * even while an earlier one is still in flight; #sendVital saves them.
+     * the new value and plays its flash at once; VitalCards#step queues the save.
      * @this {NiceCharacterSheet}
      * @param {PointerEvent} event
      * @param {HTMLElement} target
      */
     static #onStepResource(event, target) {
       if (!this.isEditable) return;
-      const key = target.dataset.resource;
-      const saved = this.#savedVital(key);
-      const shown = this.#pendingVitals[key] ?? saved.value;
-      const next = Math.clamp(shown + (event.button === 2 ? -1 : 1), 0, saved.max);
-      if (next === shown) return;
-
-      this.#pendingVitals[key] = next;
-      // The confirming render then finds nothing new to flash.
-      this.#lastVitals[key] = next;
-      NiceCharacterSheet.#paintCard(target, next);
-      this.#startFlash(key, shown, next);
-      // A send already in flight picks the new value up when it returns.
-      this.#vitalSends[key] ??= this.#sendVital(key);
-    }
-
-    /**
-     * Save the value ring card clicks have shown for a vital: one update, then, if clicks moved it
-     * while that one was in flight, one more with the latest value, until the server has what the
-     * card shows. A run of quick clicks so costs two round trips and two renders, not one each.
-     * Waiting for the previous update also keeps the next one right: sent earlier, an update back
-     * to the value still saved (+1 then −1) would be dropped by Foundry's diff as no change, and an
-     * armor step would compute a zero delta. Armor goes through the system, so the change is spread
-     * over the armor sources the way its own sheet does. A value the server did not apply is undone
-     * by rendering the saved one.
-     * @param {string} key
-     */
-    async #sendVital(key) {
-      let sent;
-      try {
-        while (this.#pendingVitals[key] !== sent) {
-          sent = this.#pendingVitals[key];
-          if (key === "armor") await this.document.system.updateArmorValue({ value: sent - this.#savedVital(key).value });
-          else await this.document.update({ [`system.resources.${key}.value`]: sent });
-        }
-      } catch {
-        // Foundry has already reported the rejected update, on screen and in the console.
-      } finally {
-        delete this.#pendingVitals[key];
-        delete this.#vitalSends[key];
-        const actual = this.#savedVital(key).value;
-        if (actual !== sent) {
-          this.#lastVitals[key] = actual;
-          delete this.#flashes[key];
-          this.render();
-        }
-      }
-    }
-
-    /**
-     * A vital's saved value and max: armor from the system's armor score, the others from the
-     * actor's resources.
-     * @param {string} key
-     * @returns {{value: number, max: number}}
-     */
-    #savedVital(key) {
-      return key === "armor" ? this.document.system.armorScore : this.document.system.resources[key];
-    }
-
-    /**
-     * Show a value on a ring card as a render would: the filled segments and the count. Scars keep
-     * their segments.
-     * @param {HTMLElement} card
-     * @param {number} value
-     */
-    static #paintCard(card, value) {
-      card.querySelectorAll(".seg:not(.scar)").forEach((segment, i) => {
-        segment.classList.toggle("filled", i < value);
-        segment.classList.toggle("empty", i >= value);
-      });
-      card.querySelector(".nice-ring-count").firstChild.data = value;
+      this.#vitals.step(event, target, this.document);
     }
 
     /**
@@ -732,52 +553,6 @@ export function defineNiceCharacterSheet() {
         content,
         style: CONST.CHAT_MESSAGE_STYLES.OTHER
       });
-    }
-
-    /**
-     * Describe a pip track for the templates.
-     * @param {number} value
-     * @param {number} max
-     */
-    static #track(value, max) {
-      value = Math.max(Number(value) || 0, 0);
-      max = Math.max(Number(max) || 0, 0);
-      return {
-        value,
-        max,
-        percent: max ? Math.round((value / max) * 100) : 0,
-        pips: Array.fromRange(max, 1).map(index => ({ index, filled: value >= index }))
-      };
-    }
-
-    /**
-     * Describe a ring card: the track plus one arc per slot, filling clockwise from the bottom left
-     * round to the bottom right, with RING_OPENING left free between them for the count. Scars,
-     * when given, take the last segments and are drawn as lost slots.
-     * @param {number} value
-     * @param {number} max
-     * @param {string} icon     Image drawn inside the ring.
-     * @param {number} [scars]
-     */
-    static #ringCard(value, max, icon, scars = 0) {
-      const track = NiceCharacterSheet.#track(value, max);
-      const total = track.max + scars;
-      // Degrees left between segments; narrower past 9 so a 12-slot ring still reads as filled.
-      const gap = total > 9 ? 4 : 6;
-      const step = (360 - RING_OPENING) / total;
-      const start = 180 + RING_OPENING / 2;
-      // A point on the segments' centre line (radius 41 in the 100×100 viewBox), 0° at the top.
-      const point = deg => {
-        const rad = (deg * Math.PI) / 180;
-        return `${(50 + 41 * Math.sin(rad)).toFixed(2)} ${(50 - 41 * Math.cos(rad)).toFixed(2)}`;
-      };
-      const ring = Array.fromRange(total).map(i => {
-        const from = start + i * step + gap / 2;
-        const to = start + (i + 1) * step - gap / 2;
-        const state = i >= track.max ? "scar" : i < track.value ? "filled" : "empty";
-        return { state, d: `M${point(from)} A41 41 0 ${to - from > 180 ? 1 : 0} 1 ${point(to)}` };
-      });
-      return { ...track, ring, icon };
     }
 
     /* -------------------------------------------- */
@@ -1117,8 +892,7 @@ export function defineNiceCharacterSheet() {
      */
     _onClose(options) {
       super._onClose(options);
-      this.#lastVitals = {};
-      this.#flashes = {};
+      this.#vitals.reset();
       this.#settled = false;
       this.#sidebarObserver.disconnect();
     }
@@ -1150,7 +924,8 @@ export function defineNiceCharacterSheet() {
       this.#sidebarObserver.disconnect();
       if (sidebar) this.#sidebarObserver.observe(sidebar);
       if (this.document.testUserPermission(game.user, "LIMITED", { exact: true })) return;
-      this.#flashVitals(context.nice);
+      // No vitals when the sheet's additions failed (see _prepareContext).
+      if (context.nice.hitPoints) this.#vitals.sync(this.document, this.element);
       if (this.isEditable) this.#addFavoriteStars();
       this.element.querySelector(".nice-notes textarea")
         ?.addEventListener("input", event => this.#saveNotes(event.target.value));
@@ -1218,96 +993,6 @@ export function defineNiceCharacterSheet() {
         star.firstElementChild.classList.toggle("fa-solid", favorite);
         star.firstElementChild.classList.toggle("fa-regular", !favorite);
         star.dataset.tooltip = `DH_NICE_SHEETS.Favorite.${favorite ? "remove" : "add"}`;
-      }
-    }
-
-    /**
-     * Compare the rendered vitals with the previous render and trigger the CSS flash animations:
-     * a red jolt when a vital gets worse (damage, stress, an armor slot spent, Hope spent), a green
-     * lift when it recovers. A value a click has shown but the server has not confirmed counts as
-     * the current one, so the renders in between neither flash it back nor show the older value.
-     * Flashes still running from before this render carry on in the new elements.
-     * @param {object} nice  The `nice` context block of this render.
-     */
-    #flashVitals(nice) {
-      // No vitals when the sheet's additions failed (see _prepareContext).
-      if (!nice.hitPoints) return;
-      const current = Object.fromEntries(Object.keys(VITAL_FLASHES).map(key => [key, this.#pendingVitals[key] ?? nice[key].value]));
-      for (const [key, value] of Object.entries(this.#pendingVitals)) {
-        const card = this.element.querySelector(VITAL_FLASHES[key].card);
-        if (card && value !== nice[key].value) NiceCharacterSheet.#paintCard(card, value);
-      }
-
-      const previous = this.#lastVitals;
-      this.#lastVitals = current;
-      const changed = previous.hitPoints === undefined ? [] : Object.keys(current).filter(key => current[key] !== previous[key]);
-
-      const now = performance.now();
-      for (const [key, flash] of Object.entries(this.#flashes)) {
-        if (now - flash.start >= FLASH_LIFETIME) delete this.#flashes[key];
-        else if (!changed.includes(key)) this.#applyFlash(key, flash);
-      }
-      for (const key of changed) this.#startFlash(key, previous[key], current[key]);
-    }
-
-    /**
-     * Flash a vital's elements for a change from one value to another. A change that lands while
-     * the vital's last flash is still playing, carries on from where it ended and goes the same
-     * way, is the next click of a run: the flash keeps the run's starting value, so every slot
-     * clicked so far flares again with the new one, whatever renders came in between.
-     * @param {string} key  A key of VITAL_FLASHES.
-     * @param {number} from
-     * @param {number} to
-     */
-    #startFlash(key, from, to) {
-      const last = this.#flashes[key];
-      const now = performance.now();
-      if (last && now - last.start < BURST_WINDOW && last.to === from && Math.sign(to - from) === Math.sign(from - last.from)) {
-        from = last.from;
-      }
-      this.#flashes[key] = { from, to, start: now };
-      this.#applyFlash(key, this.#flashes[key]);
-    }
-
-    /**
-     * Put a flash's classes on the elements now in the sheet and seek their animations to the time
-     * the flash has already run. The ring segments between the two values are the slots that just
-     * filled or emptied; they flare with the card. The classes come off on `animationend`, so a
-     * vital can flash again on the next change.
-     * @param {string} key
-     * @param {{from: number, to: number, start: number}} flash
-     */
-    #applyFlash(key, { from, to, start }) {
-      const { card, up, down, alsoUp, alsoDown } = VITAL_FLASHES[key];
-      const rising = to > from;
-      const cls = rising ? up : down;
-      // Toggled, not added: a slot left marked by an earlier run, the other way, must not flare.
-      this.element.querySelectorAll(`${card} .seg`).forEach((segment, i) => {
-        segment.classList.toggle("changed", i >= Math.min(from, to) && i < Math.max(from, to));
-      });
-
-      const elapsed = performance.now() - start;
-      const selector = [card, rising ? alsoUp : alsoDown].filter(Boolean).join(", ");
-      for (const element of this.element.querySelectorAll(selector)) {
-        // Hope shows in the header or in its card, never both, so one of them is hidden. A hidden
-        // element never fires `animationend`, and its class would play a stale flash the moment
-        // the sheet is collapsed or expanded.
-        if (!element.checkVisibility()) continue;
-        // A quick second click lands on an element still flashing, maybe the other way; the old
-        // class goes, so the new animation starts over instead of fighting it.
-        if (element.classList.contains(up) || element.classList.contains(down)) {
-          element.classList.remove(up, down);
-          void element.offsetWidth;
-        }
-        element.classList.add(cls);
-        element.addEventListener("animationend", () => element.classList.remove(cls), { once: true });
-        if (elapsed < 50) continue;
-        // Looping animations are left to syncLoopingAnimations.
-        for (const animation of element.getAnimations({ subtree: true })) {
-          if (animation instanceof CSSAnimation && animation.effect.getTiming().iterations !== Infinity) {
-            animation.currentTime = elapsed;
-          }
-        }
       }
     }
   };

@@ -35,12 +35,12 @@
         {{!-- One click target per card: left click adds, right click removes. The ring only shows the
              value; with 9 to 12 armor slots a segment is a few pixels wide, too small to aim at. --}}
         <div class="nice-rings">
-            {{> ringCard card=nice.hitPoints kind="hp" resource="hitPoints" label=(localize "DAGGERHEART.GENERAL.HitPoints.short")}}
-            {{> ringCard card=nice.stress kind="stress" resource="stress" label=(localize "DAGGERHEART.GENERAL.stress")}}
-            {{> ringCard card=nice.armor kind="armor" resource="armor" label=(localize "DAGGERHEART.GENERAL.armor") gear=true}}
+            {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.hitPoints kind="hp" resource="hitPoints" label=(localize "DAGGERHEART.GENERAL.HitPoints.short")}}
+            {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.stress kind="stress" resource="stress" label=(localize "DAGGERHEART.GENERAL.stress")}}
+            {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.armor kind="armor" resource="armor" label=(localize "DAGGERHEART.GENERAL.armor") gear=true}}
             {{!-- Collapsed sheets only, where it stands in for the header's Hope row and the four cards
                  form a 2×2. Expanded, Hope stays in the header and this card is hidden. --}}
-            {{> ringCard card=nice.hope kind="hope" resource="hope" label=(localize "DAGGERHEART.GENERAL.hope")}}
+            {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.hope kind="hope" resource="hope" label=(localize "DAGGERHEART.GENERAL.hope")}}
         </div>
 
         {{#each nice.extraResources as |resource|}}
@@ -153,32 +153,6 @@
         </div>
     </div>
 </aside>
-
-{{!-- A vital as a card: a ring with one segment per slot around a core icon. The ring is open at the
-     bottom and the count sits in the opening, which saves the card a line of its own. The icon and
-     hue name the resource, so the name lives in the tooltip and the aria-label rather than on the
-     card. The armor card is laid out as a banner by CSS alone, so the collapsed sheet can stack it
-     like the others without a re-render. --}}
-{{#*inline "ringCard"}}
-    <div class="nice-ring-card {{kind}}" data-action="niceStepResource" data-resource="{{resource}}" aria-label="{{label}}"
-         data-tooltip-text="{{#if @root.editable}}{{localize "DH_NICE_SHEETS.Resource.step" name=label}}{{else}}{{label}}{{/if}}">
-        {{!-- The system's action id carries this spelling. The click handler resolves the closest
-             [data-action], so the gear opens the armor tooltip without also stepping the card. --}}
-        {{#if (and gear @root.editable card.max)}}
-            <a class="nice-ring-gear" data-action="toggleArmorMangement"><i class="fa-solid fa-gear" inert></i></a>
-        {{/if}}
-        <div class="nice-ring">
-            <svg viewBox="0 0 100 100" aria-hidden="true">
-                <circle class="well" cx="50" cy="50" r="35" />
-                <circle class="rim" cx="50" cy="50" r="48" />
-                <circle class="rim" cx="50" cy="50" r="34.5" />
-                {{#each card.ring}}<path class="seg {{state}}" d="{{d}}" />{{/each}}
-            </svg>
-            <img class="nice-ring-icon" src="{{card.icon}}" alt="" inert />
-            <span class="nice-ring-count">{{card.value}}<span class="max"><span class="sep">/</span>{{card.max}}</span></span>
-        </div>
-    </div>
-{{/inline}}
 
 {{!-- An extra resource's icon as configured in the system's homebrew settings: a Font Awesome class
      or an image, which the system tints gold unless "No Filter" is set. --}}

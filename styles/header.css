@@ -320,7 +320,7 @@
     }
   }
 
-  /* A Hope gain or spend flashes the gems (#flashVitals in character-sheet.js). */
+  /* A Hope gain or spend flashes the gems (VitalCards#sync in vital-cards.js). */
   .nice-hope.flash-gain .nice-gem.lit { animation: nice-gem-gain 0.7s var(--nice-ease) 1; }
   .nice-hope.flash-spend .nice-gem { animation: nice-gem-spend 0.5s var(--nice-ease) 1; }
 

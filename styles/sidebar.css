@@ -141,7 +141,7 @@
       pointer-events: none;
     }
 
-    /* Flashes set by #flashVitals in character-sheet.js. HP, Stress and Armor get worse as they
+    /* Flashes set by VitalCards#sync in vital-cards.js. HP, Stress and Armor get worse as they
        fill; Hope gets better. Every animation in a flash lasts the same 0.9s: the class comes off
        on the first `animationend` that bubbles up, which would cut a longer one short. */
     &.flash-worse,
