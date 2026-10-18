@@ -10,7 +10,7 @@
     {{!-- Shown only while the sheet is collapsed, when the header holding the trait plaques is hidden. --}}
     <div class="nice-compact-traits">
         {{#each nice.traits as |trait|}}
-            <a class="nice-compact-trait nice-mat-{{trait.material}}" data-tooltip="{{trait.label}}"
+            <a class="nice-compact-trait nice-mat-{{trait.material}}"
                data-action="rollAttribute" data-attribute="{{trait.key}}" data-value="{{trait.value}}">
                 {{#if trait.isSpellcasting}}<span class="nice-trait-ring" inert></span>{{/if}}
                 <span class="nice-trait-name">{{trait.short}}</span>
