@@ -37,7 +37,7 @@
     },
     "TagTeam": {
       "label": "Tag Team",
-      "ready": "Ask the table for a Tag Team (costs {cost} Hope)",
+      "ready": "Start a Tag Team (costs {cost} Hope)",
       "noHope": "A Tag Team needs {cost} Hope",
       "chat": "{name} wants to use a Tag Team",
       "cost": "Costs {cost} Hope"

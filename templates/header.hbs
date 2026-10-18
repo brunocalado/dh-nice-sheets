@@ -82,9 +82,10 @@
                 {{/each}}
             </div>
             <span class="nice-hope-count">{{nice.hope.value}}<span class="sep">/</span>{{nice.hope.max}}</span>
-            {{!-- A reminder, not automation: it lights while the character can afford a Tag Team and a
-                 click only announces the wish in chat. The header is hidden while collapsed, so it is
-                 too. aria-disabled rather than disabled, so the tooltip still shows. --}}
+            {{!-- Lights while the character can afford a Tag Team; a click opens the system's Tag Team
+                 dialog for the character's party, or announces the wish in chat when there is none.
+                 The header is hidden while collapsed, so it is too. aria-disabled rather than
+                 disabled, so the tooltip still shows. --}}
             <button type="button" class="nice-tag-team {{#if nice.tagTeam.ready}}lit{{/if}}"
                     {{#if (and @root.editable nice.tagTeam.ready)}}data-action="niceTagTeam"{{else}}aria-disabled="true"{{/if}}
                     aria-label="{{localize "DH_NICE_SHEETS.TagTeam.label"}}" data-tooltip="{{nice.tagTeam.tooltip}}">

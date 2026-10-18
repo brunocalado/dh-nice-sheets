@@ -28,6 +28,8 @@ import { VitalCards } from "./vital-cards.js";
  *   featureGroups, background, connections, isDeath.
  * - Settings and schema: `variantRules.massiveDamage`, `LevelTiers` tiers' `levels.end`, and the
  *   party schema's `tagTeam.initiator.cost`.
+ * - The Tag Team button opens `game.system.api.applications.dialogs.TagTeamDialog(party)`, the
+ *   party taken from `game.actors.party` (the active one) and `actor.parties`.
  * - The filters: inventory search on `input.search-inventory` inside
  *   `[data-application-part="inventory"] .items-section`; the loadout filters, whose hiding is
  *   undone (_attachPartListeners).
@@ -485,8 +487,11 @@ export function defineNiceCharacterSheet() {
     }
 
     /**
-     * Announce in chat that the character wants a Tag Team. Nothing is spent or tracked; the table
-     * runs the Tag Team itself. The card follows Daggerheart: Quick Actions' chat card look.
+     * Open the system's Tag Team dialog for the character's party, the same one the party sheet's
+     * Tag Team button opens: the active party when the character is in it, else its first party.
+     * A character in no party has no dialog to open, so the click announces the wish in chat
+     * instead and the table runs the Tag Team itself. The card follows Daggerheart: Quick Actions'
+     * chat card look.
      * @this {NiceCharacterSheet}
      * @type {ApplicationClickAction}
      */
@@ -494,6 +499,12 @@ export function defineNiceCharacterSheet() {
       const actor = this.document;
       const cost = NiceCharacterSheet.#tagTeamCost;
       if ((actor.system.resources.hope.value ?? 0) < cost) return;
+      const active = game.actors.party;
+      const party = actor.parties.has(active) ? active : actor.parties.first();
+      if (party) {
+        new game.system.api.applications.dialogs.TagTeamDialog(party).render({ force: true });
+        return;
+      }
       const gold = "#C9A060";
       const name = foundry.utils.escapeHTML(actor.name);
       const content = `
