@@ -142,8 +142,9 @@
     }
 
     /* Flashes set by #flashVitals in character-sheet.js. HP, Stress and Armor get worse as they
-       fill; Hope gets better. Every animation in a flash lasts the same 0.9s: the class comes off
-       on the first `animationend` that bubbles up, which would cut a longer one short. */
+       fill; Hope gets better. Every animation in a flash ends at the same 0.9s: the class comes off
+       on the first `animationend` that bubbles up, which would cut a longer one short. A slot's
+       flare waits for its place in the wave, so it runs for what is left of the 0.9s. */
     &.flash-worse,
     &.hope.flash-spend {
       --nice-flash: var(--nice-hp-glow);
@@ -162,7 +163,11 @@
 
     &:is(.flash-worse, .flash-better, .flash-gain, .flash-spend) {
       &::after { animation: nice-card-wash 0.9s var(--nice-ease) 1; }
-      .seg.changed { animation: nice-seg-flare 0.9s var(--nice-ease) 1; }
+      .seg.changed {
+        animation: nice-seg-glint calc(0.9s - var(--nice-seg-delay, 0ms)) var(--nice-ease) var(--nice-seg-delay, 0ms) 1;
+
+        &.newest { animation-name: nice-seg-flare; }
+      }
     }
   }
 

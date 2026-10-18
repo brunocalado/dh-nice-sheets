@@ -88,6 +88,9 @@ const VITAL_FLASHES = Object.freeze({
 /** How long a flash can still be running, in ms: the longest one is the Hope glow (1.8s). */
 const FLASH_LIFETIME = 2000;
 
+/** How soon after a vital's last flash a click still adds to the same run, in ms: a ring card's 0.9s flash. */
+const BURST_WINDOW = 900;
+
 /** How long after a drop an item the GM transfers is still caught, in ms (see #awaitTransfer). */
 const TRANSFER_WAIT = 10000;
 
@@ -326,16 +329,14 @@ export function defineNiceCharacterSheet() {
     #lastVitals = {};
 
     /**
-     * Values a ring card click has shown but the server has not confirmed yet, by vital. `seq`
-     * tells the latest click apart from earlier ones still in flight.
-     * @type {Record<string, {value: number, seq: number}>}
+     * Values a ring card click has shown but the server has not confirmed yet, by vital.
+     * @type {Record<string, number>}
      */
     #pendingVitals = {};
 
     /**
-     * The last update sent for each vital from a ring card click; the next click's update waits for
-     * it (see #onStepResource).
-     * @type {Record<string, Promise>}
+     * The #sendVital run saving each vital's clicks, while one is in flight.
+     * @type {Record<string, Promise<void>>}
      */
     #vitalSends = {};
 
@@ -589,49 +590,69 @@ export function defineNiceCharacterSheet() {
      * Step a vital by one from its ring card: left click adds, right click removes. The card shows
      * the new value and plays its flash at once, without waiting for the server's round trip and
      * the re-render that follows. Each click steps from the value shown, so quick clicks add up
-     * even while earlier ones are still in flight. Their updates go out one after another, each once
-     * the previous one is confirmed: sent earlier, an update back to the value still saved (+1 then
-     * −1) would be dropped by Foundry's diff as no change, and an armor step would compute a zero
-     * delta. Armor goes through the system, so the change is spread over the armor sources the way
-     * its own sheet does. A click the server did not apply is undone by rendering the saved value.
+     * even while an earlier one is still in flight; #sendVital saves them.
      * @this {NiceCharacterSheet}
      * @param {PointerEvent} event
      * @param {HTMLElement} target
      */
-    static async #onStepResource(event, target) {
+    static #onStepResource(event, target) {
       if (!this.isEditable) return;
       const key = target.dataset.resource;
-      const saved = () => (key === "armor" ? this.document.system.armorScore : this.document.system.resources[key]);
-      const pending = this.#pendingVitals[key];
-      const shown = pending?.value ?? saved().value;
-      const next = Math.clamp(shown + (event.button === 2 ? -1 : 1), 0, saved().max);
+      const saved = this.#savedVital(key);
+      const shown = this.#pendingVitals[key] ?? saved.value;
+      const next = Math.clamp(shown + (event.button === 2 ? -1 : 1), 0, saved.max);
       if (next === shown) return;
 
-      const seq = (pending?.seq ?? 0) + 1;
-      this.#pendingVitals[key] = { value: next, seq };
+      this.#pendingVitals[key] = next;
       // The confirming render then finds nothing new to flash.
       this.#lastVitals[key] = next;
       NiceCharacterSheet.#paintCard(target, next);
       this.#startFlash(key, shown, next);
+      // A send already in flight picks the new value up when it returns.
+      this.#vitalSends[key] ??= this.#sendVital(key);
+    }
 
-      const send = (this.#vitalSends[key] ?? Promise.resolve()).catch(() => {}).then(() => {
-        if (key === "armor") return this.document.system.updateArmorValue({ value: next - saved().value });
-        return this.document.update({ [`system.resources.${key}.value`]: next });
-      });
-      this.#vitalSends[key] = send;
+    /**
+     * Save the value ring card clicks have shown for a vital: one update, then, if clicks moved it
+     * while that one was in flight, one more with the latest value, until the server has what the
+     * card shows. A run of quick clicks so costs two round trips and two renders, not one each.
+     * Waiting for the previous update also keeps the next one right: sent earlier, an update back
+     * to the value still saved (+1 then −1) would be dropped by Foundry's diff as no change, and an
+     * armor step would compute a zero delta. Armor goes through the system, so the change is spread
+     * over the armor sources the way its own sheet does. A value the server did not apply is undone
+     * by rendering the saved one.
+     * @param {string} key
+     */
+    async #sendVital(key) {
+      let sent;
       try {
-        await send;
+        while (this.#pendingVitals[key] !== sent) {
+          sent = this.#pendingVitals[key];
+          if (key === "armor") await this.document.system.updateArmorValue({ value: sent - this.#savedVital(key).value });
+          else await this.document.update({ [`system.resources.${key}.value`]: sent });
+        }
+      } catch {
+        // Foundry has already reported the rejected update, on screen and in the console.
       } finally {
-        if (this.#pendingVitals[key]?.seq === seq) {
-          delete this.#pendingVitals[key];
-          const actual = saved().value;
-          if (actual !== next) {
-            this.#lastVitals[key] = actual;
-            delete this.#flashes[key];
-            this.render();
-          }
+        delete this.#pendingVitals[key];
+        delete this.#vitalSends[key];
+        const actual = this.#savedVital(key).value;
+        if (actual !== sent) {
+          this.#lastVitals[key] = actual;
+          delete this.#flashes[key];
+          this.render();
         }
       }
+    }
+
+    /**
+     * A vital's saved value and max: armor from the system's armor score, the others from the
+     * actor's resources.
+     * @param {string} key
+     * @returns {{value: number, max: number}}
+     */
+    #savedVital(key) {
+      return key === "armor" ? this.document.system.armorScore : this.document.system.resources[key];
     }
 
     /**
@@ -1208,8 +1229,8 @@ export function defineNiceCharacterSheet() {
     #flashVitals(nice) {
       // No vitals when the sheet's additions failed (see _prepareContext).
       if (!nice.hitPoints) return;
-      const current = Object.fromEntries(Object.keys(VITAL_FLASHES).map(key => [key, this.#pendingVitals[key]?.value ?? nice[key].value]));
-      for (const [key, { value }] of Object.entries(this.#pendingVitals)) {
+      const current = Object.fromEntries(Object.keys(VITAL_FLASHES).map(key => [key, this.#pendingVitals[key] ?? nice[key].value]));
+      for (const [key, value] of Object.entries(this.#pendingVitals)) {
         const card = this.element.querySelector(VITAL_FLASHES[key].card);
         if (card && value !== nice[key].value) NiceCharacterSheet.#paintCard(card, value);
       }
@@ -1227,13 +1248,21 @@ export function defineNiceCharacterSheet() {
     }
 
     /**
-     * Flash a vital's elements for a change from one value to another.
+     * Flash a vital's elements for a change from one value to another. A change that lands while
+     * the vital's last flash is still playing, carries on from where it ended and goes the same
+     * way, is the next click of a run: the flash keeps the run's starting value, so every slot
+     * clicked so far flares again with the new one, whatever renders came in between.
      * @param {string} key  A key of VITAL_FLASHES.
      * @param {number} from
      * @param {number} to
      */
     #startFlash(key, from, to) {
-      this.#flashes[key] = { from, to, start: performance.now() };
+      const last = this.#flashes[key];
+      const now = performance.now();
+      if (last && now - last.start < BURST_WINDOW && last.to === from && Math.sign(to - from) === Math.sign(from - last.from)) {
+        from = last.from;
+      }
+      this.#flashes[key] = { from, to, start: now };
       this.#applyFlash(key, this.#flashes[key]);
     }
 
@@ -1249,8 +1278,20 @@ export function defineNiceCharacterSheet() {
       const { card, up, down, alsoUp, alsoDown } = VITAL_FLASHES[key];
       const rising = to > from;
       const cls = rising ? up : down;
-      const segments = this.element.querySelectorAll(`${card} .seg`);
-      for (let i = Math.min(from, to); i < Math.max(from, to); i++) segments[i]?.classList.add("changed");
+      // The slots flare as a wave in the order they were clicked, 60ms apart and spread over 300ms
+      // at most, and the newest one flares brightest. Toggled, not added: a slot left marked by an
+      // earlier run, the other way, must not flare.
+      const low = Math.min(from, to);
+      const count = Math.abs(to - from);
+      const step = Math.min(60, 300 / Math.max(count - 1, 1));
+      this.element.querySelectorAll(`${card} .seg`).forEach((segment, i) => {
+        const order = rising ? i - low : low + count - 1 - i;
+        const changed = order >= 0 && order < count;
+        segment.classList.toggle("changed", changed);
+        segment.classList.toggle("newest", changed && order === count - 1);
+        if (changed) segment.style.setProperty("--nice-seg-delay", `${Math.round(order * step)}ms`);
+        else segment.style.removeProperty("--nice-seg-delay");
+      });
 
       const elapsed = performance.now() - start;
       const selector = [card, rising ? alsoUp : alsoDown].filter(Boolean).join(", ");
