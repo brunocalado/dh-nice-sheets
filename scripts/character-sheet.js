@@ -1255,6 +1255,10 @@ export function defineNiceCharacterSheet() {
       const elapsed = performance.now() - start;
       const selector = [card, rising ? alsoUp : alsoDown].filter(Boolean).join(", ");
       for (const element of this.element.querySelectorAll(selector)) {
+        // Hope shows in the header or in its card, never both, so one of them is hidden. A hidden
+        // element never fires `animationend`, and its class would play a stale flash the moment
+        // the sheet is collapsed or expanded.
+        if (!element.checkVisibility()) continue;
         // A quick second click lands on an element still flashing, maybe the other way; the old
         // class goes, so the new animation starts over instead of fighting it.
         if (element.classList.contains(up) || element.classList.contains(down)) {
