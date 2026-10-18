@@ -83,6 +83,35 @@ To change it for the whole world, the GM picks the sheet in **Default Sheet** in
 
 The sheet reads parts of the Daggerheart system that can change between versions. If an update breaks something, the sheet still opens with what the system provides, or the system's own sheet opens in its place, and a message tells you to switch back to the system's sheet in **Configure Sheet** until Nice Sheets is updated. The GM can also change the **Default Sheet** for the whole world.
 
+## Adding actions to the party sheet
+
+The buttons at the top of the Nice party sheet (Tag Team, Group Roll, Short Rest and Long Rest) come from a list that other modules can change through the `dh-nice-sheets.partyActions` hook. The hook runs every time the sheet draws its header, with the sheet and the list. A listener adds, removes or reorders entries in the list, and the sheet draws a button for each one. It never needs to touch the sheet's HTML.
+
+Each entry is an object with these keys:
+
+| Key | Meaning |
+|---|---|
+| `id` | A unique string. The built-in ones are `tagTeamRoll`, `groupRoll`, `shortRest` and `longRest`. |
+| `label` | The caption under the button, as a translation key or plain text. |
+| `icon` | The Font Awesome classes of the icon, for example `fa-solid fa-moon`. |
+| `tooltip` | Optional. A translation key or plain text. |
+| `active` | Optional. Lights the button, as Tag Team does while one is under way. |
+| `gmOnly` | Optional. Only the GM sees the button. It is drawn like the rest buttons, after a divider. |
+| `onClick(event, sheet)` | What the button does when clicked. |
+
+The sheet skips an entry with no `id`, with an `id` already used, or with no `onClick`. The built-in entries have none because they call the system's own actions, so keep them as they are when you move them. This example replaces the two rests with one Downtime button in the same place:
+
+```js
+Hooks.on("dh-nice-sheets.partyActions", (sheet, actions) => {
+  const at = actions.findIndex(a => a.id === "shortRest");
+  actions.splice(0, actions.length, ...actions.filter(a => a.id !== "shortRest" && a.id !== "longRest"));
+  actions.splice(at < 0 ? actions.length : at, 0, {
+    id: "my-downtime", label: "DAGGERHEART.GENERAL.downtime", icon: "fa-solid fa-moon",
+    gmOnly: true, onClick: () => openMyDowntimeWindow()
+  });
+});
+```
+
 ## Translations
 
 The module ships in English. To translate it, open an [issue](https://github.com/brunocalado/dh-nice-sheets/issues) and attach a translated copy of [lang/en.json](lang/en.json), with the code of your language (for example `fr`, `de` or `pt-BR`). I add the file to the module in the next update. To update a translation later, do the same with the new file.

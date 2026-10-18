@@ -20,7 +20,7 @@ import { VitalCards } from "./vital-cards.js";
  * - PARTS ids: the system prepares context by id (`_preparePartContext`: header, partyMembers,
  *   notes), and `Actor#_onUpdate` re-renders `{ parts: ["partyMembers"] }` on every party when a
  *   member changes.
- * - Context keys: tabs, partyMembers (weapons, subtitle), showStats, isGM, tagTeamActive,
+ * - Context keys: tabs, partyMembers (weapons, subtitle), showStats, tagTeamActive,
  *   groupRollActive, notes, inventory, source.
  * - Actions: tagTeamRoll, groupRoll, triggerRest (data-type), openDocument (data-uuid),
  *   deletePartyMember (closest [data-uuid]), toggleHope (data-actor-id, data-value), editImage,
@@ -70,7 +70,8 @@ export function defineNicePartySheet() {
       actions: {
         // A right click reaches actions as an `auxclick` with button 2 only when it is listed.
         niceStepResource: { handler: NicePartySheet.#onStepResource, buttons: [0, 2] },
-        niceToggleGroup: toggleGroup
+        niceToggleGroup: toggleGroup,
+        nicePartyAction: NicePartySheet.#onPartyAction
       },
       // Concatenated onto the system's menus (effects, actions, features), not replacing them. The
       // system's party rows carry no menu of their own; this one hosts the container entries the
@@ -119,6 +120,9 @@ export function defineNicePartySheet() {
 
     /** Whether a full render has completed; see NiceCharacterSheet#settled. */
     #settled = false;
+
+    /** The `onClick` of each header coin other modules added, by action id; rebuilt per header render. */
+    #partyActions = new Map();
 
     /** @inheritdoc */
     _initializeApplicationOptions(options) {
@@ -178,13 +182,54 @@ export function defineNicePartySheet() {
     /** @inheritdoc */
     async _preparePartContext(partId, context, options) {
       context = await super._preparePartContext(partId, context, options);
-      if (partId !== "partyMembers" || !context.nice.count) return context;
       try {
-        context.nice.groups = this.#prepareGroups(context);
+        if (partId === "header") context.nice.partyActions = this.#preparePartyActions(context);
+        else if (partId === "partyMembers" && context.nice.count) context.nice.groups = this.#prepareGroups(context);
       } catch (error) {
         reportSheetFailure(error);
       }
       return context;
+    }
+
+    /**
+     * The header's action coins. Other modules add, remove or reorder them through the
+     * `dh-nice-sheets.partyActions` hook instead of editing the rendered markup, so the coin's
+     * markup and classes stay ours to change. Runs after the system's header context, which sets
+     * tagTeamActive and groupRollActive.
+     * @param {object} context  The header part's render context.
+     */
+    #preparePartyActions(context) {
+      const actions = [
+        { id: "tagTeamRoll", label: "DH_NICE_SHEETS.TagTeam.label", tooltip: "DAGGERHEART.APPLICATIONS.TagTeamSelect.title",
+          icon: "fa-solid fa-user-group", active: context.tagTeamActive, action: "tagTeamRoll" },
+        { id: "groupRoll", label: "DAGGERHEART.APPLICATIONS.GroupRollSelect.title", tooltip: "DAGGERHEART.APPLICATIONS.GroupRollSelect.title",
+          icon: "fa-solid fa-users", active: context.groupRollActive, action: "groupRoll" },
+        // The rests ask every member for their downtime moves, so they are the GM's only. The
+        // system's triggerRest reads which rest from data-type.
+        { id: "shortRest", label: "DAGGERHEART.APPLICATIONS.Downtime.shortRest.title", icon: "fa-solid fa-campground",
+          gmOnly: true, action: "triggerRest", type: "shortRest" },
+        { id: "longRest", label: "DAGGERHEART.APPLICATIONS.Downtime.longRest.title", icon: "fa-solid fa-moon",
+          gmOnly: true, action: "triggerRest", type: "longRest" }
+      ];
+      // callAll reports a throwing listener through Hooks.onError and goes on with the next one.
+      Hooks.callAll(`${MODULE_ID}.partyActions`, this, actions);
+
+      // The entries now come from other modules: an entry without an id or a handler, or reusing
+      // an id, is dropped rather than drawn as a coin that does nothing.
+      this.#partyActions = new Map();
+      const seen = new Set();
+      const entries = [];
+      for (const entry of actions) {
+        if (!entry?.id || seen.has(entry.id)) continue;
+        if (!entry.action && typeof entry.onClick !== "function") continue;
+        if (entry.gmOnly && !game.user.isGM) continue;
+        seen.add(entry.id);
+        if (!entry.action) this.#partyActions.set(entry.id, entry.onClick);
+        // The GM's coins sit after a divider, when anything comes before them.
+        const divider = Boolean(entry.gmOnly) && entries.length > 0 && !entries.at(-1).gmOnly;
+        entries.push({ ...entry, dataAction: entry.action ?? "nicePartyAction", divider });
+      }
+      return entries;
     }
 
     /**
@@ -303,6 +348,16 @@ export function defineNicePartySheet() {
       const actor = this.document.system.partyMembers.find(member => member.uuid === uuid);
       if (!actor?.isOwner) return;
       this.#vitals.step(event, target, actor);
+    }
+
+    /**
+     * A header coin another module added through the `dh-nice-sheets.partyActions` hook.
+     * @this {NicePartySheet}
+     * @param {PointerEvent} event
+     * @param {HTMLElement} target
+     */
+    static #onPartyAction(event, target) {
+      this.#partyActions.get(target.dataset.actionId)?.(event, this);
     }
 
     /* -------------------------------------------- */

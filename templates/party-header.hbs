@@ -26,29 +26,20 @@
             </div>
         </div>
 
-        {{!-- The system's party actions as coins, cut like the level coin; Tag Team and Group Roll
-             light up while one is under way. The rests ask every member for their downtime moves,
-             so they are the GM's only. --}}
+        {{!-- The party actions as coins, cut like the level coin; one lights up while it is under
+             way, as Tag Team and Group Roll do. The list comes from the sheet, where the
+             `dh-nice-sheets.partyActions` hook lets other modules change it; the GM's coins are
+             drawn as the rests. --}}
         <div class="nice-party-actions">
-            <a class="nice-party-action {{#if tagTeamActive}}active{{/if}}" data-action="tagTeamRoll" data-tooltip="DAGGERHEART.APPLICATIONS.TagTeamSelect.title">
-                <span class="coin"><i class="fa-solid fa-user-group" inert></i></span>
-                <span class="caption">{{localize "DH_NICE_SHEETS.TagTeam.label"}}</span>
-            </a>
-            <a class="nice-party-action {{#if groupRollActive}}active{{/if}}" data-action="groupRoll" data-tooltip="DAGGERHEART.APPLICATIONS.GroupRollSelect.title">
-                <span class="coin"><i class="fa-solid fa-users" inert></i></span>
-                <span class="caption">{{localize "DAGGERHEART.APPLICATIONS.GroupRollSelect.title"}}</span>
-            </a>
-            {{#if isGM}}
-                <span class="divider" inert></span>
-                <a class="nice-party-action rest" data-action="triggerRest" data-type="shortRest">
-                    <span class="coin"><i class="fa-solid fa-campground" inert></i></span>
-                    <span class="caption">{{localize "DAGGERHEART.APPLICATIONS.Downtime.shortRest.title"}}</span>
+            {{#each nice.partyActions as |entry|}}
+                {{#if entry.divider}}<span class="divider" inert></span>{{/if}}
+                <a class="nice-party-action {{#if entry.gmOnly}}rest{{/if}} {{#if entry.active}}active{{/if}}"
+                   data-action="{{entry.dataAction}}" data-action-id="{{entry.id}}" {{#if entry.type}}data-type="{{entry.type}}"{{/if}}
+                   {{#if entry.tooltip}}data-tooltip="{{entry.tooltip}}"{{/if}}>
+                    <span class="coin"><i class="{{entry.icon}}" inert></i></span>
+                    <span class="caption">{{localize entry.label}}</span>
                 </a>
-                <a class="nice-party-action rest" data-action="triggerRest" data-type="longRest">
-                    <span class="coin"><i class="fa-solid fa-moon" inert></i></span>
-                    <span class="caption">{{localize "DAGGERHEART.APPLICATIONS.Downtime.longRest.title"}}</span>
-                </a>
-            {{/if}}
+            {{/each}}
         </div>
     </div>
 
