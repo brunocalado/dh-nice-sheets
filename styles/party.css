@@ -319,6 +319,9 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      /* The actor's art is usually full-body; framed from the top, as the system's party sheet
+         does, the small square shows the face instead of the torso. */
+      object-position: center top;
       border: none;
       border-radius: 6px;
     }
