@@ -1,0 +1,9 @@
+<section class="tab {{tabs.notes.cssClass}} {{tabs.notes.id}}" data-tab="{{tabs.notes.id}}" data-group="{{tabs.notes.group}}">
+    <div class="nice-scroll nice-sections">
+        {{!-- The system's notes field, unchanged, inside a panel of the sheet. --}}
+        <fieldset class="nice-panel nice-party-notes">
+            <legend><span>{{localize tabs.notes.label}}</span></legend>
+            {{formInput notes.field value=notes.value enriched=notes.value toggled=true}}
+        </fieldset>
+    </div>
+</section>

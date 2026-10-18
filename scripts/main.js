@@ -8,6 +8,7 @@
 
 import { FLAGS, MODULE_ID, SETTINGS } from "./constants.js";
 import { defineNiceCharacterSheet } from "./character-sheet.js";
+import { defineNicePartySheet } from "./party-sheet.js";
 import { releaseContents } from "./helpers.js";
 import { offerSheet } from "./sheet-offer.js";
 
@@ -82,6 +83,14 @@ Hooks.once("init", () => {
     makeDefault: true,
     label: "DH_NICE_SHEETS.SheetLabel",
     // Dark only (the window pins `theme-dark` itself), so the sheet config offers no theme choice.
+    themes: null
+  });
+
+  // Not the default: the GM picks it for a party in Configure Sheet.
+  foundry.documents.collections.Actors.registerSheet(MODULE_ID, defineNicePartySheet(), {
+    types: ["party"],
+    makeDefault: false,
+    label: "DH_NICE_SHEETS.PartySheetLabel",
     themes: null
   });
 });

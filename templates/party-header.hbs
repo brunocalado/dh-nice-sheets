@@ -1,0 +1,63 @@
+<header class="nice-header nice-party-header">
+    {{!-- The party art sits behind the whole sheet as a faint backdrop, positioned against
+         `.window-content` like the character's. --}}
+    {{#if nice.backdrop}}
+        <div class="nice-backdrop" style="background-image: url('{{nice.backdrop}}')" inert></div>
+    {{/if}}
+
+    <div class="nice-title-row">
+        {{!-- `img.profile` is what the system's artwork context menu binds to. --}}
+        <img class="profile nice-party-emblem" src="{{source.img}}" data-action="editImage" data-edit="img" alt="" />
+        <div class="nice-name-block">
+            <h1
+                class="actor-name input"
+                contenteditable="plaintext-only"
+                data-property="name"
+                placeholder="{{localize "DAGGERHEART.GENERAL.actorName"}}"
+                autocomplete="off"
+                spellcheck="false"
+            >{{source.name}}</h1>
+            <div class="nice-party-meta">
+                <span>{{nice.memberCount}}</span>
+                {{#if nice.active}}
+                    <span class="dot" inert>&#9670;</span>
+                    <span class="nice-party-active"><i class="fa-solid fa-flag" inert></i>{{localize "DH_NICE_SHEETS.Party.active"}}</span>
+                {{/if}}
+            </div>
+        </div>
+
+        {{!-- The system's party actions as coins, cut like the level coin; Tag Team and Group Roll
+             light up while one is under way. The rests ask every member for their downtime moves,
+             so they are the GM's only. --}}
+        <div class="nice-party-actions">
+            <a class="nice-party-action {{#if tagTeamActive}}active{{/if}}" data-action="tagTeamRoll" data-tooltip="DAGGERHEART.APPLICATIONS.TagTeamSelect.title">
+                <span class="coin"><i class="fa-solid fa-user-group" inert></i></span>
+                <span class="caption">{{localize "DH_NICE_SHEETS.TagTeam.label"}}</span>
+            </a>
+            <a class="nice-party-action {{#if groupRollActive}}active{{/if}}" data-action="groupRoll" data-tooltip="DAGGERHEART.APPLICATIONS.GroupRollSelect.title">
+                <span class="coin"><i class="fa-solid fa-users" inert></i></span>
+                <span class="caption">{{localize "DAGGERHEART.APPLICATIONS.GroupRollSelect.title"}}</span>
+            </a>
+            {{#if isGM}}
+                <span class="divider" inert></span>
+                <a class="nice-party-action rest" data-action="triggerRest" data-type="shortRest">
+                    <span class="coin"><i class="fa-solid fa-campground" inert></i></span>
+                    <span class="caption">{{localize "DAGGERHEART.APPLICATIONS.Downtime.shortRest.title"}}</span>
+                </a>
+                <a class="nice-party-action rest" data-action="triggerRest" data-type="longRest">
+                    <span class="coin"><i class="fa-solid fa-moon" inert></i></span>
+                    <span class="caption">{{localize "DAGGERHEART.APPLICATIONS.Downtime.longRest.title"}}</span>
+                </a>
+            {{/if}}
+        </div>
+    </div>
+
+    <nav class="nice-tabs sheet-tabs tabs" data-group="primary">
+        {{#each tabs as |tab|}}
+            <a class="nice-tab {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+                <span>{{localize tab.label}}</span>
+                {{#if (and (eq tab.id "partyMembers") @root.nice.count)}}<span class="count">{{@root.nice.count}}</span>{{/if}}
+            </a>
+        {{/each}}
+    </nav>
+</header>

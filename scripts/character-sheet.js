@@ -168,7 +168,8 @@ export function defineNiceCharacterSheet() {
       // The sheet is designed dark only. DocumentSheetV2 adds `themed theme-<x>` from the sheet
       // config only when `themed` is not already there, so declaring it here pins the window dark
       // and lets core and system partials inside it resolve their dark variables too.
-      classes: [MODULE_ID, "themed", "theme-dark"],
+      // The second class scopes the character layout, which the party window must not inherit.
+      classes: [MODULE_ID, `${MODULE_ID}-character`, "themed", "theme-dark"],
       // The system's character sheet is resizable; this one keeps its designed size (the collapse
       // toggle aside), so the core resize handle is not even added to the frame.
       window: { resizable: false },

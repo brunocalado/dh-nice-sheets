@@ -55,7 +55,9 @@
   }
 }
 
-.application.sheet.daggerheart.dh-nice-sheets {
+/* The character sheet's own layout, scoped to its class so the party window, which shares the
+   module class and the frame above, keeps its own (party.css). */
+.application.sheet.daggerheart.dh-nice-sheets-character {
   --nice-column: 250px;
   background-image:
     radial-gradient(120% 90% at 50% -10%, rgba(var(--nice-gold-rgb), 0.14), transparent 60%),

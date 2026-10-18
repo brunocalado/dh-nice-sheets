@@ -1,0 +1,713 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The party sheet (party-header.hbs, party-members.hbs, party-notes.hbs). It shares the module
+   class, so the tokens, panels, ring cards, Hope gems, thresholds and trait materials of the
+   character sheet apply here too; this file holds the window layout and the sizes of the member
+   cards, which fit four characters and a companion into 760×640. */
+
+/* ========================================================================== */
+/*  Window                                                                      */
+/* ========================================================================== */
+.application.sheet.daggerheart.dh-nice-sheets-party {
+  background-image:
+    radial-gradient(120% 90% at 50% -10%, rgba(var(--nice-gold-rgb), 0.14), transparent 60%),
+    radial-gradient(90% 60% at 50% 110%, rgba(0, 0, 0, 0.35), transparent 60%);
+
+  .window-header {
+    z-index: 3;
+  }
+
+  .window-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--nice-font-body);
+    color: var(--nice-text);
+
+    > .tab {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 0;
+
+      &.active {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  /* The party art, anchored top-right behind the header and fading out before the cards. */
+  .nice-backdrop {
+    position: absolute;
+    inset: 0;
+    /* `.window-content` is a stacking context, so -1 paints behind every part but above the leather. */
+    z-index: -1;
+    pointer-events: none;
+    background-position: right top;
+    background-size: 70% auto;
+    background-repeat: no-repeat;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 35%, #000 60%),
+      linear-gradient(180deg, #000 10%, rgba(0, 0, 0, 0.35) 30%, transparent 55%);
+    mask-composite: intersect;
+    opacity: 0.14;
+    mix-blend-mode: luminosity;
+    transform-origin: right top;
+    animation: nice-backdrop-drift 34s ease-in-out infinite alternate;
+  }
+
+  /* ======================================================================== */
+  /*  Header                                                                   */
+  /* ======================================================================== */
+  /* Static, so the backdrop inside it is placed against `.window-content`. */
+  .nice-party-header {
+    position: static;
+    gap: 4px;
+    padding: calc(var(--header-height) - 6px) 14px 0 16px;
+
+    .nice-title-row {
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1.actor-name {
+      font-size: var(--font-size-24);
+    }
+
+    .nice-tabs {
+      margin-top: 4px;
+    }
+
+    .nice-tab {
+      gap: 7px;
+      height: 28px;
+
+      .count {
+        display: inline-grid;
+        place-items: center;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 4px;
+        border: 1px solid var(--nice-panel-border);
+        border-radius: 9px;
+        background: var(--nice-accent-soft);
+        color: var(--nice-gold-bright);
+        font-family: var(--nice-font-body);
+        font-size: 10px;
+        letter-spacing: 0;
+      }
+    }
+  }
+
+  img.nice-party-emblem {
+    flex: none;
+    width: 54px;
+    height: 54px;
+    border: 1.5px solid var(--nice-gold);
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--nice-ink);
+    box-shadow: 0 0 0 3px var(--nice-ink-2), 0 0 0 4px rgba(var(--nice-gold-rgb), 0.35), 0 4px 10px var(--nice-shadow);
+    cursor: pointer;
+    transition: transform 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 3px var(--nice-ink-2), 0 0 0 4px var(--nice-gold), var(--nice-gold-glow);
+    }
+  }
+
+  .nice-party-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 7px;
+    margin-top: 2px;
+    font-family: var(--nice-font-display);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    .dot {
+      font-size: 7px;
+      color: var(--nice-gold-dim);
+    }
+
+    .nice-party-active {
+      color: var(--nice-gold-bright);
+      text-shadow: 0 0 8px rgba(var(--nice-gold-rgb), 0.6);
+
+      i {
+        margin-right: 4px;
+        font-size: 9px;
+      }
+    }
+  }
+
+  /* ---- Party actions: coins cut like the level coin --------------------------- */
+  .nice-party-actions {
+    flex: none;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding-top: 2px;
+
+    .divider {
+      width: 1px;
+      align-self: stretch;
+      margin: 2px 0 12px;
+      background: linear-gradient(180deg, transparent, var(--nice-line), transparent);
+    }
+  }
+
+  .nice-party-action {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    color: inherit;
+    text-decoration: none;
+
+    .coin {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 28%, #b89a62 0%, #93773f 50%, #5e4a22 100%);
+      box-shadow: 0 2px 4px var(--nice-shadow), inset 0 0 0 1px #4a3a14;
+      color: #1d1608;
+      font-size: 14px;
+      transition: transform 0.25s var(--nice-ease), filter 0.25s var(--nice-ease);
+
+      /* The engraved inner ring. */
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        border-radius: 50%;
+        border: 1px solid rgba(60, 46, 14, 0.7);
+      }
+    }
+
+    .caption {
+      font-family: var(--nice-font-display);
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      line-height: 1;
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--nice-text-muted);
+    }
+
+    &:hover .coin {
+      transform: translateY(-2px);
+      filter: brightness(1.18);
+    }
+
+    /* The rests read as tools, like the character header's rest buttons. */
+    &.rest .coin {
+      background: linear-gradient(180deg, var(--nice-ink-3), var(--nice-ink));
+      color: var(--nice-accent);
+      box-shadow: 0 2px 6px var(--nice-shadow), inset 0 0 0 1px var(--nice-line);
+
+      &::after { display: none; }
+    }
+
+    &.rest:hover .coin {
+      background: var(--nice-gold-lit);
+      color: var(--nice-ink);
+      filter: none;
+      box-shadow: var(--nice-gold-glow), 0 4px 8px var(--nice-shadow);
+    }
+
+    /* A Tag Team or Group Roll under way: the coin lights up as the level coin does with a level
+       up pending, with a sheen across the face and a light running round the rim. */
+    &.active {
+      .coin {
+        overflow: hidden;
+        background: radial-gradient(circle at 35% 28%, var(--nice-gold-bright) 0%, var(--nice-gold) 42%, var(--nice-gold-dim) 100%);
+        box-shadow: 0 3px 6px var(--nice-shadow), inset 0 0 0 1px var(--nice-gold-deep);
+
+        &::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: 2;
+          width: 250%;
+          height: 100%;
+          background: linear-gradient(115deg, transparent 38%, rgba(255, 250, 230, 0.85) 50%, transparent 62%);
+          animation: nice-coin-sheen 2.8s ease-in-out infinite;
+        }
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: -4px;
+        left: calc(50% - 22px);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: conic-gradient(transparent 0 62%, rgba(255, 227, 163, 0.2) 75%, var(--nice-gold-bright) 92%, transparent 100%);
+        mask: radial-gradient(closest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+        filter: drop-shadow(0 0 3px var(--nice-gold));
+        animation: nice-coin-orbit 2.2s linear infinite;
+        pointer-events: none;
+      }
+
+      .caption { color: var(--nice-gold-bright); }
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Members                                                                  */
+  /* ======================================================================== */
+  .nice-party-body {
+    padding: 10px 8px 12px 14px;
+
+    > .nice-section-title {
+      margin: 12px 0 8px;
+    }
+  }
+
+  .nice-party-members {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  /* A character: portrait and identity on top, the ring cards beside the defense column, the
+     traits strip at the bottom. */
+  .nice-party-member {
+    position: relative;
+    display: grid;
+    align-items: start;
+    column-gap: 10px;
+    row-gap: 8px;
+    grid-template-columns: 52px minmax(0, 1fr) 146px;
+    grid-template-areas:
+      "portrait identity identity"
+      "rings rings defense"
+      "traits traits traits";
+    padding: 9px 10px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 8px;
+    background: linear-gradient(90deg, rgba(var(--nice-gold-rgb), 0.06), transparent 40%), var(--nice-panel);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 1px 2px var(--nice-shadow);
+    transition: border-color 0.25s var(--nice-ease), box-shadow 0.25s var(--nice-ease);
+
+    &:hover {
+      border-color: var(--nice-line);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 0 14px rgba(var(--nice-gold-rgb), 0.08);
+    }
+  }
+
+  .nice-party-portrait {
+    grid-area: portrait;
+    position: relative;
+    width: 52px;
+    height: 52px;
+    border: 1px solid var(--nice-gold-dim);
+    border-radius: 7px;
+    background: var(--nice-ink);
+    box-shadow: 0 2px 8px var(--nice-shadow), inset 0 0 0 1px rgba(0, 0, 0, 0.6);
+    transition: border-color 0.2s var(--nice-ease), box-shadow 0.2s var(--nice-ease);
+
+    > img.art {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: none;
+      border-radius: 6px;
+    }
+
+    &:hover {
+      border-color: var(--nice-gold);
+      box-shadow: 0 2px 8px var(--nice-shadow), var(--nice-gold-glow);
+    }
+  }
+
+  /* Equipped weapons as seals over the portrait's corner (the system lists the same ones). */
+  .nice-party-weapons {
+    position: absolute;
+    right: -7px;
+    bottom: -6px;
+    display: flex;
+    gap: 2px;
+
+    img {
+      width: 20px;
+      height: 20px;
+      border: 1px solid var(--nice-gold);
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--nice-ink);
+      box-shadow: 0 0 0 2px var(--nice-ink-2), 0 2px 4px var(--nice-shadow);
+    }
+  }
+
+  .nice-party-identity {
+    grid-area: identity;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    /* Clears the remove button in the corner. */
+    padding-right: 16px;
+  }
+
+  .nice-party-name {
+    align-self: flex-start;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    border-bottom: 1px solid transparent;
+    font-family: var(--nice-font-display);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    line-height: 1.2;
+    color: var(--nice-accent);
+    transition: color 0.2s var(--nice-ease), border-color 0.2s var(--nice-ease);
+
+    &:hover {
+      color: var(--nice-gold-bright);
+      border-bottom-color: var(--nice-gold);
+      text-shadow: none;
+    }
+  }
+
+  .nice-party-sub {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1px 5px;
+    font-family: var(--nice-font-display);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--nice-text);
+
+    .dot {
+      font-size: 6px;
+      color: var(--nice-gold-dim);
+    }
+
+    &.muted { color: var(--nice-text-muted); }
+  }
+
+  .nice-party-remove {
+    position: absolute;
+    top: 5px;
+    right: 6px;
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: var(--nice-text-muted);
+    font-size: 11px;
+    opacity: 0;
+    transition: opacity 0.2s, background 0.2s, color 0.2s;
+
+    &:hover {
+      background: rgba(255, 77, 109, 0.18);
+      color: var(--nice-hp-glow);
+      text-shadow: none;
+    }
+  }
+
+  .nice-party-member:hover .nice-party-remove,
+  .nice-party-remove:focus-visible {
+    opacity: 1;
+  }
+
+  /* ---- Hope: the header's pill, compact ------------------------------------------ */
+  .nice-party-identity .nice-hope {
+    align-self: flex-start;
+    gap: 6px;
+    margin-top: 2px;
+    padding: 1px 8px;
+
+    .nice-hope-label { font-size: 9px; }
+    .nice-hope-count { font-size: 10.5px; }
+    .nice-hope-gems { gap: 4px; }
+
+    .nice-gem {
+      width: 15px;
+      height: 15px;
+
+      &.scar { font-size: 11px; }
+    }
+  }
+
+  /* Gems and ring cards of a member this user doesn't own show the values without responding. */
+  .nice-gem:not([data-action]) {
+    cursor: default;
+
+    &:hover { transform: none; }
+  }
+
+  .nice-party-member .nice-ring-card:not([data-action]) {
+    cursor: default;
+
+    &:hover {
+      border-color: color-mix(in srgb, var(--nice-ring-hue) 70%, transparent);
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(0, 0, 0, 0.6),
+        0 0 10px color-mix(in srgb, var(--nice-ring-hue) 18%, transparent);
+    }
+  }
+
+  /* ---- Ring cards, at card size ------------------------------------------------- */
+  /* Rings and defenses both stretch to the taller of the two, and the cards centre their ring,
+     so the Massive band makes the cards taller instead of leaving a gap beside them. */
+  .nice-party-rings {
+    grid-area: rings;
+    align-self: stretch;
+    display: flex;
+    gap: 5px;
+
+    .nice-ring-card {
+      --nice-ring-size: 46px;
+      --nice-ring-icon: 23px;
+      justify-content: center;
+      width: 57px;
+      padding: 4px 3px 5px;
+    }
+
+    .nice-ring {
+      margin: 1px 0 6px;
+    }
+
+    .nice-ring-count {
+      translate: -50% 3px;
+      font-size: 14px;
+
+      .sep { margin: 0 1px; }
+    }
+  }
+
+  /* ---- Defense: Evasion or Difficulty, thresholds, Massive --------------------------- */
+  .nice-party-defense {
+    grid-area: defense;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    min-width: 0;
+
+    .nice-stat {
+      flex: none;
+
+      .label { letter-spacing: 0.08em; }
+
+      .value {
+        min-width: 32px;
+        padding: 5px 8px;
+        font-size: 16px;
+      }
+    }
+
+    .nice-thresholds {
+      margin-top: 0;
+
+      .band {
+        height: 28px;
+        gap: 3px;
+
+        &.minor { padding-right: 12px; }
+        &.major { padding-inline: 12px; }
+        &.severe { padding-left: 12px; }
+      }
+
+      .name {
+        font-size: 9px;
+        letter-spacing: 0.06em;
+      }
+
+      .cost { font-size: 7.5px; letter-spacing: 0.04em; }
+
+      .mark {
+        width: 24px;
+        height: 24px;
+        margin: -1px -12px;
+        font-size: 11.5px;
+
+        &::before { inset: 3.5px; }
+      }
+    }
+
+    .nice-massive {
+      height: 22px;
+
+      .name { font-size: 9px; }
+      .cost { font-size: 7.5px; }
+
+      .mark {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+
+        &::before { inset: 4px; }
+      }
+    }
+  }
+
+  /* ---- Traits: the trait plaques' materials, at strip size --------------------------- */
+  .nice-party-traits {
+    grid-area: traits;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .nice-party-traits .nice-party-trait {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 0;
+    height: 30px;
+    border-radius: 5px;
+
+    .nice-trait-name {
+      font-family: var(--nice-font-display);
+      font-size: 7.5px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    /* Also over the larger value the gold materials set. */
+    .nice-trait-value {
+      font-family: var(--nice-font-display);
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--nice-trait-value-color);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85);
+    }
+  }
+
+  .nice-party-crest {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    z-index: 2;
+    width: 7px;
+    height: 7px;
+    margin-left: -3.5px;
+    transform: rotate(45deg);
+    border: 1px solid var(--nice-gold-deep);
+    background: var(--nice-diamond-fill);
+    box-shadow: 0 0 5px var(--nice-gold);
+  }
+
+  /* ---- Companions, adversaries, NPCs: one row per member -------------------------- */
+  .nice-party-members:not(.character) {
+    .nice-party-member {
+      grid-template-columns: 44px minmax(0, 1fr) auto 112px;
+      grid-template-areas: "portrait identity rings defense";
+      align-items: center;
+      padding: 7px 10px;
+
+      /* Thresholds need the character's defense width. */
+      &:has(.nice-thresholds) {
+        grid-template-columns: 44px minmax(0, 1fr) auto 146px;
+      }
+    }
+
+    /* With thresholds beside two rings, half the width leaves no room for the name. */
+    &.adversary {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .nice-party-portrait {
+      width: 44px;
+      height: 44px;
+    }
+
+    .nice-party-identity {
+      padding-right: 0;
+    }
+
+    .nice-ring-card {
+      --nice-ring-size: 36px;
+      --nice-ring-icon: 18px;
+      width: 48px;
+      padding: 3px 3px 4px;
+    }
+
+    .nice-ring-count {
+      font-size: 12px;
+    }
+  }
+
+  /* ---- Stats hidden by Metagaming: portrait, name and subtitle only ------------------- */
+  .nice-party-members.hidden-stats .nice-party-member {
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-areas: "portrait identity";
+    align-items: center;
+
+    .nice-party-portrait {
+      width: 44px;
+      height: 44px;
+    }
+  }
+
+  /* ---- An empty party: where to drop actors -------------------------------------- */
+  .nice-party-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 360px;
+    border: 1px dashed var(--nice-line);
+    border-radius: 10px;
+    background: radial-gradient(circle at 50% 45%, rgba(var(--nice-gold-rgb), 0.08), transparent 60%);
+    color: var(--nice-text-muted);
+    font-family: var(--nice-font-display);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+
+    i {
+      font-size: 38px;
+      color: var(--nice-gold);
+      animation: nice-breathe 2.6s ease-in-out infinite;
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Notes                                                                    */
+  /* ======================================================================== */
+  .nice-party-notes {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+}

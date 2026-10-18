@@ -1,0 +1,141 @@
+<section class="tab {{tabs.partyMembers.cssClass}} {{tabs.partyMembers.id}}" data-tab="{{tabs.partyMembers.id}}" data-group="{{tabs.partyMembers.group}}">
+    <div class="nice-scroll nice-party-body">
+        {{#each nice.groups as |group|}}
+            {{#if group.title}}
+                <h3 class="nice-section-title"><span>{{localize group.title}}</span><small class="nice-slot-count">{{group.members.length}}</small></h3>
+            {{/if}}
+            {{!-- Characters as two-column cards; the other types one row each. With Hide Party
+                 Stats in force for this user, every card shows portrait, name and subtitle only,
+                 as the system's sheet does. --}}
+            <div class="nice-party-members {{group.type}} {{#unless @root.showStats}}hidden-stats{{/unless}}">
+                {{#each group.members as |member|}}
+                    <article class="nice-party-member {{member.type}}" data-member-uuid="{{member.uuid}}">
+                        <a class="nice-party-portrait" data-action="openDocument" data-uuid="{{member.uuid}}">
+                            <img class="art" src="{{member.img}}" alt="" />
+                            {{#if (and @root.showStats member.weapons.length)}}
+                                <span class="nice-party-weapons">
+                                    {{#each member.weapons as |weapon|}}
+                                        <img src="{{weapon.img}}" data-tooltip-text="{{weapon.name}}" alt="" />
+                                    {{/each}}
+                                </span>
+                            {{/if}}
+                        </a>
+
+                        <div class="nice-party-identity">
+                            <a class="nice-party-name" data-action="openDocument" data-uuid="{{member.uuid}}">{{member.name}}</a>
+                            {{#if member.heritage.length}}
+                                <div class="nice-party-sub">
+                                    {{#each member.heritage as |name|}}
+                                        {{#unless @first}}<span class="dot" inert>&#9670;</span>{{/unless}}<span>{{name}}</span>
+                                    {{/each}}
+                                </div>
+                            {{else if member.subtitle}}
+                                <div class="nice-party-sub muted">{{member.subtitle}}</div>
+                            {{/if}}
+                            {{#if (and @root.showStats member.hope)}}
+                                {{!-- Gems click only for a user who owns the member. --}}
+                                <div class="nice-hope">
+                                    <span class="nice-hope-label">{{localize "DAGGERHEART.GENERAL.hope"}}</span>
+                                    <div class="nice-hope-gems">
+                                        {{#each member.hope.pips as |pip|}}
+                                            <a class="nice-gem {{#if pip.filled}}lit{{/if}}" {{#if member.editable}}data-action="toggleHope" data-actor-id="{{member.uuid}}" data-value="{{pip.index}}"{{/if}}>
+                                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                                    <path class="gem-body" d="M12 1.5 22.5 12 12 22.5 1.5 12Z" />
+                                                    <path class="gem-facet" d="M12 1.5 22.5 12H1.5Z" />
+                                                    <path class="gem-spark" d="M12 5.5 15 12l-3 6.5L9 12Z" />
+                                                </svg>
+                                            </a>
+                                        {{/each}}
+                                        {{#each member.hope.scars}}
+                                            <span class="nice-gem scar" data-tooltip="DAGGERHEART.GENERAL.scars"><i class="fa-regular fa-ban" inert></i></span>
+                                        {{/each}}
+                                    </div>
+                                    <span class="nice-hope-count">{{member.hope.value}}<span class="sep">/</span>{{member.hope.max}}</span>
+                                </div>
+                            {{/if}}
+                        </div>
+
+                        {{#if @root.showStats}}
+                            {{#if member.rings.length}}
+                                <div class="nice-party-rings">
+                                    {{#each member.rings as |ring|}}
+                                        {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=member.editable card=ring.card kind=ring.kind resource=ring.resource label=(localize ring.label)}}
+                                    {{/each}}
+                                </div>
+                            {{/if}}
+
+                            {{#if (or member.defense member.thresholds)}}
+                                <div class="nice-party-defense">
+                                    {{#if member.defense}}
+                                        <div class="nice-stat">
+                                            <span class="label">{{localize member.defense.label}}</span>
+                                            <span class="value">{{member.defense.value}}</span>
+                                        </div>
+                                    {{/if}}
+                                    {{#if member.thresholds}}
+                                        {{!-- As in the sidebar: the marks sit on the borders between the
+                                             bands, and the Massive band hangs under them as one block. --}}
+                                        <div class="nice-damage">
+                                            <div class="nice-thresholds" data-tooltip="DAGGERHEART.GENERAL.DamageThresholds.title">
+                                                <span class="band minor">
+                                                    <span class="name">{{localize "DAGGERHEART.ACTORS.Party.Thresholds.minor"}}</span>
+                                                    <span class="cost">1 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                                                </span>
+                                                <span class="mark">{{member.thresholds.major}}</span>
+                                                <span class="band major">
+                                                    <span class="name">{{localize "DAGGERHEART.ACTORS.Party.Thresholds.major"}}</span>
+                                                    <span class="cost">2 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                                                </span>
+                                                <span class="mark">{{member.thresholds.severe}}</span>
+                                                <span class="band severe">
+                                                    <span class="name">{{localize "DAGGERHEART.ACTORS.Party.Thresholds.severe"}}</span>
+                                                    <span class="cost">3 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                                                </span>
+                                            </div>
+                                            {{#if member.massive}}
+                                                <div class="nice-massive">
+                                                    <span class="mark">{{member.massive}}</span>
+                                                    <span class="name">{{localize "DAGGERHEART.SETTINGS.VariantRules.FIELDS.massiveDamage.title"}}</span>
+                                                    <span class="cost">4 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                                                </div>
+                                            {{/if}}
+                                        </div>
+                                    {{/if}}
+                                </div>
+                            {{/if}}
+
+                            {{#if member.traits}}
+                                {{!-- Values only: the party rolls nothing, as on the system's sheet. --}}
+                                <div class="nice-party-traits">
+                                    {{#each member.traits as |trait|}}
+                                        <span class="nice-party-trait nice-mat-{{trait.material}}"
+                                              data-tooltip-text="{{trait.label}}{{#if trait.isSpellcasting}} · {{localize "DH_NICE_SHEETS.Spellcast"}}{{/if}}">
+                                            {{#if trait.isSpellcasting}}<span class="nice-trait-ring" inert></span>{{/if}}
+                                            {{#if trait.crowned}}<span class="nice-party-crest" inert></span>{{/if}}
+                                            <span class="nice-trait-name">{{trait.short}}</span>
+                                            <span class="nice-trait-value">{{trait.signed}}</span>
+                                        </span>
+                                    {{/each}}
+                                </div>
+                            {{/if}}
+                        {{/if}}
+
+                        {{#if @root.editable}}
+                            <a class="nice-party-remove" data-action="deletePartyMember" data-uuid="{{member.uuid}}"
+                               data-tooltip-text="{{localize "DAGGERHEART.ACTORS.Party.RemoveConfirmation.title" name=member.name}}">
+                                <i class="fa-solid fa-xmark" inert></i>
+                            </a>
+                        {{/if}}
+                    </article>
+                {{/each}}
+            </div>
+        {{/each}}
+
+        {{#unless document.system.partyMembers.length}}
+            <div class="nice-party-dropzone">
+                <i class="fa-solid fa-users" inert></i>
+                <span>{{localize "DAGGERHEART.GENERAL.dropActorsHere"}}</span>
+            </div>
+        {{/unless}}
+    </div>
+</section>

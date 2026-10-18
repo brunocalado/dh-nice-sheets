@@ -167,8 +167,9 @@
   }
 
   /* Armor spans both columns as a banner with a smaller ring, which keeps the expanded sheet's third
-     card short. The collapsed sheet turns it back into a card like the others. */
-  .nice-ring-card.armor {
+     card short. The collapsed sheet turns it back into a card like the others. Only in the
+     sidebar: the party's member cards keep every ring a card. */
+  .nice-sidebar .nice-ring-card.armor {
     --nice-ring-size: 64px;
     --nice-ring-icon: 34px;
     grid-column: 1 / -1;

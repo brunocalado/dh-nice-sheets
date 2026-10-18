@@ -41,6 +41,7 @@
     { "src": "styles/settings.css" },
     { "src": "styles/levelup.css" },
     { "src": "styles/collapsed.css" },
+    { "src": "styles/party.css" },
     { "src": "styles/motion.css" }
   ],
   "languages": [
