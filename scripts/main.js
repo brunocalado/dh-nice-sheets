@@ -74,9 +74,12 @@ Hooks.once("init", () => {
     if (options.isFirstRender) offerSheet(sheet, NiceCharacterSheet);
   });
 
+  // Default only while the GM hasn't saved another Default Sheet: core prefers the stored
+  // core.sheetClasses choice over makeDefault, and nothing is written, so disabling the module
+  // hands characters back to the system's sheet.
   foundry.documents.collections.Actors.registerSheet(MODULE_ID, NiceCharacterSheet, {
     types: ["character"],
-    makeDefault: false,
+    makeDefault: true,
     label: "DH_NICE_SHEETS.SheetLabel",
     // Dark only (the window pins `theme-dark` itself), so the sheet config offers no theme choice.
     themes: null

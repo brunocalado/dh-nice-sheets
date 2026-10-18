@@ -1,6 +1,6 @@
 # Daggerheart: Nice Sheets
 
-Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Each player picks it for their own character in **Configure Sheet**, and the system's sheet stays the default. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
+Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Once the module is enabled, characters open in it by default, unless the GM has already chosen another **Default Sheet**. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
 
 What changes is the layout. Hit Points, Stress and Armor stay in view in a sidebar, with Hope in the header above the traits. The six traits sit on plaques ranked from cracked iron to gold, and the character's art fills the background of the whole sheet.
 
@@ -69,15 +69,19 @@ A player with only Limited permission on a character sees a short card instead o
 
 ## How to use it
 
-1. Open a character sheet.
-2. In the window menu, choose **Configure Sheet**.
-3. Pick **Nice Sheet** in the sheet list and save.
+Enable the module and open a character. It opens in the Nice Sheet.
 
-To go back, do the same and pick the system's sheet.
+To use the system's sheet for one character:
+
+1. Open the character sheet.
+2. In the window menu, choose **Configure Sheet**.
+3. Pick the system's sheet in **This Sheet** and save.
+
+To change it for the whole world, the GM picks the sheet in **Default Sheet** in the same window. A character with its own choice in **This Sheet** keeps it. Disabling the module also brings back the system's sheet.
 
 ## When Daggerheart updates
 
-The sheet reads parts of the Daggerheart system that can change between versions. If an update breaks something, the sheet still opens with what the system provides, or the system's own sheet opens in its place, and a message tells you to switch back to the system's sheet in **Configure Sheet** until Nice Sheets is updated.
+The sheet reads parts of the Daggerheart system that can change between versions. If an update breaks something, the sheet still opens with what the system provides, or the system's own sheet opens in its place, and a message tells you to switch back to the system's sheet in **Configure Sheet** until Nice Sheets is updated. The GM can also change the **Default Sheet** for the whole world.
 
 ## Translations
 
