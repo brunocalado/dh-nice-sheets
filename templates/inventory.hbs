@@ -21,7 +21,7 @@
     </div>
 
     {{!-- Containers come first, so they are in reach as drop targets; the type sections list only
-         the items no container holds (see NiceCharacterSheet.#sortIntoContainers). --}}
+         the items no container holds (see ContainerSheetMixin#containerInventory). --}}
     <div class="items-section nice-scroll nice-sections">
         {{#each nice.inventory.containers as |container|}}
             {{> "modules/dh-nice-sheets/templates/container.hbs" container=container}}
