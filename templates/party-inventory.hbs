@@ -1,11 +1,12 @@
 <section class="tab {{tabs.inventory.cssClass}} {{tabs.inventory.id}}" data-tab="{{tabs.inventory.id}}" data-group="{{tabs.inventory.group}}">
     {{!-- The search field is gone, but the system shows an item only once its SearchFilter has
          matched it, and that filter runs only on a `search-inventory` input: the hidden, empty one
-         matches every item. Each coin is the system's `.currency[data-currency]` with its icon in
-         a `.drag-handle`, the markup the base sheet drags from, so coins still go from the party
-         to a character. --}}
+         matches every item. Its blank placeholder keeps it `:placeholder-shown`, which is how the
+         shared CSS (tab-bodies.css) tells that no search is typed, so collapsed groups stay shut.
+         Each coin is the system's `.currency[data-currency]` with its icon in a `.drag-handle`,
+         the markup the base sheet drags from, so coins still go from the party to a character. --}}
     <div class="nice-toolbar">
-        <input type="search" class="search-inventory" hidden />
+        <input type="search" class="search-inventory" placeholder=" " hidden />
         {{#if nice.currencies.length}}
             <div class="nice-purse">
                 {{#each nice.currencies as |currency|}}
