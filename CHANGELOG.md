@@ -8,6 +8,7 @@
 - [Changed] The party sheet's group titles no longer show a member count.
 - [Added] With the Massive Damage rule on, adversaries on the party sheet show Massive as a fourth band of the thresholds bar, keeping the row short.
 - [Fixed] The party sheet shows the Massive Damage band even when it is 0.
+- [Fixed] The numbers in the party sheet's threshold diamonds sit centred instead of half a pixel high.
 
 # 0.1.0
 
