@@ -2,7 +2,7 @@
     <div class="nice-scroll nice-party-body">
         {{#each nice.groups as |group|}}
             {{#if group.title}}
-                <h3 class="nice-section-title"><span>{{localize group.title}}</span><small class="nice-slot-count">{{group.members.length}}</small></h3>
+                <h3 class="nice-section-title"><span>{{localize group.title}}</span></h3>
             {{/if}}
             {{!-- Characters as two-column cards; the other types one row each. With Hide Party
                  Stats in force for this user, every card shows portrait, name and subtitle only,
@@ -33,6 +33,17 @@
                                         </div>
                                     {{/each}}
                                 </div>
+                            {{else if (and @root.showStats member.adversary)}}
+                                <div class="nice-party-sub muted">{{member.adversary.tier}}</div>
+                                {{#with member.adversary.attack as |attack|}}
+                                    <div class="nice-party-attack">
+                                        <i class="fa-solid fa-swords" inert></i>
+                                        <span class="name">{{attack.name}}</span>
+                                        {{#if attack.bonus}}<span class="bonus">{{attack.bonus}}</span>{{/if}}
+                                        {{#if attack.range}}<span class="dot" inert>&#9670;</span><span>{{attack.range}}</span>{{/if}}
+                                        {{#if attack.damage}}<span class="dot" inert>&#9670;</span><span class="damage">{{attack.damage}}{{#if attack.damageType}} {{attack.damageType}}{{/if}}</span>{{/if}}
+                                    </div>
+                                {{/with}}
                             {{else if member.subtitle}}
                                 <div class="nice-party-sub muted">{{member.subtitle}}</div>
                             {{/if}}
@@ -60,6 +71,13 @@
                         </div>
 
                         {{#if @root.showStats}}
+                            {{#if member.evasion}}
+                                <div class="nice-party-evasion">
+                                    <span class="label">{{localize member.evasion.label}}</span>
+                                    <span class="value">{{member.evasion.value}}</span>
+                                </div>
+                            {{/if}}
+
                             {{#if member.rings.length}}
                                 <div class="nice-party-rings">
                                     {{#each member.rings as |ring|}}

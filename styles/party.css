@@ -424,6 +424,99 @@
     &.muted { color: var(--nice-text-muted); }
   }
 
+  /* An adversary's standard attack, beside its name. */
+  .nice-party-attack {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 11px;
+    color: var(--nice-text);
+
+    > i {
+      margin-right: 4px;
+      font-size: 10px;
+      color: var(--nice-gold-dim);
+    }
+
+    .name {
+      font-family: var(--nice-font-display);
+      letter-spacing: 0.04em;
+    }
+
+    .bonus,
+    .damage {
+      font-weight: 700;
+      color: var(--nice-accent);
+    }
+
+    .dot {
+      margin: 0 5px;
+      font-size: 6px;
+      vertical-align: middle;
+      color: var(--nice-gold-dim);
+    }
+  }
+
+  /* ---- A character's Evasion: a plaque in the card's top corner ------------------------
+     Out of the grid, beside the name and heritage only: the Hope pill below them needs the
+     identity column's full width. */
+  .nice-party-evasion {
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 46px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 6px;
+    background: var(--nice-panel);
+    box-shadow: 0 2px 4px var(--nice-shadow);
+    overflow: hidden;
+
+    .label {
+      align-self: stretch;
+      padding: 3px 0 2px;
+      font-family: var(--nice-font-display);
+      font-size: 7px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: center;
+      text-transform: uppercase;
+      color: var(--nice-accent);
+    }
+
+    .value {
+      align-self: stretch;
+      padding: 5px 0 6px;
+      border-top: 1px solid var(--nice-panel-border);
+      background: rgba(0, 0, 0, 0.3);
+      font-family: var(--nice-font-display);
+      font-size: var(--font-size-18);
+      font-weight: 700;
+      line-height: 1;
+      text-align: center;
+      text-box: trim-both cap alphabetic;
+      color: var(--nice-text);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .nice-party-member:has(.nice-party-evasion) {
+    .nice-party-name,
+    .nice-party-heritage {
+      max-width: calc(100% - 40px);
+    }
+
+    /* The plaque takes the corner the remove button used; the button moves over the portrait. */
+    .nice-party-remove {
+      right: auto;
+      left: 4px;
+      top: 4px;
+      background: var(--nice-ink);
+    }
+  }
+
   .nice-party-remove {
     position: absolute;
     top: 5px;
@@ -656,10 +749,11 @@
       grid-template-columns: minmax(0, 1fr);
     }
 
+    /* Stretches to the row, so it matches the ring cards beside it; a member without rings
+       keeps the square. */
     .nice-party-portrait {
       width: 44px;
-      height: 44px;
-      min-height: 0;
+      min-height: 44px;
     }
 
     .nice-party-identity {

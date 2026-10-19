@@ -2,6 +2,10 @@
 
 - [Fixed] Party cards show class and subclass on one line and community and ancestry on the next, instead of wrapping long names and pushing the card out of line with its neighbour.
 - [Fixed] A character's portrait on the party card is as tall as the name, heritage and Hope beside it, leaving no gap below it.
+- [Changed] A character's Evasion sits in the top corner of the party card, beside the name, which makes the card shorter.
+- [Added] Adversaries on the party sheet show their tier, type and standard attack beside the name.
+- [Fixed] A companion's portrait on the party sheet is as tall as the ring cards beside it.
+- [Changed] The party sheet's group titles no longer show a member count.
 
 # 0.1.0
 

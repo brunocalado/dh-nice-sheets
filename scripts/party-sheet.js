@@ -47,6 +47,37 @@ const MEMBER_FLASHES = Object.freeze({
 const MEMBER_GROUPS = ["character", "companion", "adversary", "npc"];
 
 /**
+ * An adversary's tier and type, and its standard attack as the system's adversary sheet shows it:
+ * name, bonus, range, damage formula and damage type.
+ * @param {object} system  The adversary's system data
+ * @returns {{ tier: string, attack: object|null }}
+ */
+function describeAdversary(system) {
+  const { attack } = system;
+  const type = CONFIG.DH.ACTOR.adversaryTypes[system.type]?.label;
+  const tier = game.i18n.format("DAGGERHEART.GENERAL.Tiers.typed", {
+    tier: system.tier,
+    type: type ? game.i18n.localize(type) : ""
+  });
+  if (!attack) return { tier, attack: null };
+
+  // The bonus is stored as a string and may be a formula; a numeric one is signed by hand because
+  // Number#signedString leaves zero unsigned, and adversaries print "+0".
+  const bonus = attack.roll?.bonus;
+  const damageType = CONFIG.DH.GENERAL.damageTypes[attack.damage?.main?.type?.first()];
+  return {
+    tier,
+    attack: {
+      name: attack.name,
+      bonus: bonus == null || bonus === "" ? null : Number(bonus) < 0 ? String(Number(bonus)) : `+${bonus}`,
+      range: attack.range ? game.i18n.localize(`DAGGERHEART.CONFIG.Range.${attack.range}.short`) : null,
+      damage: attack.getDamageFormula() || null,
+      damageType: damageType ? game.i18n.localize(damageType.abbreviation) : null
+    }
+  };
+}
+
+/**
  * Build the party sheet class. Like the character sheet, it extends the system's own PartySheet,
  * so the Tag Team and Group Roll dialogs, the rest trigger, actor drops, the inventory filters and
  * item transfers stay the system's; the templates, their context and the CSS scope are ours. A
@@ -292,10 +323,16 @@ export function defineNicePartySheet() {
               .map(names => ({ names, text: names.join(" • ") }))
             : null,
           subtitle: isCharacter ? null : subtitle,
+          // An adversary's row is full width; its tier, type and attack fill the room beside the
+          // name with what the GM reaches for at the table.
+          adversary: actor.type === "adversary" ? describeAdversary(system) : null,
           weapons,
           hope: isCharacter ? { ...track(shown("hope"), system.resources.hope.max), scars: Array.fromRange(system.scars ?? 0) } : null,
           rings,
-          defense,
+          // A character's Evasion sits in the card's top corner, beside the name, so the defense
+          // column holds only the thresholds and the rings row stays as short as the rings.
+          defense: isCharacter ? null : defense,
+          evasion: isCharacter ? defense : null,
           thresholds,
           // The Massive Damage variant rule: at or above twice Severe marks 4 HP.
           massive: massive && thresholds ? thresholds.severe * 2 : null,
