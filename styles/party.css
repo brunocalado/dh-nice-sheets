@@ -659,6 +659,24 @@
       }
     }
 
+    /* An adversary's fourth band, after Severe. */
+    .nice-thresholds:has(.band.massive) {
+      grid-template-columns: 1fr auto 1.25fr auto 1fr auto 1fr;
+
+      .band.severe {
+        padding-right: 12px;
+        border-right: none;
+        border-radius: 0;
+      }
+
+      .band.massive {
+        --nice-band: #e5332f;
+        padding-left: 12px;
+        border-right: 1px solid color-mix(in srgb, var(--nice-band) 55%, transparent);
+        border-radius: 0 6px 6px 0;
+      }
+    }
+
     /* The character sheet's band under the thresholds. A fourth, red diamond closing the bar
        would add no height, but squeezed the bands and shrank the diamonds to 22px. */
     .nice-massive {
@@ -741,6 +759,11 @@
       /* Thresholds need the character's defense width. */
       &:has(.nice-thresholds) {
         grid-template-columns: 44px minmax(0, 1fr) auto 146px;
+      }
+
+      /* An adversary's Massive band closes the bar; the row is full width, so it widens instead. */
+      &:has(.band.massive) {
+        grid-template-columns: 44px minmax(0, 1fr) auto 196px;
       }
     }
 

@@ -113,10 +113,17 @@
                                                     <span class="name">{{localize "DAGGERHEART.ACTORS.Party.Thresholds.severe"}}</span>
                                                     <span class="cost">3 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
                                                 </span>
+                                                {{#if (and member.massive member.massiveInline)}}
+                                                    <span class="mark massive">{{member.massive.value}}</span>
+                                                    <span class="band massive">
+                                                        <span class="name">{{localize "DH_NICE_SHEETS.Party.massive"}}</span>
+                                                        <span class="cost">4 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
+                                                    </span>
+                                                {{/if}}
                                             </div>
-                                            {{#if member.massive}}
+                                            {{#if (and member.massive (not member.massiveInline))}}
                                                 <div class="nice-massive">
-                                                    <span class="mark">{{member.massive}}</span>
+                                                    <span class="mark">{{member.massive.value}}</span>
                                                     <span class="name">{{localize "DAGGERHEART.SETTINGS.VariantRules.FIELDS.massiveDamage.title"}}</span>
                                                     <span class="cost">4 {{localize "DAGGERHEART.GENERAL.HitPoints.short"}}</span>
                                                 </div>

@@ -83,6 +83,7 @@
         "other": "{count} members"
       },
       "active": "Active Party",
+      "massive": "MAS",
       "section": {
         "companion": "Companions",
         "adversary": "Adversaries",

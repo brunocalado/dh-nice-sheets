@@ -6,6 +6,8 @@
 - [Added] Adversaries on the party sheet show their tier, type and standard attack beside the name.
 - [Fixed] A companion's portrait on the party sheet is as tall as the ring cards beside it.
 - [Changed] The party sheet's group titles no longer show a member count.
+- [Added] With the Massive Damage rule on, adversaries on the party sheet show Massive as a fourth band of the thresholds bar, keeping the row short.
+- [Fixed] The party sheet shows the Massive Damage band even when it is 0.
 
 # 0.1.0
 

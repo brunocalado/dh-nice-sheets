@@ -335,7 +335,11 @@ export function defineNicePartySheet() {
           evasion: isCharacter ? defense : null,
           thresholds,
           // The Massive Damage variant rule: at or above twice Severe marks 4 HP.
-          massive: massive && thresholds ? thresholds.severe * 2 : null,
+          // Wrapped so a Severe of 0 still shows its band: Handlebars treats a bare 0 as false.
+          massive: massive && thresholds ? { value: thresholds.severe * 2 } : null,
+          // An adversary's row is wide but short: Massive closes the thresholds bar as a fourth band
+          // instead of hanging under it, which would make the row taller.
+          massiveInline: actor.type === "adversary",
           traits
         });
       }
