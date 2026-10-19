@@ -1,3 +1,7 @@
+# Unreleased
+
+- [Fixed] Party cards show class and subclass on one line and community and ancestry on the next, instead of wrapping long names and pushing the card out of line with its neighbour.
+
 # 0.1.0
 
 - [Added] A Nice Party Sheet, used by default for parties: member cards with Hope, Hit Points, Stress, Armor, Evasion, damage thresholds and traits, with companions, adversaries and NPCs in groups of their own.

@@ -391,11 +391,18 @@
     }
   }
 
-  .nice-party-sub {
+  .nice-party-heritage {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1px 5px;
+    flex-direction: column;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  /* A block, not a flex row: text-overflow has no effect on a flex container's items. */
+  .nice-party-sub {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     font-family: var(--nice-font-display);
     font-size: 9px;
     letter-spacing: 0.05em;
@@ -403,7 +410,9 @@
     color: var(--nice-text);
 
     .dot {
+      margin: 0 5px;
       font-size: 6px;
+      vertical-align: middle;
       color: var(--nice-gold-dim);
     }
 

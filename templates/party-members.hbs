@@ -24,9 +24,13 @@
                         <div class="nice-party-identity">
                             <a class="nice-party-name" data-action="openDocument" data-uuid="{{member.uuid}}">{{member.name}}</a>
                             {{#if member.heritage.length}}
-                                <div class="nice-party-sub">
-                                    {{#each member.heritage as |name|}}
-                                        {{#unless @first}}<span class="dot" inert>&#9670;</span>{{/unless}}<span>{{name}}</span>
+                                <div class="nice-party-heritage">
+                                    {{#each member.heritage as |line|}}
+                                        <div class="nice-party-sub" data-tooltip-text="{{line.text}}">
+                                            {{#each line.names as |name|}}
+                                                {{#unless @first}}<span class="dot" inert>&#9670;</span>{{/unless}}<span>{{name}}</span>
+                                            {{/each}}
+                                        </div>
                                     {{/each}}
                                 </div>
                             {{else if member.subtitle}}

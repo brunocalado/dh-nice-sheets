@@ -282,10 +282,14 @@ export function defineNicePartySheet() {
           img: actor.img,
           type: actor.type,
           editable: actor.isOwner,
-          // Characters list their class, subclass, community and ancestry as the character
-          // sheet's header does; the others take the system's subtitle.
+          // Characters list their class and subclass, then their community and ancestry, as the
+          // character sheet's header does. Two fixed lines keep every card in a row the same height
+          // instead of wrapping wherever the width runs out; the others take the system's subtitle.
           heritage: isCharacter
-            ? [system.class?.value, system.class?.subclass, system.community, system.ancestry].filter(Boolean).map(item => item.name)
+            ? [[system.class?.value, system.class?.subclass], [system.community, system.ancestry]]
+              .map(line => line.filter(Boolean).map(item => item.name))
+              .filter(names => names.length)
+              .map(names => ({ names, text: names.join(" • ") }))
             : null,
           subtitle: isCharacter ? null : subtitle,
           weapons,
