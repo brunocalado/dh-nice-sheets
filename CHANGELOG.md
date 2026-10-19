@@ -1,6 +1,7 @@
 # Unreleased
 
 - [Fixed] Party cards show class and subclass on one line and community and ancestry on the next, instead of wrapping long names and pushing the card out of line with its neighbour.
+- [Fixed] A character's portrait on the party card is as tall as the name, heritage and Hope beside it, leaving no gap below it.
 
 # 0.1.0
 
