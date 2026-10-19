@@ -1,12 +1,12 @@
-# Unreleased
+# 0.1.1
 
 - [Fixed] Party cards show class and subclass on one line and community and ancestry on the next, instead of wrapping long names and pushing the card out of line with its neighbour.
 - [Fixed] A character's portrait on the party card is as tall as the name, heritage and Hope beside it, leaving no gap below it.
 - [Changed] A character's Evasion sits in the top corner of the party card, beside the name, which makes the card shorter.
-- [Added] Adversaries on the party sheet show their tier, type and standard attack beside the name.
+- [Changed] Adversaries on the party sheet show their tier, type and standard attack beside the name.
 - [Fixed] A companion's portrait on the party sheet is as tall as the ring cards beside it.
 - [Changed] The party sheet's group titles no longer show a member count.
-- [Added] With the Massive Damage rule on, adversaries on the party sheet show Massive as a fourth band of the thresholds bar, keeping the row short.
+- [Changed] With the Massive Damage rule on, adversaries on the party sheet show Massive as a fourth band of the thresholds bar, keeping the row short.
 - [Fixed] The party sheet shows the Massive Damage band even when it is 0.
 - [Fixed] The numbers in the party sheet's threshold diamonds sit centred instead of half a pixel high.
 
