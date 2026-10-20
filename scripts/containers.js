@@ -20,6 +20,10 @@ import { releaseContents, unsetFlagData } from "./helpers.js";
 
 /** How long after a drop an item the GM transfers is still caught, in ms (see #awaitTransfer). */
 const TRANSFER_WAIT = 10000;
+/** Distance from the inventory list's edge, in px, at which a drag starts scrolling it. */
+const SCROLL_EDGE = 48;
+/** Top drag-scroll speed, in px per frame. */
+const SCROLL_SPEED = 16;
 
 /**
  * Containers in an actor sheet's inventory: a loot item flagged as a container holds other items,
@@ -271,10 +275,10 @@ export function ContainerSheetMixin(Base) {
     }
 
     /**
-     * Light up the container panel under a dragged item. The listeners sit on the window
-     * element, which outlives every re-render, so they are added once. `dragenter` and
-     * `dragleave` fire for every child crossed, so a panel only goes dark when the pointer has
-     * really left it.
+     * Light up the container panel under a dragged item, and scroll the inventory when it nears the
+     * list's edge. The listeners sit on the window element, which outlives every re-render, so
+     * they are added once. `dragenter` and `dragleave` fire for every child crossed, so a panel
+     * only goes dark when the pointer has really left it.
      * @inheritdoc
      */
     async _onFirstRender(context, options) {
@@ -291,6 +295,41 @@ export function ContainerSheetMixin(Base) {
       };
       this.element.addEventListener("drop", clear);
       this.element.addEventListener("dragend", clear);
+
+      // Chrome's own drag auto-scroll only engages a few pixels from the edge, too slow to bring a
+      // container panel into reach. `dragover` is listened to rather than assigned: DragDrop sets the
+      // `ondragover` property and the system rebinds it every render, without a callback that would
+      // reach `_onDragOver`. The scrolling runs in a frame loop because `dragover` fires only every
+      // few hundred ms while the pointer rests. Only the inventory list scrolls: it is the one list
+      // whose drop targets sit out of view.
+      let scroll = { list: null, speed: 0, frame: 0 };
+      const run = () => {
+        if (!scroll.speed || !scroll.list?.isConnected) return void (scroll.frame = 0);
+        scroll.list.scrollTop += scroll.speed;
+        scroll.frame = requestAnimationFrame(run);
+      };
+      const stop = () => {
+        cancelAnimationFrame(scroll.frame);
+        scroll = { list: null, speed: 0, frame: 0 };
+      };
+      this.element.addEventListener("dragover", event => {
+        const list = this.element.querySelector(".tab.inventory.active .items-section");
+        if (!list) return stop();
+        const { top, bottom } = list.getBoundingClientRect();
+        const y = event.clientY;
+        // Above the list (the toolbar) scrolls up at full speed; below it is the window frame.
+        const depth = y < top + SCROLL_EDGE ? -Math.min(1, (top + SCROLL_EDGE - y) / SCROLL_EDGE)
+          : y > bottom - SCROLL_EDGE && y <= bottom ? (y - (bottom - SCROLL_EDGE)) / SCROLL_EDGE
+          : 0;
+        scroll.list = list;
+        scroll.speed = Math.round(depth * SCROLL_SPEED);
+        if (scroll.speed && !scroll.frame) scroll.frame = requestAnimationFrame(run);
+      });
+      this.element.addEventListener("dragleave", event => {
+        if (!this.element.contains(event.relatedTarget)) stop();
+      });
+      this.element.addEventListener("drop", stop);
+      this.element.addEventListener("dragend", stop);
     }
   };
 }
