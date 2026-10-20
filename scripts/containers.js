@@ -134,8 +134,51 @@ export function ContainerSheetMixin(Base) {
           icon: "fa-solid fa-arrow-up-from-bracket",
           visible: target => this.isEditable && !!containerOf(this.itemFromTarget(target))?.getFlag(MODULE_ID, FLAGS.container),
           onClick: (_, target) => this.itemFromTarget(target)?.unsetFlag(MODULE_ID, FLAGS.storedIn)
+        },
+        // One entry for every container rather than one per container: the entry list is built
+        // once, on first render, while containers come and go; v14 ContextMenu has no submenus.
+        // Storing by menu saves dragging an item up a long inventory, which doesn't auto-scroll.
+        {
+          label: "DH_NICE_SHEETS.Container.storeIn",
+          icon: "fa-solid fa-box-archive",
+          visible: target => this.isEditable && this.#storeTargets(this.itemFromTarget(target)).length > 0,
+          onClick: async (_, target) => {
+            const item = this.itemFromTarget(target);
+            const targets = this.#storeTargets(item);
+            const container = targets.length === 1 ? targets[0] : await this.#pickContainer(targets);
+            if (container) await item.setFlag(MODULE_ID, FLAGS.storedIn, container.id);
+          }
         }
       ];
+    }
+
+    /**
+     * The containers an item can go into: every container on the actor but the one holding it. None
+     * for an item that can't be stored or is equipped, which the drop path refuses too.
+     * @param {foundry.documents.Item} [item]
+     * @returns {foundry.documents.Item[]}
+     */
+    #storeTargets(item) {
+      if (!item || !STORABLE_TYPES.includes(item.type) || item.getFlag(MODULE_ID, FLAGS.container)) return [];
+      if (item.system.equipped) return [];
+      const storedIn = item.getFlag(MODULE_ID, FLAGS.storedIn);
+      return this.document.items.filter(other => other.getFlag(MODULE_ID, FLAGS.container) && other.id !== storedIn);
+    }
+
+    /**
+     * Ask which container to store an item in. Item names are user text, so they go only into the
+     * button labels, which DialogV2 escapes.
+     * @param {foundry.documents.Item[]} containers
+     * @returns {Promise<foundry.documents.Item|null>}  Null when the dialog is closed.
+     */
+    async #pickContainer(containers) {
+      const id = await foundry.applications.api.DialogV2.wait({
+        window: { title: "DH_NICE_SHEETS.Container.storeIn" },
+        content: `<p>${game.i18n.localize("DH_NICE_SHEETS.Container.pick")}</p>`,
+        buttons: containers.map(container => ({ action: container.id, label: container.name, icon: "fa-solid fa-box-open" })),
+        rejectClose: false
+      });
+      return this.document.items.get(id) ?? null;
     }
 
     /**

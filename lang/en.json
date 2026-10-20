@@ -73,6 +73,8 @@
       "make": "Use as container",
       "unmake": "Stop using as container",
       "takeOut": "Take out of the container",
+      "storeIn": "Store in a container",
+      "pick": "Which container?",
       "count": "Items stored here",
       "empty": "Drag items here to store them",
       "equipped": "Equipped items can't go in a container. Unequip it first."

@@ -1,5 +1,6 @@
 # Unreleased
 
+- [Added] Items have a "Store in a container" menu entry; with several containers it asks which one.
 - [Fixed] The character sheet header shows class and subclass on one line and community and ancestry on the next, instead of wrapping long names wherever they run out of room.
 
 # 0.1.1
