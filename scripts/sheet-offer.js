@@ -20,7 +20,8 @@ let offerOpen = false;
  */
 export async function offerSheet(sheet, NiceCharacterSheet) {
   const actor = sheet.document;
-  if (offerOpen || game.user.isGM || (sheet instanceof NiceCharacterSheet)) return;
+  // The system's settings window is an ActorSheetV2 too, so only the actor's own sheet counts.
+  if (offerOpen || game.user.isGM || (sheet !== actor.sheet) || (sheet instanceof NiceCharacterSheet)) return;
   if ((actor.type !== "character") || !actor.isOwner) return;
   if (!game.settings.get(MODULE_ID, SETTINGS.suggestSheet)) return;
   if (game.settings.get(MODULE_ID, SETTINGS.sheetOfferAnswer) === "declined") return;
