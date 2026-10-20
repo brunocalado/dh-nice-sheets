@@ -80,6 +80,9 @@
   }
 
   .nice-heritage {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
     margin-top: 2px;
   }
 
@@ -94,7 +97,6 @@
     text-transform: uppercase;
 
     &.multiclass {
-      margin-top: 2px;
       opacity: 0.85;
     }
 

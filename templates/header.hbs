@@ -9,13 +9,16 @@
                 autocomplete="off"
                 spellcheck="false"
             >{{source.name}}</h1>
-            {{!-- `character-details` is the selector the system binds its heritage context menu to. --}}
+            {{!-- `character-details` is the selector the system binds its heritage context menu to.
+                 Class and subclass on one line, community and ancestry on the next, so long names
+                 break in a fixed place instead of orphaning the last chip. --}}
             <div class="nice-heritage character-details">
                 <div class="nice-heritage-line">
                     {{> heritage item=document.system.class.value key="classes" label=(localize "TYPES.Item.class")}}
                     <span class="dot" inert>&#9670;</span>
                     {{> heritage item=document.system.class.subclass key="subclasses" label=(localize "TYPES.Item.subclass")}}
-                    <span class="dot" inert>&#9670;</span>
+                </div>
+                <div class="nice-heritage-line">
                     {{> heritage item=document.system.community key="communities" label=(localize "TYPES.Item.community")}}
                     <span class="dot" inert>&#9670;</span>
                     {{> heritage item=document.system.ancestry key="ancestries" label=(localize "TYPES.Item.ancestry")}}
