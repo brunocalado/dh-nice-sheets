@@ -62,6 +62,20 @@
     }
   }
 
+  /* The character's name never wraps: a long one would push the whole header taller. The party
+     and settings headers have their own name rules. */
+  &.dh-nice-sheets-character .nice-name-block h1.actor-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: normal;
+
+    /* Editing: no ellipsis, the field scrolls with the caret so the end of the name is reachable. */
+    &:focus {
+      text-overflow: clip;
+    }
+  }
+
   /* One-shot gold shimmer across the name when the sheet opens. */
   @supports (background-clip: text) or (-webkit-background-clip: text) {
     h1.actor-name:not(:focus) {
