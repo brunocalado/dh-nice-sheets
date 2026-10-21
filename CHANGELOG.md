@@ -1,4 +1,4 @@
-# Unreleased
+# 0.2.0
 
 - [Added] Items have a "Store in a container" menu entry; with several containers it asks which one.
 - [Added] Dragging an item near the top or bottom of the inventory scrolls the list.
