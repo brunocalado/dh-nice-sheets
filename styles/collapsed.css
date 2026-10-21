@@ -91,16 +91,14 @@
       display: grid;
     }
 
-    /* HP, Stress / Armor, Hope: the Armor banner becomes a card like the others. */
     .nice-ring-card.hope {
       display: flex;
     }
 
-    .nice-ring-card.armor {
-      --nice-ring-size: 80px;
-      --nice-ring-icon: 44px;
-      grid-column: auto;
-      padding: 5px 4px 4px;
+    /* HP, Stress / Armor, Hope, then Evasion and Proficiency as a full-width row under them. */
+    .nice-defense {
+      order: 1;
+      grid-column: 1 / -1;
     }
 
     /* The traits strip holds the drag-bar strip here, so the title would take a line of its own;

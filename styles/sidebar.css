@@ -166,16 +166,6 @@
     }
   }
 
-  /* Armor spans both columns as a banner with a smaller ring, which keeps the expanded sheet's third
-     card short. The collapsed sheet turns it back into a card like the others. Only in the
-     sidebar: the party's member cards keep every ring a card. */
-  .nice-sidebar .nice-ring-card.armor {
-    --nice-ring-size: 64px;
-    --nice-ring-icon: 34px;
-    grid-column: 1 / -1;
-    padding: 6px 12px;
-  }
-
   .nice-ring-gear {
     position: absolute;
     top: 4px;
@@ -401,17 +391,6 @@
     position: relative;
     display: flex;
     gap: 6px;
-    margin-top: 9px;
-
-    /* A faint rule sets the defenses apart from the tracks above. */
-    &::before {
-      content: "";
-      position: absolute;
-      top: -8px;
-      inset-inline: 6px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--nice-line), transparent);
-    }
   }
 
   /* Each plaque starts from its own content width and the spare room is shared equally, so a
@@ -460,6 +439,27 @@
       text-box: trim-both cap alphabetic;
       color: var(--nice-text);
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  /* Expanded, every vital takes the small ring, so the four cells of the 2×2 share one height:
+     HP and Stress on top, Armor beside the Evasion and Proficiency plaques. Only in the sidebar:
+     the party's member cards size their own rings. */
+  &:not(.nice-collapsed) {
+    .nice-sidebar .nice-ring-card {
+      --nice-ring-size: 64px;
+      --nice-ring-icon: 34px;
+      padding: 6px 4px 4px;
+    }
+
+    .nice-defense {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 6px;
+      min-width: 0;
+
+      .nice-stat .label { padding: 0 3px; font-size: 8.5px; letter-spacing: 0.02em; }
+      .nice-stat .value { flex: 0 0 34px; padding: 0; font-size: 20px; }
     }
   }
 

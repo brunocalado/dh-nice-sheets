@@ -1,3 +1,7 @@
+# Unreleased
+
+- [Changed] The expanded sheet's HP, Stress and Armor are smaller cards in a 2×2 grid, with Evasion and Proficiency beside Armor, which makes the Resources block shorter.
+
 # 0.2.0
 
 - [Added] Items have a "Store in a container" menu entry; with several containers it asks which one.

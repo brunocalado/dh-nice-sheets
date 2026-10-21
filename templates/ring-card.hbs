@@ -1,8 +1,8 @@
 {{!-- A vital as a card: a ring with one segment per slot around a core icon. The ring is open at the
      bottom and the count sits in the opening, which saves the card a line of its own. The icon and
      hue name the resource, so the name lives in the tooltip and the aria-label rather than on the
-     card. The character's armor card is laid out as a banner by CSS alone, so the collapsed sheet
-     can stack it like the others without a re-render. Only an editable card carries the click
+     card. The sidebar's ring size is set by CSS alone, so collapsing the sheet resizes the cards
+     without a re-render. Only an editable card carries the click
      action: left click adds, right click removes (VitalCards#step). --}}
 <div class="nice-ring-card {{kind}}" {{#if editable}}data-action="niceStepResource"{{/if}} data-resource="{{resource}}" aria-label="{{label}}"
      data-tooltip-text="{{#if editable}}{{localize "DH_NICE_SHEETS.Resource.step" name=label}}{{else}}{{label}}{{/if}}">

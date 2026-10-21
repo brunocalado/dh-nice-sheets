@@ -38,6 +38,17 @@
             {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.hitPoints kind="hp" resource="hitPoints" label=(localize "DAGGERHEART.GENERAL.HitPoints.short")}}
             {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.stress kind="stress" resource="stress" label=(localize "DAGGERHEART.GENERAL.stress")}}
             {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.armor kind="armor" resource="armor" label=(localize "DAGGERHEART.GENERAL.armor") gear=true}}
+            {{!-- Beside the Armor card rather than inside it, so a click on the plaques never steps Armor. --}}
+            <div class="nice-defense">
+                <div class="nice-stat evasion">
+                    <span class="label">{{localize "DAGGERHEART.GENERAL.evasion"}}</span>
+                    <span class="value">{{document.system.evasion}}</span>
+                </div>
+                <div class="nice-stat proficiency">
+                    <span class="label">{{localize "DAGGERHEART.GENERAL.proficiency"}}</span>
+                    <span class="value">{{document.system.proficiency}}</span>
+                </div>
+            </div>
             {{!-- Collapsed sheets only, where it stands in for the header's Hope row and the four cards
                  form a 2×2. Expanded, Hope stays in the header and this card is hidden. --}}
             {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=@root.editable card=nice.hope kind="hope" resource="hope" label=(localize "DAGGERHEART.GENERAL.hope")}}
@@ -59,17 +70,6 @@
                 </div>
             </div>
         {{/each}}
-
-        <div class="nice-defense">
-            <div class="nice-stat evasion">
-                <span class="label">{{localize "DAGGERHEART.GENERAL.evasion"}}</span>
-                <span class="value">{{document.system.evasion}}</span>
-            </div>
-            <div class="nice-stat proficiency">
-                <span class="label">{{localize "DAGGERHEART.GENERAL.proficiency"}}</span>
-                <span class="value">{{document.system.proficiency}}</span>
-            </div>
-        </div>
 
         {{!-- Thresholds and the Massive band form one block, so the column's gap doesn't split them. --}}
         <div class="nice-damage">
