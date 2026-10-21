@@ -61,7 +61,7 @@
                     <span class="nice-track-rule"></span>
                     <span class="nice-track-count">{{resource.value}}<span class="max"><span class="sep">/</span>{{resource.max}}</span></span>
                 </header>
-                <div class="nice-pips">
+                <div class="nice-pips" style="--nice-pip-count: {{resource.pips.length}}">
                     {{#each resource.pips as |pip|}}
                         <a class="nice-pip {{#if pip.filled}}filled{{/if}}" data-action="niceToggleResource" data-resource="{{resource.key}}" data-value="{{pip.index}}">
                             {{#if pip.filled}}{{> resourceIcon icon=resource.fullIcon}}{{else}}{{> resourceIcon icon=resource.emptyIcon}}{{/if}}

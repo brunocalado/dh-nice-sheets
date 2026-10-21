@@ -355,9 +355,18 @@
         text-overflow: ellipsis;
       }
 
+      /* The gap shrinks with the point count, down to 2px, so a 12-point track fits one row of
+         the 250px sidebar; with fewer points it stays at 5px, and past 12 the track wraps. The
+         divisor never drops below 1: a one-point track would make it ∞ − ∞, which is NaN. An
+         auto-fill grid of 16px columns would fit too, but it puts short tracks on the same tight
+         pitch as long ones. */
+      .nice-pips {
+        column-gap: clamp(2px, (100% - var(--nice-pip-count) * 16px) / max(var(--nice-pip-count) - 1, 1), 5px);
+      }
+
       .nice-pip {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         border: none;
         background: none;
         box-shadow: none;
@@ -368,8 +377,8 @@
         font-size: 13px;
 
         img {
-          width: 16px;
-          height: 16px;
+          width: 14px;
+          height: 14px;
           border: none;
         }
 
@@ -444,7 +453,9 @@
 
   /* Expanded, every vital takes the small ring, so the four cells of the 2×2 share one height:
      HP and Stress on top, Armor beside the Evasion and Proficiency plaques. Only in the sidebar:
-     the party's member cards size their own rings. */
+     the party's member cards size their own rings. The fourth cell went to the defenses rather
+     than the equipped items' icons, which repeat the Equipment list below and would put click
+     targets inside a card that steps Armor, or Hope, which the player spends from the header. */
   &:not(.nice-collapsed) {
     .nice-sidebar .nice-ring-card {
       --nice-ring-size: 64px;

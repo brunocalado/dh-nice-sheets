@@ -1,6 +1,7 @@
 # Unreleased
 
 - [Changed] The expanded sheet's HP, Stress and Armor are smaller cards in a 2×2 grid, with Evasion and Proficiency beside Armor, which makes the Resources block shorter.
+- [Changed] An extra resource of up to 12 points fits on one row of the sidebar.
 
 # 0.2.0
 
