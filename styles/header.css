@@ -79,14 +79,15 @@
     }
   }
 
-  .nice-heritage {
+  /* The limited view keeps its centred single line of heritage (limited.hbs). */
+  .nice-limited .nice-heritage {
     display: flex;
     flex-direction: column;
     gap: 2px;
     margin-top: 2px;
   }
 
-  .nice-heritage-line {
+  .nice-limited .nice-heritage-line {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -96,13 +97,63 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
 
-    &.multiclass {
-      opacity: 0.85;
-    }
-
     .dot {
       font-size: 7px;
       color: var(--nice-gold-dim);
+    }
+  }
+
+  .nice-name-block .nice-heritage {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2px 16px;
+    margin-top: 2px;
+    /* Clips the separator in front of a line's first chip, which sits left of the box. */
+    overflow: hidden;
+    font-family: var(--nice-font-display);
+    font-size: var(--font-size-11);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+
+    .nice-chip {
+      position: relative;
+      max-width: 100%;
+      white-space: nowrap;
+    }
+
+    .nice-chip.multiclass {
+      opacity: 0.85;
+    }
+
+    .nice-chip-text {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Centred in the column gap: `left` is half of the 16px gap above. */
+    .nice-chip.in-pair::before,
+    .nice-chip.new-pair::before {
+      position: absolute;
+      top: 50%;
+      left: -8px;
+      translate: -50% -50%;
+      color: var(--nice-gold-dim);
+      pointer-events: none;
+    }
+
+    .nice-chip.in-pair::before {
+      content: "\25C6";
+      font-size: 7px;
+    }
+
+    .nice-chip.new-pair::before {
+      content: "";
+      width: 1px;
+      height: 10px;
+      background: var(--nice-gold-dim);
+      opacity: 0.7;
     }
   }
 

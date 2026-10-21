@@ -10,25 +10,17 @@
                 spellcheck="false"
             >{{source.name}}</h1>
             {{!-- `character-details` is the selector the system binds its heritage context menu to.
-                 Class and subclass on one line, community and ancestry on the next, so long names
-                 break in a fixed place instead of orphaning the last chip. --}}
+                 One flow of chips that wraps only at the edge; each chip draws its own separator
+                 (`in-pair` a diamond, `new-pair` a rule), which the container clips when a chip
+                 starts a line. --}}
             <div class="nice-heritage character-details">
-                <div class="nice-heritage-line">
-                    {{> heritage item=document.system.class.value key="classes" label=(localize "TYPES.Item.class")}}
-                    <span class="dot" inert>&#9670;</span>
-                    {{> heritage item=document.system.class.subclass key="subclasses" label=(localize "TYPES.Item.subclass")}}
-                </div>
-                <div class="nice-heritage-line">
-                    {{> heritage item=document.system.community key="communities" label=(localize "TYPES.Item.community")}}
-                    <span class="dot" inert>&#9670;</span>
-                    {{> heritage item=document.system.ancestry key="ancestries" label=(localize "TYPES.Item.ancestry")}}
-                </div>
+                {{> heritage item=document.system.class.value key="classes" label=(localize "TYPES.Item.class")}}
+                {{> heritage item=document.system.class.subclass key="subclasses" label=(localize "TYPES.Item.subclass") sep="in-pair"}}
+                {{> heritage item=document.system.community key="communities" label=(localize "TYPES.Item.community") sep="new-pair"}}
+                {{> heritage item=document.system.ancestry key="ancestries" label=(localize "TYPES.Item.ancestry") sep="in-pair"}}
                 {{#if (or document.system.multiclass.value document.system.multiclass.subclass)}}
-                    <div class="nice-heritage-line multiclass">
-                        {{> heritage item=document.system.multiclass.value key="classes" label=(localize "DAGGERHEART.GENERAL.multiclass")}}
-                        <span class="dot" inert>&#9670;</span>
-                        {{> heritage item=document.system.multiclass.subclass key="subclasses" label=(localize "TYPES.Item.subclass")}}
-                    </div>
+                    {{> heritage item=document.system.multiclass.value key="classes" label=(localize "DAGGERHEART.GENERAL.multiclass") sep="new-pair multiclass"}}
+                    {{> heritage item=document.system.multiclass.subclass key="subclasses" label=(localize "TYPES.Item.subclass") sep="in-pair multiclass"}}
                 {{/if}}
             </div>
         </div>
@@ -146,8 +138,8 @@
 
 {{#*inline "heritage"}}
     {{#if item}}
-        <span class="nice-chip" data-action="editDoc" data-item-uuid="{{item.uuid}}" {{#if (or (eq item.type "ancestry") (eq item.type "community") (eq item.type "subclass"))}}data-tooltip="#item#{{item.uuid}}"{{/if}}>{{item.name}}</span>
+        <span class="nice-chip {{sep}}" data-action="editDoc" data-item-uuid="{{item.uuid}}" {{#if (or (eq item.type "ancestry") (eq item.type "community") (eq item.type "subclass"))}}data-tooltip="#item#{{item.uuid}}"{{/if}}><span class="nice-chip-text">{{item.name}}</span></span>
     {{else}}
-        <span class="nice-chip missing-header-feature" data-action="openPack" data-key="{{key}}">{{label}}</span>
+        <span class="nice-chip missing-header-feature {{sep}}" data-action="openPack" data-key="{{key}}"><span class="nice-chip-text">{{label}}</span></span>
     {{/if}}
 {{/inline}}
