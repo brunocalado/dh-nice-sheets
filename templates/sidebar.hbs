@@ -13,6 +13,7 @@
             <a class="nice-compact-trait nice-mat-{{trait.material}}"
                data-action="rollAttribute" data-attribute="{{trait.key}}" data-value="{{trait.value}}">
                 {{#if trait.isSpellcasting}}<span class="nice-trait-ring" inert></span>{{/if}}
+                {{#if trait.crowned}}<span class="nice-compact-crest" inert></span>{{/if}}
                 <span class="nice-trait-name">{{trait.short}}</span>
                 <span class="nice-trait-value">{{trait.signed}}</span>
             </a>

@@ -18,7 +18,7 @@ The header has the character's class, subclass, community and ancestry, the doma
 
 <p align="center"><img width="648" src="docs/sheet-traits.webp" alt="The header with the domains, the level medal, the Hope row and the six trait plaques"></p>
 
-Each trait plaque takes its material from where the value ranks among the character's own traits. The lowest is cracked iron, the highest is gold with a crest on top, and the values between are slate, bronze and brass. Equal values always get the same material. The spellcasting trait is violet, with a ring of light turning around its border. Click a plaque to roll that trait.
+Each trait plaque takes its material from where the value ranks among the character's own traits. The lowest is cracked iron, the highest is gold with a crest on top, and the values between are steel, bronze and brass. Equal values always get the same material. The spellcasting trait is violet glass, with a ring of light turning around its border. Click a plaque to roll that trait.
 
 When Hit Points, Stress or Armor change, the card shakes and turns red for a loss, and lifts and turns green for a recovery. Gaining Hope lights up the character's art for a moment.
 

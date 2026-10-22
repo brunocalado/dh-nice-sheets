@@ -68,6 +68,21 @@
       line-height: 1;
     }
   }
+
+  /* The highest value's crest at the party card's size; the full plaque's would crowd 44px. */
+  .nice-compact-crest {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    z-index: 2;
+    width: 7px;
+    height: 7px;
+    margin-left: -3.5px;
+    transform: rotate(45deg);
+    border: 1px solid var(--nice-gold-deep);
+    background: var(--nice-diamond-fill);
+    box-shadow: 0 0 5px var(--nice-gold);
+  }
 }
 
 .application.sheet.daggerheart.dh-nice-sheets.nice-collapsed {

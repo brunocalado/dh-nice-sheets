@@ -28,7 +28,7 @@ export function reportSheetFailure(error) {
 const TRAIT_ORDER = ["agility", "strength", "finesse", "instinct", "presence", "knowledge"];
 
 /** Trait plaque materials for the values between the lowest and the highest, lowest first. */
-const MIDDLE_MATERIALS = ["slate", "bronze", "brass"];
+const MIDDLE_MATERIALS = ["steel", "bronze", "brass"];
 
 /** Degrees left open at the bottom of a resource ring, where its count sits (see ringCard). */
 const RING_OPENING = 90;
@@ -36,8 +36,9 @@ const RING_OPENING = 90;
 /**
  * Describe the traits in sheet order and pick each plaque's material by the rank of its value
  * among this character's distinct values: the lowest is cracked iron, the highest gold, and
- * the ones between spread over slate, bronze and brass. Different values get different
- * materials and equal values always match, at level 1 (+2 to −1) as at level 10.
+ * the ones between spread over steel, bronze and brass. Different values get different
+ * materials and equal values always match, at level 1 (+2 to −1) as at level 10. The spellcast
+ * trait is glass whatever its rank; when it is also the highest, only the crest tells.
  * @param {Record<string, object>} attributes  Trait data keyed like the system's `context.attributes`.
  */
 export function describeTraits(attributes) {
@@ -56,7 +57,7 @@ export function describeTraits(attributes) {
     const rank = ranks.indexOf(trait.value);
     const crowned = top > 0 && rank === top;
     let material;
-    if (trait.isSpellcasting) material = crowned ? "spell-top" : "spell";
+    if (trait.isSpellcasting) material = "spell";
     else if (crowned) material = "gold";
     else if (top > 0 && rank === 0) material = "iron";
     else {

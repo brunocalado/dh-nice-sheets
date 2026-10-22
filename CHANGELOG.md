@@ -3,6 +3,7 @@
 - [Added] A Nice Companion Sheet, used by default for companions: the art behind the whole sheet, Stress as a ring card, Evasion, the partner and the Action Roll at the top, and the attack and experiences below.
 - [Added] The companion sheet shows the partner's Hope, which the partner's owners can change from there.
 - [Added] The companion sheet's Training tab shows the eight companion upgrades, how many marks each has, and how many choices are pending.
+- [Changed] Trait plaques look like struck metal (iron, steel, bronze, brass and gold) with soft reflections and a bevel; steel takes slate's place. The spellcasting trait is violet glass, and when it is also the highest it keeps the glass and shows the crest.
 
 # 0.2.1
 
