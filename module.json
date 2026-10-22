@@ -2,7 +2,7 @@
   "id": "dh-nice-sheets",
   "title": "Daggerheart: Nice Sheets",
   "description": "Character and party sheets for the Daggerheart system with a richer visual design, used by default for characters and parties once the module is enabled. Reuses every native roll and action of the system.",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "compatibility": {
     "minimum": "14",
     "verified": "14",
