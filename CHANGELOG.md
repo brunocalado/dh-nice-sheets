@@ -1,4 +1,4 @@
-# Unreleased
+# 0.2.1
 
 - [Changed] A long character name stays on one line in the sheet header and ends with an ellipsis instead of wrapping.
 - [Changed] The character header lists class, subclass, community, ancestry and multiclass one after another, wrapping only at the edge, so the header is shorter when the names are short.
