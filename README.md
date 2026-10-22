@@ -4,7 +4,7 @@ Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system.
 
 What changes is the layout. Hit Points, Stress and Armor stay in view in a sidebar, with Hope in the header above the traits. The six traits sit on plaques ranked from cracked iron to gold, and the character's art fills the background of the whole sheet.
 
-<p align="center"><img width="900" src="docs/preview.webp" alt="Clicking the Hit Points and Stress cards, which flash as they change, then the Hope row and the Inventory tab"></p>
+<p align="center"><img width="900" src="docs/preview.webp" alt="On the Inventory tab, clicking the Hit Points and Stress cards, which flash as they change, then the Hope row"></p>
 
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy_Me_a_Coffee-Donate-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/mestredigital) [![More Modules](https://img.shields.io/badge/Foundry%20VTT-More%20Modules-red?style=for-the-badge&logo=gamepad)](https://mestredigital.online/pages/projetos-en)
 
@@ -18,7 +18,7 @@ The header has the character's class, subclass, community and ancestry, the doma
 
 <p align="center"><img width="648" src="docs/sheet-traits.webp" alt="The header with the domains, the level medal, the Hope row and the six trait plaques"></p>
 
-Each trait plaque takes its material from where the value ranks among the character's own traits. The lowest is cracked iron, the highest is gold with a crest on top, and the values between are steel, bronze and brass. Equal values always get the same material. The spellcasting trait is violet glass, with a ring of light turning around its border. Click a plaque to roll that trait.
+Each trait plaque takes its material from where the value ranks among the character's own traits. The lowest is cracked iron, the highest is gold with a crest on top, and the values between are steel, bronze and brass. Equal values always get the same material. The spellcasting trait is violet glass, with a ring of light turning around its border. Click a plaque to roll that trait. Hold the mouse over it to see three things the trait is used for, such as Sprint, Leap and Maneuver for Agility.
 
 When Hit Points, Stress or Armor change, the card shakes and turns red for a loss, and lifts and turns green for a recovery. Gaining Hope lights up the character's art for a moment.
 
@@ -140,7 +140,6 @@ It needs Foundry VTT v14 and the Daggerheart system, version 2.10.13 or later.
 | 💀 [**Adversary Manager**](https://github.com/brunocalado/daggerheart-advmanager) | Scale adversaries instantly and build balanced encounters. |
 | 🖼️ [**Art Mapper**](https://github.com/brunocalado/dh-assets) | Automatically assigns artwork to system compendiums, actors, tokens, and custom module content — keeping your visuals organized and up to date. |
 | 🐉 [**Colossus**](https://github.com/brunocalado/dh-colossus) | Manage massive multi-part boss encounters with independent HP per part and a single shared stress pool. |
-| 📦 [**Containers**](https://github.com/brunocalado/dh-containers) | Group inventory items into collapsible containers — pouches, chests, backpacks — to declutter character sheets. |
 | 💥 [**Critical**](https://github.com/brunocalado/daggerheart-critical) | Animated criticals. |
 | 💠 [**Custom Stat Tracker**](https://github.com/brunocalado/dh-new-stat-tracker) | Add custom trackers to actors. |
 | ☠️ [**Death Moves**](https://github.com/brunocalado/daggerheart-death-moves) | Enhances the Death Move moment with a dramatic interface and full automation. |
