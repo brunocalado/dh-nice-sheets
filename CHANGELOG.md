@@ -1,3 +1,7 @@
+# Unreleased
+
+- [Changed] Hit Points, Stress, Armor and Hope rings show their filled slots in a brighter color with a dark outline, so they stand out from the card.
+
 # 0.3.0
 
 - [Added] A Nice Companion Sheet, used by default for companions: the art behind the whole sheet, Stress as a ring card, Evasion, the partner and the Action Roll at the top, and the attack and experiences below.

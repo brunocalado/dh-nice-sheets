@@ -96,6 +96,8 @@
   .nice-ring-card {
     --nice-ring-hue: var(--nice-gold);
     --nice-ring-glow: var(--nice-gold-bright);
+    --nice-ring-pip: var(--nice-hope-pip);
+    --nice-ring-pip-glow: var(--nice-hope-pip-glow);
     position: relative;
     display: flex;
     flex-direction: column;
@@ -119,9 +121,9 @@
         0 0 14px color-mix(in srgb, var(--nice-ring-hue) 40%, transparent);
     }
 
-    &.hp { --nice-ring-hue: var(--nice-hp); --nice-ring-glow: var(--nice-hp-glow); }
-    &.stress { --nice-ring-hue: var(--nice-stress); --nice-ring-glow: var(--nice-stress-glow); }
-    &.armor { --nice-ring-hue: var(--nice-armor); --nice-ring-glow: var(--nice-armor-glow); }
+    &.hp { --nice-ring-hue: var(--nice-hp); --nice-ring-glow: var(--nice-hp-glow); --nice-ring-pip: var(--nice-hp-pip); --nice-ring-pip-glow: var(--nice-hp-pip-glow); }
+    &.stress { --nice-ring-hue: var(--nice-stress); --nice-ring-glow: var(--nice-stress-glow); --nice-ring-pip: var(--nice-stress-pip); --nice-ring-pip-glow: var(--nice-stress-pip-glow); }
+    &.armor { --nice-ring-hue: var(--nice-armor); --nice-ring-glow: var(--nice-armor-glow); --nice-ring-pip: var(--nice-armor-pip); --nice-ring-pip-glow: var(--nice-armor-pip-glow); }
 
     /* Hope keeps the default gold. Expanded, the header shows it, so the card only appears in the
        collapsed sheet (collapsed.css), where the header is hidden. */
@@ -200,10 +202,17 @@
       stroke-width: 9;
       transition: stroke 0.2s var(--nice-ease), filter 0.2s var(--nice-ease);
 
-      &.empty { stroke: rgba(255, 255, 255, 0.11); }
-      &.filled { stroke: var(--nice-ring-hue); filter: drop-shadow(0 0 2.5px var(--nice-ring-glow)); }
+      &.empty { stroke: rgba(0, 0, 0, 0.5); }
+      &.filled { stroke: var(--nice-ring-pip); filter: drop-shadow(0 0 3px var(--nice-ring-pip-glow)); }
       &.scar { stroke: rgba(0, 0, 0, 0.75); stroke-dasharray: 2 2; }
     }
+
+    .outline { fill: none; stroke: #000; stroke-width: 12; opacity: 0.75; }
+
+    /* Shown by the state of the segment just before it, so VitalCards.paint, which only toggles
+       `.filled` on the segments, moves the streak with them. */
+    .streak { display: none; fill: none; stroke-width: 2.2; stroke: color-mix(in srgb, var(--nice-ring-pip-glow) 60%, #fff); opacity: 0.55; }
+    .seg.filled + .streak { display: inline; }
 
     .rim {
       fill: none;

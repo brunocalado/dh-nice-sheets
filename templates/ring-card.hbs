@@ -16,7 +16,7 @@
             <circle class="well" cx="50" cy="50" r="35" />
             <circle class="rim" cx="50" cy="50" r="48" />
             <circle class="rim" cx="50" cy="50" r="34.5" />
-            {{#each card.ring}}<path class="seg {{state}}" d="{{d}}" />{{/each}}
+            {{#each card.ring}}<path class="outline" d="{{outline}}" /><path class="seg {{state}}" d="{{d}}" /><path class="streak" d="{{streak}}" />{{/each}}
         </svg>
         <img class="nice-ring-icon" src="{{card.icon}}" alt="" inert />
         <span class="nice-ring-count">{{card.value}}<span class="max"><span class="sep">/</span>{{card.max}}</span></span>

@@ -144,11 +144,14 @@ export function ringCard(value, max, icon, scars = 0) {
     const rad = (deg * Math.PI) / 180;
     return `${(50 + 41 * Math.sin(rad)).toFixed(2)} ${(50 - 41 * Math.cos(rad)).toFixed(2)}`;
   };
+  const arc = (from, to) => `M${point(from)} A41 41 0 ${to - from > 180 ? 1 : 0} 1 ${point(to)}`;
   const ring = Array.fromRange(total).map(i => {
     const from = start + i * step + gap / 2;
     const to = start + (i + 1) * step - gap / 2;
     const state = i >= pips.max ? "scar" : i < pips.value ? "filled" : "empty";
-    return { state, d: `M${point(from)} A41 41 0 ${to - from > 180 ? 1 : 0} 1 ${point(to)}` };
+    // The outline runs 0.8° past the segment's ends, well inside the 4–6° gap to its neighbours;
+    // the streak stops 1.2° short of them.
+    return { state, d: arc(from, to), outline: arc(from - 0.8, to + 0.8), streak: arc(from + 1.2, to - 1.2) };
   });
   return { ...pips, ring, icon };
 }

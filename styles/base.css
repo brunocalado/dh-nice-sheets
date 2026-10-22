@@ -41,6 +41,18 @@
   --nice-stress-glow: #c99bff;
   --nice-armor: #8fa3bf;
   --nice-armor-glow: #d6e4f7;
+  /* Pip colors for the ring cards: each vital's hue, more saturated and lighter, so a filled slot
+     stands out from the card, which is tinted with the plain hue. Saturating the hue tokens
+     themselves would saturate the card along with the pip, and HP's red is near full saturation
+     already, so the extra lightness, the black outline and the glow do most of the work. */
+  --nice-hp-pip: hsl(351 100% 50%);
+  --nice-hp-pip-glow: hsl(351 100% 68%);
+  --nice-stress-pip: hsl(267 92% 65%);
+  --nice-stress-pip-glow: hsl(267 92% 83%);
+  --nice-armor-pip: hsl(215 58% 73%);
+  --nice-armor-pip-glow: hsl(215 58% 91%);
+  --nice-hope-pip: hsl(39 100% 76%);
+  --nice-hope-pip-glow: hsl(39 100% 94%);
   /* Spellcast violets: the same values as Stress today, but a separate role. */
   --nice-arcane: #8b4fd6;
   --nice-arcane-light: #c99bff;
