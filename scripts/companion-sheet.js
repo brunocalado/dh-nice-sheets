@@ -7,7 +7,7 @@
  */
 
 import { MODULE_ID, RESOURCE_ICONS, TEMPLATE_PATH } from "./constants.js";
-import { reportSheetFailure, ringCard, syncLoopingAnimations } from "./helpers.js";
+import { reportSheetFailure, ringCard, syncLoopingAnimations, track } from "./helpers.js";
 import { RING_FLASHES, VitalCards } from "./vital-cards.js";
 
 /*
@@ -20,8 +20,18 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
  *   triggerContextMenu; the attack's context menu on `[data-item-uuid][data-type="attack"]`.
  * - Schema: system.partner, evasion, resources.stress, experiences, attack (img, name, range,
  *   uuid, getDamageFormula(), damage.main.type), canLevelUp, levelData.level.changed, the
- *   DEFAULT_ICON; on the partner, system.spellcastModifierTrait.{key,value}.
+ *   DEFAULT_ICON; on the partner, system.spellcastModifierTrait.{key,value} and resources.hope.
  */
+
+/**
+ * What flashes on the sheet: the companion's Stress card, and the partner's Hope plaque. Each is
+ * synced against its own actor, the plaque inside the defense column only, so a change to the
+ * partner's own Stress never flashes the companion's card.
+ */
+const COMPANION_FLASHES = Object.freeze({
+  ...RING_FLASHES,
+  hope: { card: ".nice-stat.hope", up: "flash-gain", down: "flash-spend" }
+});
 
 /**
  * Build the companion sheet class. Like the character and party sheets, it extends the system's
@@ -68,7 +78,8 @@ export function defineNiceCompanionSheet() {
       actions: {
         // A right click reaches actions as an `auxclick` with button 2 only when it is listed.
         niceStepResource: { handler: NiceCompanionSheet.#onStepResource, buttons: [0, 2] },
-        niceOpenPartner: NiceCompanionSheet.#onOpenPartner
+        niceOpenPartner: NiceCompanionSheet.#onOpenPartner,
+        niceTogglePartnerHope: NiceCompanionSheet.#onTogglePartnerHope
       }
     };
 
@@ -95,8 +106,8 @@ export function defineNiceCompanionSheet() {
       }
     };
 
-    /** The Stress card's click queue and flashes. */
-    #vitals = new VitalCards(RING_FLASHES, () => this.render());
+    /** The Stress card's click queue, and its flashes and the partner's Hope plaque's. */
+    #vitals = new VitalCards(COMPANION_FLASHES, () => this.render());
 
     /** Whether a full render has completed; see NiceCharacterSheet#settled. */
     #settled = false;
@@ -166,6 +177,12 @@ export function defineNiceCompanionSheet() {
         // The last Stress takes the companion out of the scene until the partner's next long rest.
         out: stress.max > 0 && stress.value >= stress.max,
         partner: partner ? { uuid: partner.uuid, name: partner.name, img: partner.img } : null,
+        // Companion features are paid for with the partner's Hope, so it is shown here. Clickable
+        // only by someone who could also change it on the partner's own sheet.
+        hope: partner ? {
+          ...track(partner.system.resources.hope.value, partner.system.resources.hope.max),
+          editable: this.isEditable && partner.isOwner
+        } : null,
         level: actor.system.levelData.level.changed,
         canLevelUp: actor.system.canLevelUp,
         evasion: { value: actor.system.evasion, bonus: evasionBonus ? evasionBonus.signedString() : null },
@@ -207,6 +224,23 @@ export function defineNiceCompanionSheet() {
       this.document.system.partner?.sheet.render({ force: true });
     }
 
+    /**
+     * Set the partner's Hope from a gem on its plaque, the way the system's party sheet toggles a
+     * member's: a click on the last lit gem clears it, any other sets Hope to that gem. The
+     * template leaves the action off for users who don't own the partner; the check here covers a
+     * plaque rendered before ownership changed.
+     * @this {NiceCompanionSheet}
+     * @param {PointerEvent} event
+     * @param {HTMLElement} target
+     */
+    static async #onTogglePartnerHope(event, target) {
+      const partner = this.document.system.partner;
+      if (!partner?.isOwner) return;
+      const index = Number(target.dataset.value);
+      const { value } = partner.system.resources.hope;
+      await partner.update({ "system.resources.hope.value": value >= index ? index - 1 : index });
+    }
+
     /* -------------------------------------------- */
     /*  Rendering                                   */
     /* -------------------------------------------- */
@@ -237,6 +271,8 @@ export function defineNiceCompanionSheet() {
       // backdrop, in the header part, and the banner below it read the same state.
       this.element.querySelector(".window-content")?.classList.toggle("nice-out", Boolean(context.nice.out));
       if (context.nice.stress) this.#vitals.sync(this.document, this.element);
+      const plaques = this.element.querySelector(".nice-companion-vitals .nice-defense");
+      if (context.nice.hope && plaques) this.#vitals.sync(this.document.system.partner, plaques);
     }
 
     /**

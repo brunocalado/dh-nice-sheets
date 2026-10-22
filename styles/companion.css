@@ -253,7 +253,30 @@
       .value {
         flex: 0 0 56px;
         font-size: 20px;
+
+        .max { font-size: 0.65em; color: var(--nice-text-muted); }
       }
+    }
+
+    /* The partner's Hope: the header's gems, smaller, between the label and the value. */
+    .nice-stat.hope {
+      .nice-hope-gems {
+        flex: none;
+        gap: 3px;
+        padding-right: 10px;
+      }
+
+      .nice-gem {
+        width: 14px;
+        height: 14px;
+
+        &:not([data-action]) { cursor: default; }
+        &:not([data-action]):hover { transform: none; }
+      }
+
+      /* A Hope gain or spend flashes the gems, as in the character's header (VitalCards#sync). */
+      &.flash-gain .nice-gem.lit { animation: nice-gem-gain 0.7s var(--nice-ease) 1; }
+      &.flash-spend .nice-gem { animation: nice-gem-spend 0.5s var(--nice-ease) 1; }
     }
   }
 

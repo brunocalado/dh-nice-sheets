@@ -118,6 +118,15 @@ Hooks.once("init", () => {
     label: "DH_NICE_SHEETS.CompanionSheetLabel",
     themes: null
   });
+
+  // The system re-renders parties when a member changes, but not a companion when its partner does;
+  // the companion sheet shows the partner's Hope, name, art and spellcast trait.
+  Hooks.on("updateActor", actor => {
+    if (actor.type !== "character") return;
+    for (const app of foundry.applications.instances.values()) {
+      if (app instanceof NiceCompanionSheet && app.document.system.partner === actor) app.render();
+    }
+  });
 });
 
 // Equipping an item takes it out of its container, whichever sheet or tool equips it. Folded into
