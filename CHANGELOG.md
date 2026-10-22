@@ -1,6 +1,7 @@
 # Unreleased
 
 - [Changed] Hit Points, Stress, Armor and Hope rings show their filled slots in a brighter color with a dark outline, so they stand out from the card.
+- [Added] Hovering a trait on the expanded character sheet shows the three things it is used for, like the system's sheet, with a short delay and no lingering.
 
 # 0.3.0
 

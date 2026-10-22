@@ -266,6 +266,14 @@
   > :last-child { margin-bottom: 0; }
 }
 
+/* Trait verbs: quicker than core's 500 ms fade, so leaving a plaque clears it at once. Core also
+   holds `visibility` for 500 ms after the fade; it is matched to the short fade here. */
+#tooltip.nice-trait-verbs {
+  transition: visibility 0s 120ms, opacity 120ms;
+  ul { margin: 0; padding: 0; list-style: none; }
+}
+#tooltip.nice-trait-verbs.active { transition: opacity 120ms; }
+
 /* ---- Keyframes (global names, prefixed to avoid collisions) ------------------ */
 @keyframes nice-menu-in {
   from { opacity: 0; transform: translateY(-4px); }

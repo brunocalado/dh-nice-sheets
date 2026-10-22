@@ -280,6 +280,15 @@ export function defineNiceCharacterSheet() {
      */
     #partyMenu = null;
 
+    /** Delay before a trait's verbs show; a quick pass over the plaques shows nothing. */
+    static #VERBS_DELAY_MS = 300;
+
+    /** The pending show of a trait's verbs. */
+    #verbsTimer = null;
+
+    /** When a trait's verbs were last hidden, from `performance.now()`. */
+    #verbsHiddenAt = -Infinity;
+
     /**
      * The system resolves this from the actor type's metadata and caches it in its own private
      * field, so overriding the getter is the only way to swap in our settings window.
@@ -772,6 +781,61 @@ export function defineNiceCharacterSheet() {
       this.#settled = false;
       this.#sidebarObserver.disconnect();
       this.#closePartyMenu();
+      this.#hideVerbs();
+    }
+
+    /**
+     * Hovering a header trait plaque shows its three example verbs, as the system's sheet does,
+     * but not through `data-tooltip`: core waits 500 ms to show one and, on leave, another 500 ms
+     * plus a 500 ms fade before it is gone. Lowering `TooltipManager.TOOLTIP_ACTIVATION_MS` would
+     * change every tooltip in Foundry, so the sheet drives core's tooltip itself, with its own short
+     * delay and an immediate close. The header part is replaced on re-render; listeners on the root
+     * survive that, and the settings window's and compact strip's traits are not reached.
+     * @inheritdoc
+     */
+    async _onFirstRender(context, options) {
+      await super._onFirstRender(context, options);
+      const plaque = event => event.target.closest?.(".nice-traits .nice-trait");
+      // pointerenter/leave don't bubble; a capture listener on the root still sees every plaque.
+      this.element.addEventListener("pointerenter", event => {
+        const target = plaque(event);
+        if (target === event.target) this.#queueVerbs(target);
+      }, { capture: true });
+      this.element.addEventListener("pointerleave", event => {
+        if (plaque(event) === event.target) this.#hideVerbs();
+      }, { capture: true });
+      // Clicking rolls the trait; the roll dialog should not open under the tooltip.
+      this.element.addEventListener("pointerdown", event => {
+        if (plaque(event)) this.#hideVerbs();
+      });
+    }
+
+    /**
+     * Show a trait's verbs after the delay, or at once when another plaque's just closed.
+     * Reads `CONFIG.DH.ACTOR.abilities[key].verbs`, a Daggerheart internal (checked against 2.10.13).
+     * @param {HTMLElement} target  The hovered `.nice-trait`.
+     */
+    #queueVerbs(target) {
+      window.clearTimeout(this.#verbsTimer);
+      // Leaving a plaque already closed its tooltip, so "was one just showing" is a timestamp: sliding
+      // to the neighbour right after switches at once, as core does between tooltips.
+      const warm = performance.now() - this.#verbsHiddenAt < NiceCharacterSheet.#VERBS_DELAY_MS;
+      this.#verbsTimer = window.setTimeout(() => {
+        if (!target.isConnected) return;
+        const verbs = CONFIG.DH.ACTOR.abilities[target.dataset.attribute]?.verbs ?? [];
+        const list = document.createElement("ul");
+        for (const verb of verbs) list.append(Object.assign(document.createElement("li"), { textContent: game.i18n.localize(verb) }));
+        game.tooltip.activate(target, { html: list, cssClass: "nice-trait-verbs", direction: "UP" });
+      }, warm ? 0 : NiceCharacterSheet.#VERBS_DELAY_MS);
+    }
+
+    /** Cancel a pending show, and close the tooltip when it is a trait's verbs. */
+    #hideVerbs() {
+      window.clearTimeout(this.#verbsTimer);
+      // Only our own tooltip; another one (a domain coin, an item) is left to core.
+      if (!game.tooltip.element?.matches(".nice-trait")) return;
+      game.tooltip.deactivate();
+      this.#verbsHiddenAt = performance.now();
     }
 
     /**
