@@ -30,7 +30,7 @@ Clicking the level medal asks before raising the level, then opens the level-up 
 
 The level-up manager is the system's, in the sheet's style. Each advancement is a row with one gem per pick, and clicking the gem or the row's text takes it. The line above the tiers counts the picks the level has left. The choices tab lists what those picks still need, such as a trait or a domain card, one numbered step at a time, and the footer says what is missing before you can move on.
 
-<p align="center"><img width="900" src="docs/sheet-levelup.webp" alt="The level-up manager at level 5, with tier 2 picks taken, tier 3 lit as the current tier and tier 4 dimmed"></p>
+<p align="center"><img width="900" src="docs/sheet-levelup.webp" alt="The level-up manager at level 6, with the picks already taken in tiers 2 and 3, tier 3 lit as the current tier and tier 4 dimmed"></p>
 
 ## Inventory and containers
 
@@ -71,7 +71,7 @@ A player with only Limited permission on a character sees a short card instead o
 
 The party sheet puts every member on one page. Each character has a card with the heritage, Hope, Hit Points, Stress and Armor, Evasion, the damage thresholds and the six traits, ranked in the same materials as on the character sheet. The equipped weapons sit on the corner of the portrait, and a click on the portrait or the name opens the character. On the characters you own, Hope and the resource cards take the same clicks as on the character sheet. The traits only show values, so nothing is rolled from here. Companions and adversaries in the party are listed in groups of their own.
 
-<p align="center"><img width="686" src="docs/sheet-party.webp" alt="The party sheet with four character cards, each with Hope, the resource cards, Evasion, the damage thresholds and the trait plaques"></p>
+<p align="center"><img width="760" src="docs/sheet-party.webp" alt="The party sheet with four character cards, each with Hope, the resource cards, Evasion, the damage thresholds and the trait plaques"></p>
 
 The buttons at the top start a Tag Team or a Group Roll, and light up while one is under way. The GM also gets buttons for a short and a long rest. When the system's **Hide Party Stats** setting hides the stats from you, the cards show only the portrait, the name and the heritage.
 
@@ -79,11 +79,15 @@ The Inventory tab works like the character's, containers included, with the part
 
 ## The companion sheet
 
-A companion opens in its own small sheet. The companion's art sits faint behind the whole sheet, as on the character sheet, and is changed with the portrait in the settings window (the wrench). Stress is a ring card that takes the same clicks as the character's: left click marks one, right click clears one. Evasion sits beside it.
+A companion opens in its own small sheet. The companion's art sits faint behind the whole sheet, as on the character sheet, and is changed with the portrait in the settings window (the wrench). Stress is a ring card that takes the same clicks as the character's: left click marks one, right click clears one. Evasion sits beside it, and below it the partner's Hope, which pays for the companion's features. The partner's owners can change it there by clicking its gems.
 
 Under the name is the partner. Click it to open the partner's sheet. A companion with no partner shows **No partner** there instead, and the click opens the settings window, where the partner is chosen. The **Action Roll** button is near the top, with the partner's Spellcast trait and its modifier. When the companion marks its last Stress, the sheet turns grey and says it is out of the scene until the partner's next long rest.
 
+<p align="center"><img width="440" src="docs/sheet-companion.webp" alt="The companion sheet with Stress at 1 of 3, Evasion, the partner's Hope, the Action Roll and the Details tab with the attack and three experiences"></p>
+
 The Details tab has the attack, which rolls when you click its image, and the experiences, each with a button that sends it to chat. Effects are in their own tab.
+
+The Training tab lists the eight companion upgrades, with the marks each one has, and says how many choices are still pending. The choices are made in the system's companion level-up window, which opens from the level medal when one is waiting.
 
 ## How to use it
 
