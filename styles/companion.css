@@ -289,16 +289,17 @@
     height: auto;
     margin: 10px 0 0;
     padding: 8px 12px;
+    /* The training badge's ember at button size: a solid gold slab outshone the rest of the sheet. */
     border: 1px solid var(--nice-gold);
     border-radius: 9px;
-    background: linear-gradient(180deg, var(--nice-gold-bright), var(--nice-gold) 55%, var(--nice-gold-dim));
-    box-shadow: inset 0 1px 0 rgba(255, 250, 235, 0.7), inset 0 -3px 6px rgba(107, 78, 20, 0.45), 0 4px 14px rgba(0, 0, 0, 0.5);
-    color: #1a1405;
+    background: radial-gradient(120% 160% at 50% 0%, #2c210d, #110c04 70%);
+    box-shadow: 0 0 10px rgba(var(--nice-gold-rgb), 0.3), inset 0 0 12px rgba(var(--nice-gold-rgb), 0.16);
+    color: var(--nice-gold-bright);
     text-align: left;
     transition: box-shadow 0.15s var(--nice-ease), filter 0.15s var(--nice-ease);
 
     &:hover:not(:disabled) {
-      box-shadow: inset 0 1px 0 rgba(255, 250, 235, 0.7), inset 0 -3px 6px rgba(107, 78, 20, 0.45), 0 0 18px rgba(var(--nice-gold-rgb), 0.55);
+      box-shadow: 0 0 18px rgba(var(--nice-gold-rgb), 0.55), inset 0 0 16px rgba(var(--nice-gold-rgb), 0.26);
     }
 
     &:disabled {
@@ -310,7 +311,10 @@
     .die {
       margin: 0;
       font-size: 22px;
-      filter: drop-shadow(0 1px 0 rgba(255, 240, 200, 0.6));
+    }
+
+    .die, .title, .modifier {
+      text-shadow: 0 0 6px rgba(var(--nice-gold-rgb), 0.55);
     }
 
     .text {
@@ -330,7 +334,7 @@
 
     /* Core greys out every `.hint`. */
     .hint {
-      color: inherit;
+      color: var(--nice-text-muted);
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -338,7 +342,6 @@
       font-size: 11px;
       font-weight: 600;
       line-height: 1.3;
-      opacity: 0.75;
     }
 
     .modifier {
@@ -491,19 +494,25 @@
 /* ========================================================================== */
 /* The companion's eight level-up options with their marks; the ones taken stand out. */
 .application.sheet.daggerheart.dh-nice-sheets-companion {
+  /* An ember: a dark well in a glowing gold ring. The odd size keeps the odd-width digits on the
+     pixel grid, and line-height: 1 stops the tab's taller line box from pinning them to the top. */
   .nice-tab-badge {
     display: inline-grid;
     place-items: center;
-    min-width: 16px;
-    height: 16px;
+    box-sizing: border-box;
+    width: 17px;
+    height: 17px;
     margin-left: 5px;
-    padding: 0 4px;
-    border-radius: 8px;
-    background: var(--nice-gold);
-    color: #1a1405;
-    font-family: var(--nice-font-body);
-    font-size: 9.5px;
+    border: 1px solid var(--nice-gold);
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 40%, #2c210d, #110c04);
+    box-shadow: var(--nice-gold-glow), inset 0 0 4px rgba(var(--nice-gold-rgb), 0.35);
+    color: var(--nice-gold-bright);
+    font-family: var(--nice-font-display);
+    font-size: 10px;
+    line-height: 1;
     letter-spacing: 0;
+    text-shadow: 0 0 4px rgba(var(--nice-gold-rgb), 0.6);
   }
 
   .nice-training-head {
