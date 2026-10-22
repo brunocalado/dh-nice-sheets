@@ -63,7 +63,9 @@
   }
 
   /* The character's name never wraps: a long one would push the whole header taller. The party
-     and settings headers have their own name rules. */
+     and settings headers have their own name rules. It is cut, not shrunk to fit, because a
+     fitted size would change from one character to the next and a script would run on every
+     render and resize; `line-clamp` to two lines still adds a line. */
   &.dh-nice-sheets-character .nice-name-block h1.actor-name {
     overflow: hidden;
     white-space: nowrap;
@@ -117,6 +119,12 @@
     }
   }
 
+  /* Every chip is one item in a single wrapping row, so short names share a line and a line
+     breaks only where the next chip does not fit. Tried and dropped: pairs as unbreakable groups
+     (three nearly full groups still took three lines); the Hope pill under the domains (the
+     right column became taller than the names); the multiclass on the class line ("Sorcerer /
+     Guardian" reads ambiguously); the multiclass only as a domain-coin tooltip (loses click to
+     edit and the system's context menu). */
   .nice-name-block .nice-heritage {
     display: flex;
     flex-wrap: wrap;
