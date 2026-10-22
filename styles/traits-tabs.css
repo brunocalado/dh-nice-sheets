@@ -86,6 +86,42 @@
     pointer-events: none;
   }
 
+  /* A photo of the metal (ambientCG, CC0), grey around mid grey, overlaid on the plate only where
+     its light falls: the key light top-left and the rebound below, the same ellipses as the fill.
+     Mid grey changes nothing under overlay, so hue and reflection stay the stylesheet's; the photo
+     adds scratches, brushing and blotches, which on real metal show where they catch the light.
+     At even strength over the whole face it read as a pasted-on image; generated SVG noise read
+     as synthetic, and rust or verdigris stains as dirt. */
+  .nice-trait-tex {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-position: var(--nice-tex-x, 0) var(--nice-tex-y, 0);
+    background-size: 240px 240px;
+    mix-blend-mode: overlay;
+    opacity: 0.6;
+    mask:
+      radial-gradient(85% 75% at 26% -18%, #000, transparent 72%),
+      radial-gradient(130% 60% at 62% 122%, rgba(0, 0, 0, 0.8), transparent 78%);
+  }
+
+  /* The image is set here rather than through a custom property: a relative url() resolves
+     against the stylesheet that uses it. */
+  .nice-mat-iron .nice-trait-tex { background-image: url("../assets/textures/metal-iron.webp"); }
+  .nice-mat-steel .nice-trait-tex { background-image: url("../assets/textures/metal-steel.webp"); }
+  .nice-mat-bronze .nice-trait-tex { background-image: url("../assets/textures/metal-bronze.webp"); }
+  .nice-mat-brass .nice-trait-tex { background-image: url("../assets/textures/metal-brass.webp"); }
+  .nice-mat-gold .nice-trait-tex { background-image: url("../assets/textures/metal-gold.webp"); }
+  .nice-mat-spell .nice-trait-tex { display: none; }
+
+  /* A different patch of the photo per plaque, so neighbours never repeat. */
+  .nice-traits > :nth-child(1) { --nice-tex-x: 0px; --nice-tex-y: 0px; }
+  .nice-traits > :nth-child(2) { --nice-tex-x: -97px; --nice-tex-y: -151px; }
+  .nice-traits > :nth-child(3) { --nice-tex-x: -194px; --nice-tex-y: -62px; }
+  .nice-traits > :nth-child(4) { --nice-tex-x: -51px; --nice-tex-y: -213px; }
+  .nice-traits > :nth-child(5) { --nice-tex-x: -148px; --nice-tex-y: -124px; }
+  .nice-traits > :nth-child(6) { --nice-tex-x: -5px; --nice-tex-y: -35px; }
+
   .nice-trait-name {
     position: relative;
     z-index: 1;
@@ -344,7 +380,7 @@
   /* Violet glass: it lets the sheet's leather and art through, blurred, which is what makes it
      read as glass, with a glossy highlight above and light gathering below. When the spellcast
      trait is also the highest it stays this glass and only the crest tells; every gold-and-arcane
-     mix read as two plates glued together. */
+     mix read as two plates glued together. A faceted crystal blotched behind the number. */
   .nice-mat-spell {
     gap: 2px;
     border: 1px solid rgba(225, 205, 255, 0.45);

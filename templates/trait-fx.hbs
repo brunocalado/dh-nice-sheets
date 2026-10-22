@@ -2,6 +2,9 @@
      spellcast ring sits outside it, on the border the layer clips away. --}}
 {{#if trait.isSpellcasting}}<span class="nice-trait-ring" inert></span>{{/if}}
 <span class="nice-trait-fx" inert>
+    {{!-- An <i>, not a <span>: the motes are placed by :nth-of-type, and a span in front of them
+         would shift one into the corner. --}}
+    <i class="nice-trait-tex"></i>
     {{#if trait.isSpellcasting}}
         <svg class="nice-trait-sigil" viewBox="0 0 100 100" aria-hidden="true">
             <g fill="none" stroke="currentColor" stroke-width="1.2">

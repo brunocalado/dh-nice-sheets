@@ -125,7 +125,7 @@ It needs Foundry VTT v14 and the Daggerheart system, version 2.10.13 or later.
 
 * **Code License:** GNU GPLv3.
 
-* **Textures:** derived from an [ambientCG](https://ambientcg.com) material, released under CC0 1.0. Details in [docs/CREDITS.md](docs/CREDITS.md).
+* **Textures:** derived from [ambientCG](https://ambientcg.com) materials, released under CC0 1.0. Details in [docs/CREDITS.md](docs/CREDITS.md).
 
 * **Disclaimer:** This module is an independent creation and is not affiliated with Darrington Press.
 
