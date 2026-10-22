@@ -1,0 +1,97 @@
+<header class="nice-header nice-companion-header">
+    {{!-- The companion's art sits behind the whole sheet as a faint backdrop, positioned against
+         `.window-content` like the character's. It is changed in the settings window. --}}
+    {{#if nice.backdrop}}
+        <div class="nice-backdrop" style="background-image: url('{{nice.backdrop}}')" inert></div>
+    {{/if}}
+
+    <div class="nice-companion-kicker"><i class="fa-solid fa-paw" inert></i>{{localize "DH_NICE_SHEETS.Companion.kicker"}}</div>
+
+    <div class="nice-title-row">
+        <div class="nice-name-block">
+            <h1
+                class="actor-name input"
+                contenteditable="plaintext-only"
+                data-property="name"
+                placeholder="{{localize "DAGGERHEART.GENERAL.actorName"}}"
+                autocomplete="off"
+                spellcheck="false"
+            >{{source.name}}</h1>
+            {{!-- The system has no drop handler for a partner, so without one the chip opens the
+                 settings window, where the partner is chosen. --}}
+            {{#if nice.partner}}
+                <a class="nice-partner-chip" data-action="niceOpenPartner" data-tooltip="{{localize "DAGGERHEART.GENERAL.partner"}}">
+                    <img src="{{nice.partner.img}}" alt="" inert />
+                    <span class="name">{{nice.partner.name}}</span>
+                    <i class="fa-solid fa-link" inert></i>
+                </a>
+            {{else}}
+                <a class="nice-partner-chip none" {{#if editable}}data-action="openSettings"{{/if}}>
+                    <i class="fa-solid fa-link-slash" inert></i>
+                    <span class="name">{{localize "DH_NICE_SHEETS.Companion.noPartner"}}</span>
+                </a>
+            {{/if}}
+        </div>
+
+        <div class="nice-level">
+            {{!-- The level is the partner's; the badge only acts while a level-up choice is pending,
+                 and opens the system's companion level-up window. --}}
+            <a class="nice-level-badge {{#if nice.canLevelUp}}ready{{/if}}"
+               {{#if (and editable nice.canLevelUp)}}data-action="levelManagement" data-tooltip="DAGGERHEART.ACTORS.Character.levelUp"{{/if}}
+               {{#unless nice.partner}}data-tooltip="DAGGERHEART.UI.Tooltip.companionPartnerLevelBlock"{{/unless}}>
+                <span class="nice-level-coin"><span class="nice-level-number">{{nice.level}}</span></span>
+                <span class="nice-level-caption">{{localize "DAGGERHEART.GENERAL.level"}}</span>
+            </a>
+        </div>
+    </div>
+
+    {{#if nice.out}}
+        <div class="nice-out-banner">
+            {{localize "DH_NICE_SHEETS.Companion.out.title"}}
+            {{#if nice.partner}}<small>{{localize "DH_NICE_SHEETS.Companion.out.hint" name=nice.partner.name}}</small>{{/if}}
+        </div>
+    {{/if}}
+
+    <div class="nice-companion-vitals">
+        {{> "modules/dh-nice-sheets/templates/ring-card.hbs" editable=editable card=nice.stress kind="stress" resource="stress" label=(localize "DAGGERHEART.GENERAL.stress")}}
+        <div class="nice-defense">
+            <div class="nice-stat evasion">
+                <span class="label">
+                    {{localize "DAGGERHEART.GENERAL.evasion"}}
+                    {{#if nice.evasion.bonus}}<small>{{nice.evasion.bonus}}</small>{{/if}}
+                </span>
+                <span class="value">{{nice.evasion.value}}</span>
+            </div>
+        </div>
+    </div>
+
+    {{!-- The system's Action Roll: the partner rolls with their Spellcast trait. --}}
+    <button type="button" class="nice-action-roll" data-action="actionRoll"
+            {{#unless nice.partner}}disabled data-tooltip="DAGGERHEART.UI.Notifications.partnerRequired"{{/unless}}>
+        <i class="fa-solid fa-dice-d20 die" inert></i>
+        <span class="text">
+            <span class="title">{{localize "DAGGERHEART.GENERAL.Roll.action"}}</span>
+            <span class="hint">
+                {{#if nice.partner}}
+                    {{#if nice.spellcast}}{{localize "DH_NICE_SHEETS.Companion.rollHint" name=nice.partner.name trait=nice.spellcast.label}}{{else}}{{nice.partner.name}}{{/if}}
+                {{else}}
+                    {{localize "DH_NICE_SHEETS.Companion.needsPartner"}}
+                {{/if}}
+            </span>
+        </span>
+        {{#if nice.spellcast}}<span class="modifier">{{nice.spellcast.value}}</span>{{/if}}
+    </button>
+
+    <nav class="nice-tabs sheet-tabs tabs" data-group="primary">
+        {{#each tabs as |tab|}}
+            <a class="nice-tab {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+                <span>{{localize tab.label}}</span>
+            </a>
+        {{/each}}
+        <div class="nice-tab-tools">
+            <button type="button" class="nice-tab-settings" data-action="openSettings" data-tooltip="DAGGERHEART.UI.Tooltip.openSheetSettings">
+                <i class="fa-solid fa-wrench" inert></i>
+            </button>
+        </div>
+    </nav>
+</header>

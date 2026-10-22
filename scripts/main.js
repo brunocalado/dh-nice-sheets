@@ -8,6 +8,7 @@
 
 import { FLAGS, MODULE_ID, SETTINGS } from "./constants.js";
 import { defineNiceCharacterSheet } from "./character-sheet.js";
+import { defineNiceCompanionSheet } from "./companion-sheet.js";
 import { defineNicePartySheet } from "./party-sheet.js";
 import { releaseContents } from "./helpers.js";
 import { offerSheet } from "./sheet-offer.js";
@@ -18,6 +19,7 @@ import { offerSheet } from "./sheet-offer.js";
 Hooks.once("init", () => {
   const NiceCharacterSheet = defineNiceCharacterSheet();
   const NicePartySheet = defineNicePartySheet();
+  const NiceCompanionSheet = defineNiceCompanionSheet();
 
   // Stored on the user (not the browser) so the choice follows the player between devices.
   game.settings.register(MODULE_ID, SETTINGS.showBiography, {
@@ -106,6 +108,14 @@ Hooks.once("init", () => {
     types: ["party"],
     makeDefault: true,
     label: "DH_NICE_SHEETS.PartySheetLabel",
+    themes: null
+  });
+
+  // Default on the same terms as the character sheet above.
+  foundry.documents.collections.Actors.registerSheet(MODULE_ID, NiceCompanionSheet, {
+    types: ["companion"],
+    makeDefault: true,
+    label: "DH_NICE_SHEETS.CompanionSheetLabel",
     themes: null
   });
 });

@@ -1,0 +1,464 @@
+/*!
+ * Daggerheart: Nice Sheets
+ * 2026 https://github.com/brunocalado
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 3.
+ */
+
+/* The companion sheet (companion-header.hbs, companion-details.hbs, companion-limited.hbs). It
+   shares the module class, so the tokens, ring cards, plaques, level badge, section titles,
+   experience rows and tabs of the character sheet apply here too; this file holds the window
+   layout and what only a companion has: the partner chip, the out-of-scene banner, the Action
+   Roll and the attack card. */
+
+/* ========================================================================== */
+/*  Window                                                                      */
+/* ========================================================================== */
+.application.sheet.daggerheart.dh-nice-sheets-companion {
+  background-image:
+    radial-gradient(120% 90% at 50% -10%, rgba(var(--nice-gold-rgb), 0.14), transparent 60%),
+    radial-gradient(90% 60% at 50% 110%, rgba(0, 0, 0, 0.35), transparent 60%);
+
+  .window-header {
+    z-index: 3;
+  }
+
+  .window-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--nice-font-body);
+    color: var(--nice-text);
+
+    > .tab {
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: 0;
+
+      &.active {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+
+  /* The companion's art, as the character's and the party's: anchored top-right, faded towards
+     the left and the bottom. The character's rule lives under the character scope in
+     sheet-frame.css, so the companion keeps its own, as the party does. */
+  .nice-backdrop {
+    position: absolute;
+    inset: 0;
+    /* `.window-content` is a stacking context, so -1 paints behind every part but above the leather. */
+    z-index: -1;
+    pointer-events: none;
+    background-position: right top;
+    background-size: cover;
+    background-repeat: no-repeat;
+    mask-image:
+      linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.5) 22%, #000 45%),
+      linear-gradient(180deg, #000 30%, rgba(0, 0, 0, 0.6) 60%, transparent 100%);
+    mask-composite: intersect;
+    opacity: 0.16;
+    mix-blend-mode: luminosity;
+    transform-origin: right top;
+    animation: nice-backdrop-drift 34s ease-in-out infinite alternate;
+    transition: filter 0.6s var(--nice-ease);
+  }
+
+  /* Out of the scene: the companion marked its last Stress, and its art loses its colour. */
+  .window-content.nice-out .nice-backdrop {
+    filter: grayscale(1) brightness(0.6);
+  }
+
+  /* ======================================================================== */
+  /*  Header                                                                   */
+  /* ======================================================================== */
+  /* Static, so the backdrop and the kicker inside it are placed against `.window-content`. */
+  .nice-companion-header {
+    position: static;
+    flex: none;
+    gap: 0;
+    padding: calc(var(--header-height) + 6px) 14px 0 16px;
+
+    .nice-title-row {
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1.actor-name {
+      font-size: var(--font-size-24);
+      /* A long name stays on one line and is cut, as on the character sheet. */
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      word-break: normal;
+
+      &:focus { text-overflow: clip; }
+    }
+
+    .nice-tabs {
+      margin-top: 8px;
+    }
+
+    .nice-tab {
+      height: 28px;
+    }
+  }
+
+  /* In the window's drag bar, where the title would be: the sheet's kind. */
+  .nice-companion-kicker {
+    position: absolute;
+    top: 11px;
+    left: 16px;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--nice-font-display);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--nice-gold);
+    pointer-events: none;
+  }
+
+  /* ---- Partner chip ----------------------------------------------------------------- */
+  .nice-partner-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    max-width: 100%;
+    margin-top: 5px;
+    padding: 2px 10px 2px 2px;
+    border: 1px solid rgba(var(--nice-gold-rgb), 0.35);
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--nice-text);
+    text-decoration: none;
+    transition: border-color 0.15s var(--nice-ease), box-shadow 0.15s var(--nice-ease);
+
+    &[data-action]:hover {
+      border-color: var(--nice-gold);
+      box-shadow: var(--nice-gold-glow);
+      text-shadow: none;
+    }
+
+    img {
+      flex: none;
+      width: 22px;
+      height: 22px;
+      border: 1px solid var(--nice-gold-dim);
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .name {
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: var(--nice-font-display);
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    .fa-link { font-size: 10px; color: var(--nice-gold); }
+
+    &.none {
+      gap: 6px;
+      padding: 4px 12px;
+      border-style: dashed;
+      color: var(--nice-text-muted);
+
+      .name { font-family: var(--nice-font-body); font-weight: 500; font-size: 11px; }
+    }
+  }
+
+  /* ---- Out-of-scene banner -------------------------------------------------------- */
+  .nice-out-banner {
+    margin: 10px -16px 0 -16px;
+    padding: 5px 10px;
+    text-align: center;
+    background: linear-gradient(90deg, transparent, rgba(139, 79, 214, 0.5) 20%, rgba(139, 79, 214, 0.5) 80%, transparent);
+    font-family: var(--nice-font-display);
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #fff;
+    text-shadow: 0 1px 3px #000;
+
+    small {
+      display: block;
+      font-family: var(--nice-font-body);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: none;
+      opacity: 0.85;
+    }
+  }
+
+  /* ---- Vitals: the Stress ring beside the plaques ---------------------------------- */
+  .nice-companion-vitals {
+    display: grid;
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+
+    .nice-ring-card {
+      --nice-ring-size: 72px;
+      --nice-ring-icon: 38px;
+      justify-content: center;
+      padding: 8px 4px 6px;
+    }
+
+    /* A column of full-width plaques, where the character's sidebar has a 2×1 grid. */
+    .nice-defense {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .nice-stat {
+      flex: none;
+      min-height: 40px;
+
+      .label {
+        padding: 0 10px;
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-align: left;
+
+        small {
+          display: block;
+          margin-top: 2px;
+          font-family: var(--nice-font-body);
+          font-size: 9.5px;
+          font-weight: 500;
+          letter-spacing: 0;
+          text-transform: none;
+          color: var(--nice-text-muted);
+        }
+      }
+
+      .value {
+        flex: 0 0 56px;
+        font-size: 20px;
+      }
+    }
+  }
+
+  /* ---- Action Roll ------------------------------------------------------------------ */
+  button.nice-action-roll {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    height: auto;
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    border: 1px solid var(--nice-gold);
+    border-radius: 9px;
+    background: linear-gradient(180deg, var(--nice-gold-bright), var(--nice-gold) 55%, var(--nice-gold-dim));
+    box-shadow: inset 0 1px 0 rgba(255, 250, 235, 0.7), inset 0 -3px 6px rgba(107, 78, 20, 0.45), 0 4px 14px rgba(0, 0, 0, 0.5);
+    color: #1a1405;
+    text-align: left;
+    transition: box-shadow 0.15s var(--nice-ease), filter 0.15s var(--nice-ease);
+
+    &:hover:not(:disabled) {
+      box-shadow: inset 0 1px 0 rgba(255, 250, 235, 0.7), inset 0 -3px 6px rgba(107, 78, 20, 0.45), 0 0 18px rgba(var(--nice-gold-rgb), 0.55);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      filter: grayscale(0.85) brightness(0.55);
+      box-shadow: none;
+    }
+
+    .die {
+      margin: 0;
+      font-size: 22px;
+      filter: drop-shadow(0 1px 0 rgba(255, 240, 200, 0.6));
+    }
+
+    .text {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .title {
+      font-family: var(--nice-font-display);
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    /* Core greys out every `.hint`. */
+    .hint {
+      color: inherit;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: var(--nice-font-body);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.3;
+      opacity: 0.75;
+    }
+
+    .modifier {
+      margin-left: auto;
+      font-family: var(--nice-font-title);
+      font-size: 20px;
+      font-weight: 700;
+    }
+  }
+
+  /* ======================================================================== */
+  /*  Details                                                                  */
+  /* ======================================================================== */
+  .nice-sections {
+    gap: 6px;
+    padding: 12px 14px 14px;
+
+    .experience-list {
+      gap: 4px;
+    }
+  }
+
+  /* The attack as one card; the image rolls it, as on the system's row. */
+  .nice-attack-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    padding: 8px;
+    border: 1px solid var(--nice-panel-border);
+    border-radius: 8px;
+    background: var(--nice-panel);
+
+    .controls {
+      flex: none;
+      align-self: flex-start;
+      display: flex;
+      gap: 12px;
+      padding: 4px 4px 0;
+      color: var(--nice-text-muted);
+
+      a:hover { color: var(--nice-gold); text-shadow: none; }
+    }
+  }
+
+  .nice-attack-art {
+    position: relative;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    overflow: hidden;
+    border: 1px solid var(--nice-gold-dim);
+    border-radius: 7px;
+    cursor: pointer;
+
+    img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: cover;
+    }
+
+    /* The die shown over the art on hover says the click rolls. */
+    &::after {
+      content: "\f6cf";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-family: var(--font-awesome);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--nice-gold-bright);
+      background: rgba(8, 6, 16, 0.6);
+      opacity: 0;
+      transition: opacity 0.15s var(--nice-ease);
+    }
+
+    &:hover::after { opacity: 1; }
+  }
+
+  .nice-attack-info {
+    flex: 1;
+    min-width: 0;
+
+    .item-name {
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: var(--nice-font-display);
+      font-size: 14px;
+      font-weight: 700;
+    }
+  }
+
+  .nice-attack-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  .nice-attack-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 7px;
+    border: 1px solid rgba(var(--nice-gold-rgb), 0.25);
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.35);
+    font-size: 10.5px;
+    font-weight: 600;
+
+    i { font-size: 9px; color: var(--nice-gold); }
+  }
+}
+
+/* ========================================================================== */
+/*  Limited view                                                                */
+/* ========================================================================== */
+.application.sheet.daggerheart.dh-nice-sheets-companion.limited {
+  .nice-companion-limited {
+    padding: calc(var(--header-height) + 6px) 16px 18px;
+
+    .nice-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    h1.actor-name {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: var(--nice-font-title);
+      font-size: var(--font-size-24);
+      color: var(--nice-accent);
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+  }
+}

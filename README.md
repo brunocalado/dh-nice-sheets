@@ -1,6 +1,6 @@
 # Daggerheart: Nice Sheets
 
-Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Once the module is enabled, characters and parties open in it by default, unless the GM has already chosen another **Default Sheet**. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
+Daggerheart: Nice Sheets is a second character sheet for the Daggerheart system. Once the module is enabled, characters, companions and parties open in it by default, unless the GM has already chosen another **Default Sheet**. Rolls, actions, context menus and drag and drop all run through the system's own code, so the game plays the same.
 
 What changes is the layout. Hit Points, Stress and Armor stay in view in a sidebar, with Hope in the header above the traits. The six traits sit on plaques ranked from cracked iron to gold, and the character's art fills the background of the whole sheet.
 
@@ -76,6 +76,14 @@ The party sheet puts every member on one page. Each character has a card with th
 The buttons at the top start a Tag Team or a Group Roll, and light up while one is under way. The GM also gets buttons for a short and a long rest. When the system's **Hide Party Stats** setting hides the stats from you, the cards show only the portrait, the name and the heritage.
 
 The Inventory tab works like the character's, containers included, with the party's coins next to the search field. The party's Notes tab is hidden. The GM can show it with **Show the party Notes tab** in the module settings.
+
+## The companion sheet
+
+A companion opens in its own small sheet. The companion's art sits faint behind the whole sheet, as on the character sheet, and is changed with the portrait in the settings window (the wrench). Stress is a ring card that takes the same clicks as the character's: left click marks one, right click clears one. Evasion sits beside it.
+
+Under the name is the partner. Click it to open the partner's sheet. A companion with no partner shows **No partner** there instead, and the click opens the settings window, where the partner is chosen. The **Action Roll** button is near the top, with the partner's Spellcast trait and its modifier. When the companion marks its last Stress, the sheet turns grey and says it is out of the scene until the partner's next long rest.
+
+The Details tab has the attack, which rolls when you click its image, and the experiences, each with a button that sends it to chat. Effects are in their own tab.
 
 ## How to use it
 

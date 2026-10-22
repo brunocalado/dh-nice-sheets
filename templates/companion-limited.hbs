@@ -1,0 +1,14 @@
+{{!-- What a user with Limited permission sees: the name, the level and the art behind them. --}}
+<div class="nice-companion-limited">
+    {{#if nice.backdrop}}
+        <div class="nice-backdrop" style="background-image: url('{{nice.backdrop}}')" inert></div>
+    {{/if}}
+    <div class="nice-companion-kicker"><i class="fa-solid fa-paw" inert></i>{{localize "DH_NICE_SHEETS.Companion.kicker"}}</div>
+    <div class="nice-title-row">
+        <h1 class="actor-name">{{document.name}}</h1>
+        <span class="nice-level-badge">
+            <span class="nice-level-coin"><span class="nice-level-number">{{nice.level}}</span></span>
+            <span class="nice-level-caption">{{localize "DAGGERHEART.GENERAL.level"}}</span>
+        </span>
+    </div>
+</div>

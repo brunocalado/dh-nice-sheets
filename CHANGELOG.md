@@ -1,3 +1,7 @@
+# Unreleased
+
+- [Added] A Nice Companion Sheet, used by default for companions: the art behind the whole sheet, Stress as a ring card, Evasion, the partner and the Action Roll at the top, and the attack and experiences below.
+
 # 0.2.1
 
 - [Changed] A long character name stays on one line in the sheet header and ends with an ellipsis instead of wrapping.

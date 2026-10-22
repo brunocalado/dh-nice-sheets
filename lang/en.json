@@ -2,6 +2,7 @@
   "DH_NICE_SHEETS": {
     "SheetLabel": "Nice Sheet",
     "PartySheetLabel": "Nice Party Sheet",
+    "CompanionSheetLabel": "Nice Companion Sheet",
     "Failure": "Nice Sheets ran into an error with Daggerheart {version}, so parts of the sheet may be missing, or the system's sheet opens in its place. Until Nice Sheets is updated, switch to the system's sheet with Configure Sheet, in the sheet window's menu. The details are in the browser console (F12).",
     "ChangeImage": "Change character image",
     "ImageTips": "<p><strong>Best art for the sheet</strong></p><p>The image also fills the sheet's background, faint and cropped to fit.</p><ul><li>Portrait shape, taller than wide.</li><li>Transparent background (PNG or WebP), so only the character shows.</li><li>Face in the upper third.</li><li>About 1000 px tall or more.</li></ul><p>Wide images lose their sides, and token art shows its round frame.</p>",
@@ -90,6 +91,16 @@
         "companion": "Companions",
         "adversary": "Adversaries",
         "npc": "NPCs"
+      }
+    },
+    "Companion": {
+      "kicker": "Companion",
+      "noPartner": "No partner. Choose one in the settings",
+      "needsPartner": "Needs a partner",
+      "rollHint": "{name}'s Spellcast · {trait}",
+      "out": {
+        "title": "Out of the scene",
+        "hint": "Returns at {name}'s next long rest, with 1 Stress cleared"
       }
     }
   }

@@ -1,0 +1,41 @@
+<section class="tab {{tabs.details.cssClass}} {{tabs.details.id}}" data-tab="{{tabs.details.id}}" data-group="{{tabs.details.group}}">
+    <div class="nice-scroll nice-sections">
+        {{#if nice.attack}}
+            <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.attack"}}</span></h3>
+            {{!-- The attribute set of the system's inventory-item-compact row for type 'attack', so its
+                 context menu (on [data-item-uuid][data-type="attack"]), the drag to the hotbar and the
+                 use-on-click of the image keep working. --}}
+            <div class="nice-attack-card inventory-item" data-item-id="{{document.system.attack.id}}" data-action-id="{{document.system.attack.id}}"
+                 data-item-uuid="{{nice.attack.uuid}}" data-type="attack" draggable="true">
+                <div class="nice-attack-art" data-action="useItem" data-tooltip="#attack#{{document.uuid}}">
+                    <img src="{{nice.attack.img}}" alt="" />
+                </div>
+                <div class="nice-attack-info">
+                    <span class="item-name">{{nice.attack.name}}</span>
+                    <div class="nice-attack-chips">
+                        {{#if nice.attack.bonus}}<span class="nice-attack-chip"><i class="fa-solid fa-crosshairs" inert></i>{{nice.attack.bonus}}</span>{{/if}}
+                        {{#if nice.attack.range}}<span class="nice-attack-chip"><i class="fa-solid fa-ruler-horizontal" inert></i>{{nice.attack.range}}</span>{{/if}}
+                        {{#if nice.attack.damage}}<span class="nice-attack-chip"><i class="fa-solid fa-burst" inert></i>{{nice.attack.damage}}{{#if nice.attack.damageType}} {{nice.attack.damageType}}{{/if}}</span>{{/if}}
+                    </div>
+                </div>
+                <div class="controls">
+                    <a data-action="toChat" data-tooltip="DAGGERHEART.UI.Tooltip.sendToChat"><i class="fa-regular fa-fw fa-message" inert></i></a>
+                    <a data-action="triggerContextMenu" data-tooltip="DAGGERHEART.UI.Tooltip.moreOptions"><i class="fa-solid fa-ellipsis-vertical" inert></i></a>
+                </div>
+            </div>
+        {{/if}}
+
+        <h3 class="nice-section-title"><span>{{localize "DAGGERHEART.GENERAL.Experience.plural"}}</span></h3>
+        <div class="experience-list">
+            {{#each document.system.experiences as |experience id|}}
+                <div class="experience-row" data-tooltip-text="{{experience.description}}">
+                    <span class="experience-value">{{numberFormat experience.value sign=true}}</span>
+                    <span class="experience-name">{{experience.name}}</span>
+                    <a class="experience-chat" data-action="sendExpToChat" data-type="experience" data-id="{{id}}" data-tooltip="DAGGERHEART.UI.Tooltip.sendToChat">
+                        <i class="fa-regular fa-message" inert></i>
+                    </a>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
