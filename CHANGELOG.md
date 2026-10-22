@@ -1,4 +1,4 @@
-# Unreleased
+# 0.3.0
 
 - [Added] A Nice Companion Sheet, used by default for companions: the art behind the whole sheet, Stress as a ring card, Evasion, the partner and the Action Roll at the top, and the attack and experiences below.
 - [Added] The companion sheet shows the partner's Hope, which the partner's owners can change from there.
