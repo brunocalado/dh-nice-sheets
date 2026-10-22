@@ -101,6 +101,19 @@
       "out": {
         "title": "Out of the scene",
         "hint": "Returns at {name}'s next long rest, with 1 Stress cleared"
+      },
+      "training": {
+        "tab": "Training",
+        "toChoose": "{count} to choose",
+        "allChosen": "All choices made",
+        "intelligent": "Intelligent",
+        "lightInTheDark": "Light in the Dark",
+        "creatureComfort": "Creature Comfort",
+        "armored": "Armored",
+        "vicious": "Vicious",
+        "resilient": "Resilient",
+        "bonded": "Bonded",
+        "aware": "Aware"
       }
     }
   }

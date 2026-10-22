@@ -43,3 +43,21 @@ export const RESOURCE_ICONS = Object.freeze({
   hope: "icons/magic/light/explosion-star-glow-yellow.webp",
   armor: "icons/equipment/shield/heater-embossed-gold.webp"
 });
+
+/**
+ * The companion's level-up options as the Daggerheart system defines them (defaultCompanionTier in
+ * module/data/levelTier.mjs, 2.10.13), which the system does not expose: the selection's
+ * `optionKey`, the name of its label under `DAGGERHEART.APPLICATIONS.Levelup.options`, how many
+ * marks it takes, and its icon. Keep in step with the system. Constructing the system's
+ * DhCompanionLevelUp only to read its levelTiers would open its level-up state for a label lookup.
+ */
+export const COMPANION_TRAINING = Object.freeze([
+  { key: "experience", name: "intelligent", max: 3, icon: "fa-brain" },
+  { key: "hope", name: "lightInTheDark", max: 1, icon: "fa-sun" },
+  { key: "creatureComfort", name: "creatureComfort", max: 1, icon: "fa-heart" },
+  { key: "armored", name: "armored", max: 1, icon: "fa-shield-halved" },
+  { key: "vicious", name: "vicious", max: 3, icon: "fa-burst" },
+  { key: "stress", name: "resilient", max: 3, icon: "fa-brain" },
+  { key: "bonded", name: "bonded", max: 1, icon: "fa-link" },
+  { key: "evasion", name: "aware", max: 3, icon: "fa-eye" }
+]);

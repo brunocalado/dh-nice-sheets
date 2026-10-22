@@ -6,7 +6,7 @@
  * it under the terms of the GNU General Public License version 3.
  */
 
-import { MODULE_ID, RESOURCE_ICONS, TEMPLATE_PATH } from "./constants.js";
+import { COMPANION_TRAINING, MODULE_ID, RESOURCE_ICONS, TEMPLATE_PATH } from "./constants.js";
 import { reportSheetFailure, ringCard, syncLoopingAnimations, track } from "./helpers.js";
 import { RING_FLASHES, VitalCards } from "./vital-cards.js";
 
@@ -19,7 +19,8 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
  * - Actions: actionRoll, levelManagement, openSettings, sendExpToChat, editImage, useItem,
  *   triggerContextMenu; the attack's context menu on `[data-item-uuid][data-type="attack"]`.
  * - Schema: system.partner, evasion, resources.stress, experiences, attack (img, name, range,
- *   uuid, getDamageFormula(), damage.main.type), canLevelUp, levelData.level.changed, the
+ *   uuid, getDamageFormula(), damage.main.type), canLevelUp, levelupChoicesLeft,
+ *   levelData.level.changed, levelData.levelups[*].selections[*].optionKey, the
  *   DEFAULT_ICON; on the partner, system.spellcastModifierTrait.{key,value} and resources.hope.
  */
 
@@ -99,10 +100,25 @@ export function defineNiceCompanionSheet() {
         scrollable: [".nice-scroll"],
         template: `${TEMPLATE_PATH}/companion-details.hbs`
       },
+      training: {
+        id: "training",
+        scrollable: [".nice-scroll"],
+        template: `${TEMPLATE_PATH}/companion-training.hbs`
+      },
       effects: {
         id: "effects",
         scrollable: [".nice-scroll"],
         template: `${TEMPLATE_PATH}/effects.hbs`
+      }
+    };
+
+    /** @inheritdoc */
+    static TABS = {
+      primary: {
+        // Training sits between the system's two tabs; it has no system label key.
+        tabs: [{ id: "details" }, { id: "training", label: "DH_NICE_SHEETS.Companion.training.tab" }, { id: "effects" }],
+        initial: "details",
+        labelPrefix: "DAGGERHEART.GENERAL.Tabs"
       }
     };
 
@@ -148,6 +164,7 @@ export function defineNiceCompanionSheet() {
       // update breaks one, the sheet still opens with what the system provides, and the user is told.
       try {
         context.nice = this.#prepareNiceContext();
+        if (context.tabs?.training) context.tabs.training.badge = context.nice.choicesLeft;
       } catch (error) {
         reportSheetFailure(error);
         context.nice = {};
@@ -168,6 +185,9 @@ export function defineNiceCompanionSheet() {
         value: modifier < 0 ? String(modifier) : `+${modifier}`
       } : null;
       const evasionBonus = actor.system.evasion - actor._source.system.evasion;
+      // Marks taken per option, over every level-up the companion has recorded.
+      const taken = Object.values(actor.system.levelData.levelups).flatMap(levelup => levelup.selections)
+        .reduce((counts, selection) => (counts[selection.optionKey] = (counts[selection.optionKey] ?? 0) + 1, counts), {});
       const damageType = CONFIG.DH.GENERAL.damageTypes[attack?.damage?.main?.type?.first()];
 
       return {
@@ -185,6 +205,18 @@ export function defineNiceCompanionSheet() {
         } : null,
         level: actor.system.levelData.level.changed,
         canLevelUp: actor.system.canLevelUp,
+        // Only computed while the companion has a partner.
+        choicesLeft: actor.system.levelupChoicesLeft ?? 0,
+        training: COMPANION_TRAINING.map(option => {
+          const marks = Math.min(taken[option.key] ?? 0, option.max);
+          return {
+            ...option,
+            label: `DH_NICE_SHEETS.Companion.training.${option.name}`,
+            description: `DAGGERHEART.APPLICATIONS.Levelup.options.${option.name}`,
+            taken: marks,
+            pips: Array.fromRange(option.max).map(i => i < marks)
+          };
+        }),
         evasion: { value: actor.system.evasion, bonus: evasionBonus ? evasionBonus.signedString() : null },
         // Read off the partner rather than the companion's prepared attack bonus, which goes stale
         // when only the partner changes.
@@ -228,7 +260,8 @@ export function defineNiceCompanionSheet() {
      * Set the partner's Hope from a gem on its plaque, the way the system's party sheet toggles a
      * member's: a click on the last lit gem clears it, any other sets Hope to that gem. The
      * template leaves the action off for users who don't own the partner; the check here covers a
-     * plaque rendered before ownership changed.
+     * plaque rendered before ownership changed. They see it read-only rather than writing through
+     * the GM, which would let a companion's owner change another player's Hope.
      * @this {NiceCompanionSheet}
      * @param {PointerEvent} event
      * @param {HTMLElement} target

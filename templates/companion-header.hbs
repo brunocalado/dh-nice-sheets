@@ -1,6 +1,7 @@
 <header class="nice-header nice-companion-header">
     {{!-- The companion's art sits behind the whole sheet as a faint backdrop, positioned against
-         `.window-content` like the character's. It is changed in the settings window. --}}
+         `.window-content` like the character's, and is changed in the settings window. There is no
+         portrait or banner: companion art is mostly a small token icon, which blurs at cover size. --}}
     {{#if nice.backdrop}}
         <div class="nice-backdrop" style="background-image: url('{{nice.backdrop}}')" inert></div>
     {{/if}}
@@ -107,6 +108,7 @@
         {{#each tabs as |tab|}}
             <a class="nice-tab {{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
                 <span>{{localize tab.label}}</span>
+                {{#if tab.badge}}<span class="nice-tab-badge">{{tab.badge}}</span>{{/if}}
             </a>
         {{/each}}
         <div class="nice-tab-tools">

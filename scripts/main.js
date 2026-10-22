@@ -111,7 +111,8 @@ Hooks.once("init", () => {
     themes: null
   });
 
-  // Default on the same terms as the character sheet above.
+  // Default on the same terms as the character sheet above. Companions get no sheet offer:
+  // makeDefault already covers them, and a dialog per companion would nag.
   foundry.documents.collections.Actors.registerSheet(MODULE_ID, NiceCompanionSheet, {
     types: ["companion"],
     makeDefault: true,

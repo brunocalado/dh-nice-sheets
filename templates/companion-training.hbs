@@ -1,0 +1,23 @@
+<section class="tab {{tabs.training.cssClass}} {{tabs.training.id}}" data-tab="{{tabs.training.id}}" data-group="{{tabs.training.group}}">
+    <div class="nice-scroll nice-sections">
+        {{!-- All eight options, not only the ones taken, so the tab shows what is still open. Read-only:
+             choices are made in the system's companion level-up window, reached through the level
+             badge, which also grants what each option gives. --}}
+        <div class="nice-training-head">
+            {{#if nice.choicesLeft}}
+                {{localize "DH_NICE_SHEETS.Companion.training.toChoose" count=nice.choicesLeft}}
+            {{else}}
+                {{localize "DH_NICE_SHEETS.Companion.training.allChosen"}}
+            {{/if}}
+        </div>
+        <div class="nice-training">
+            {{#each nice.training as |option|}}
+                <div class="nice-training-tile {{#if option.taken}}taken{{/if}}" data-option="{{option.key}}" data-tooltip="{{localize option.description}}">
+                    <span class="marks" inert>{{#each option.pips as |on|}}<span class="{{#if on}}on{{/if}}"></span>{{/each}}</span>
+                    <span class="name"><i class="fa-solid {{option.icon}}" inert></i>{{localize option.label}}</span>
+                    <span class="description">{{localize option.description}}</span>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+</section>
