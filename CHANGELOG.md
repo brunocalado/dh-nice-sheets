@@ -1,3 +1,7 @@
+# 0.3.2
+
+- [Changed] Verified with Daggerheart 2.11.3.
+
 # 0.3.1
 
 - [Changed] Hit Points, Stress, Armor and Hope rings show their filled slots in a brighter color with a dark outline, so they stand out from the card.
