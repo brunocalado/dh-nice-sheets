@@ -34,6 +34,7 @@
         {{#each nice.inventory.sections as |section|}}
             {{> itemSection title=section.title type=section.type groupType=section.groupType
                 collapsed=section.collapsed collection=section.collection canCreate=section.canCreate
+                isQuantifiable=section.isQuantifiable
                 hideResources=(or (eq section.type "weapon") (eq section.type "armor"))}}
         {{/each}}
     </div>
@@ -54,7 +55,7 @@
         </legend>
         <ul class="items-list">
             {{#each collection as |item|}}
-                {{> 'daggerheart.inventory-item' item=item type=../type actorType=@root.document.type isQuantifiable=true hideResources=../hideResources}}
+                {{> 'daggerheart.inventory-item' item=item type=../type actorType=@root.document.type isQuantifiable=../isQuantifiable hideResources=../hideResources}}
             {{/each}}
         </ul>
     </fieldset>

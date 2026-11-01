@@ -113,12 +113,10 @@ export function defineNicePartySheet() {
       }]
     };
 
-    /** What templates/party-inventory.hbs passes per section: everything stacks, gear hides its resources. */
+    /** What templates/party-inventory.hbs passes per section, besides the quantity: gear hides its resources. */
     static CONTAINER_ROWS = {
-      weapon: { isQuantifiable: true, hideResources: true },
-      armor: { isQuantifiable: true, hideResources: true },
-      consumable: { isQuantifiable: true },
-      loot: { isQuantifiable: true }
+      weapon: { hideResources: true },
+      armor: { hideResources: true }
     };
 
     /** @inheritdoc */

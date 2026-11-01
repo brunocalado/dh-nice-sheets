@@ -185,13 +185,8 @@ export function defineNiceCharacterSheet() {
       }
     };
 
-    /** What templates/inventory.hbs passes to the rows of each type's section. */
-    static CONTAINER_ROWS = {
-      weapon: {},
-      armor: {},
-      consumable: { isQuantifiable: true },
-      loot: { isQuantifiable: true, showActions: true }
-    };
+    /** What templates/inventory.hbs passes to the rows of each type's section, besides the quantity. */
+    static CONTAINER_ROWS = { loot: { showActions: true } };
 
     /** @inheritdoc */
     static PARTS = {

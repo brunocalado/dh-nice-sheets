@@ -39,8 +39,9 @@ export function ContainerSheetMixin(Base) {
     /**
      * Parameters each item type's rows pass to the system's inventory-item partial inside a
      * container panel, the same ones the type's own section passes. `showActions: true` stands for
-     * "when the sheet is editable".
-     * @type {Record<string, {isQuantifiable?: boolean, showActions?: boolean, hideResources?: boolean}>}
+     * "when the sheet is editable". Whether a row has a quantity isn't listed here: the system
+     * decides it per actor type (`metadata.unquantifiable`), and containerInventory asks it too.
+     * @type {Record<string, {showActions?: boolean, hideResources?: boolean}>}
      */
     static CONTAINER_ROWS = {};
 
@@ -93,7 +94,12 @@ export function ContainerSheetMixin(Base) {
         collapsed: !!collapsedGroups[`container-${item.id}`],
         contents: held.map(heldItem => {
           const { showActions, ...row } = this.constructor.CONTAINER_ROWS[heldItem.type] ?? {};
-          return { item: heldItem, ...row, showActions: showActions ? this.isEditable : undefined };
+          return {
+            item: heldItem,
+            ...row,
+            isQuantifiable: !this.document.metadata.unquantifiable?.includes(heldItem.type),
+            showActions: showActions ? this.isEditable : undefined
+          };
         })
       }));
       return { sections, containers };
