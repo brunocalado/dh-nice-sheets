@@ -1,3 +1,10 @@
+# Unreleased
+
+- [Breaking][Changed] Requires Daggerheart 2.12.0.
+- [Fixed] The character and party sheets open again with Daggerheart 2.12, inventory included.
+- [Changed] Verified with Daggerheart 2.12.1.
+- [Added] Loot categories that another module gives a group of their own show as their own inventory group, with its own collapse toggle.
+
 # 0.3.2
 
 - [Changed] Verified with Daggerheart 2.11.3.

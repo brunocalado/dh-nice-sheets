@@ -28,25 +28,29 @@
         {{#each nice.inventory.containers as |container|}}
             {{> "modules/dh-nice-sheets/templates/container.hbs" container=container}}
         {{/each}}
-        {{> itemSection title='TYPES.Item.weapon' type='weapon' collection=@root.nice.inventory.weapons}}
-        {{> itemSection title='TYPES.Item.armor' type='armor' collection=@root.nice.inventory.armor}}
-        {{> itemSection title='TYPES.Item.consumable' type='consumable' collection=@root.nice.inventory.consumables isQuantifiable=true}}
-        {{> itemSection title='TYPES.Item.loot' type='loot' collection=@root.nice.inventory.loot showActions=@root.editable isQuantifiable=true}}
+        {{!-- The system's sections: the four types, then any loot category another module gives
+             a group of its own. Base sections' `canCreate` is the sheet's `editable`. --}}
+        {{#each nice.inventory.sections as |section|}}
+            {{> itemSection title=section.title type=section.type groupType=section.groupType
+                collapsed=section.collapsed collection=section.collection canCreate=section.canCreate
+                isQuantifiable=section.isQuantifiable
+                showActions=(and section.canCreate (eq section.type "loot"))}}
+        {{/each}}
     </div>
 </section>
 
 {{!-- The system's `daggerheart.inventory-items` fieldset, rebuilt so its plaque can carry the
      collapse toggle. The rows are still the system's partial, with the same parameters. --}}
 {{#*inline "itemSection"}}
-    <fieldset class="nice-panel drop-section {{#if (lookup @root.nice.collapsedGroups type)}}nice-group-collapsed{{/if}}" data-group-type="{{type}}">
+    <fieldset class="nice-panel drop-section {{#if collapsed}}nice-group-collapsed{{/if}}" data-group-type="{{groupType}}">
         <legend>
             <span>{{localize title}}</span>
-            {{#if @root.editable}}
+            {{#if canCreate}}
                 <a class="nice-legend-button" data-action="addNewItem" data-document-class="Item" data-type="{{type}}" data-tooltip="{{localize 'DOCUMENT.Create' type=''}}">
                     <i class="fa-solid fa-plus" inert></i>
                 </a>
             {{/if}}
-            {{> "modules/dh-nice-sheets/templates/group-toggle.hbs" collapsed=(lookup @root.nice.collapsedGroups type)}}
+            {{> "modules/dh-nice-sheets/templates/group-toggle.hbs" collapsed=collapsed}}
         </legend>
         <ul class="items-list">
             {{#each collection as |item|}}

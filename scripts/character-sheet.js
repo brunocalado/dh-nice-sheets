@@ -17,7 +17,7 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
 
 /*
  * What this sheet relies on from the Daggerheart system beyond its document data, checked against
- * 2.10.13. None of it is documented API, so when a system update breaks the sheet, start here:
+ * 2.12.1. None of it is documented API, so when a system update breaks the sheet, start here:
  * - Class paths: `game.system.api.applications.sheets.actors.Character` and
  *   `.sheetConfigs.CharacterSettings`.
  * - The `settingSheet` getter of the system's actor sheet, overridden to swap in our settings window.
@@ -25,8 +25,8 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
  *   the `viewLevelups` action name of the window control we take over. The level-up windows list
  *   their own dependencies in levelup.js.
  * - PARTS ids: the system prepares each part's context by its id, so ours keep the system's names.
- * - Keys of the system's render context: tabs, attributes, equippedItems, inventory,
- *   featureGroups, background, connections, isDeath.
+ * - Keys of the system's render context: tabs, attributes, equippedItems, inventory (its
+ *   `sections` and `currencies`), featureGroups, background, connections, isDeath.
  * - Settings and schema: `variantRules.massiveDamage`, `LevelTiers` tiers' `levels.end`, and the
  *   party schema's `tagTeam.initiator.cost`.
  * - The Tag Team button opens `game.system.api.applications.dialogs.TagTeamDialog(party)`, the

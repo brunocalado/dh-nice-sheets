@@ -10,9 +10,11 @@ import { FLAGS, MODULE_ID, STORABLE_TYPES } from "./constants.js";
 import { releaseContents, unsetFlagData } from "./helpers.js";
 
 /*
- * What containers rely on from the Daggerheart system, checked against 2.10.13:
- * - The inventory lists of the system's render context (`context.inventory`: weapons, armor,
- *   consumables, loot), in STORABLE_TYPES order and sorted.
+ * What containers rely on from the Daggerheart system, checked against 2.12.1:
+ * - The inventory sections of the system's render context (`context.inventory.sections`, each
+ *   `{ type, title, collection, canCreate, isQuantifiable }`): the four base ones in
+ *   STORABLE_TYPES order and sorted, then one `type: "loot"` section per item category of
+ *   `CONFIG.DH.ITEM.itemCategories` with a `sheetGroup`, holding the loot moved out of Loot.
  * - What `_onDropItem` and `Actor#transferItem` return and create on drops from another actor.
  * - Its sheets bind DragDrop without a drop permission, so a drop on a sheet the user can't edit
  *   still reaches `_onDropItem`.
@@ -43,30 +45,47 @@ export function ContainerSheetMixin(Base) {
     static CONTAINER_ROWS = {};
 
     /**
-     * Split the system's inventory lists into containers and loose items. A container is a loot
-     * item with the container flag; it leaves the Loot list for a panel of its own, listing what
-     * it holds by type. An item stays loose when its container is gone or when it is equipped:
-     * equipping takes it out (see main.js), so this only covers data that predates that.
+     * Split the system's inventory sections into containers and loose items. A container is a
+     * loot item with the container flag; it leaves its section for a panel of its own, listing
+     * what it holds by type. An item stays loose when its container is gone or when it is
+     * equipped: equipping takes it out (see main.js), so this only covers data that predates that.
      * @param {object} [inventory]                      The system's `context.inventory`.
      * @param {Record<string, boolean>} collapsedGroups  Groups this browser shows collapsed.
      */
     containerInventory(inventory, collapsedGroups) {
-      if (!inventory) return null;
-      const { weapons, armor, consumables, loot } = inventory;
-      const contents = new Map(loot.filter(item => item.getFlag(MODULE_ID, FLAGS.container)).map(item => [item, []]));
+      if (!inventory?.sections) return null;
+      const lootItems = inventory.sections.filter(section => section.type === "loot").flatMap(section => section.collection);
+      const contents = new Map(lootItems.filter(item => item.getFlag(MODULE_ID, FLAGS.container)).map(item => [item, []]));
       const byId = new Map([...contents].map(([container, held]) => [container.id, held]));
 
-      // The lists come in STORABLE_TYPES order and sorted, so each container's list ends up
-      // grouped by type with the sheet's own order inside each type.
-      const loose = Object.fromEntries(Object.entries({ weapons, armor, consumables, loot }).map(([key, items]) => [
-        key,
-        items.filter(item => {
-          if (contents.has(item)) return false;
-          const held = item.system.equipped ? null : byId.get(item.getFlag(MODULE_ID, FLAGS.storedIn));
-          held?.push(item);
-          return !held;
-        })
-      ]));
+      // The base sections come in STORABLE_TYPES order and sorted, so each container's list ends
+      // up grouped by type with the sheet's own order inside each type. Category sections come
+      // after them and are loot too, so items they hold join the end of a container's loot. They
+      // stay groups of their own, as on the system's sheet: a module that gives a category a
+      // sheetGroup asks for exactly that, and folding them into Loot would hide it here only.
+      const sections = inventory.sections.map(section => {
+        // The four base sections keep the bare type as their key, so collapse states saved before
+        // 2.12 still apply; a category section is keyed by its category, which the system doesn't
+        // pass. Read before filtering, so an emptied section keeps its key. The system moves only
+        // categories with a sheetGroup out of Loot; an item whose category has none stays in the
+        // plain section, so a category alone proves nothing.
+        const category = section.type === "loot"
+          ? section.collection.map(item => item.system.category)
+            .find(key => CONFIG.DH.ITEM.itemCategories[key]?.sheetGroup)
+          : null;
+        const groupType = category ? `loot-${category}` : section.type;
+        return {
+          ...section,
+          groupType,
+          collapsed: !!collapsedGroups[groupType],
+          collection: section.collection.filter(item => {
+            if (contents.has(item)) return false;
+            const held = item.system.equipped ? null : byId.get(item.getFlag(MODULE_ID, FLAGS.storedIn));
+            held?.push(item);
+            return !held;
+          })
+        };
+      });
 
       const containers = [...contents].map(([item, held]) => ({
         item,
@@ -77,7 +96,7 @@ export function ContainerSheetMixin(Base) {
           return { item: heldItem, ...row, showActions: showActions ? this.isEditable : undefined };
         })
       }));
-      return { ...loose, containers };
+      return { sections, containers };
     }
 
     /**
