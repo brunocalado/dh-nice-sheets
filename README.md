@@ -34,7 +34,7 @@ The level-up manager is the system's, in the sheet's style. Each advancement is 
 
 ## Inventory and containers
 
-Any loot item can hold other items. Right-click it and choose **Use as container**, and it becomes a panel at the top of the Inventory tab. Drag weapons, armor, consumables or loot onto the panel to store them, and drag them anywhere else in the tab to take them out. **Take out of the container** in an item's menu does the same.
+Any loot item can hold other items. Right-click it and choose **Use as container**, and it becomes a panel at the top of the Inventory tab. Drag weapons, armor, consumables or loot onto the panel to store them, and drag them anywhere else in the tab to take them out. The item menu does the same without dragging: **Store in a container** puts the item in one, asking which when there are several, and **Take out of the container** takes it out.
 
 <p align="center"><img width="900" src="docs/sheet-inventory.webp" alt="The Inventory tab with a backpack container holding four items above the weapon list"></p>
 
@@ -46,6 +46,8 @@ A few rules keep the inventory consistent:
 - An item dragged from another character, from the sidebar or from a compendium onto a container is stored there as it arrives. This also works when you don't own the other character and the GM's client makes the transfer.
 
 The currencies the GM enabled in the homebrew settings sit next to the search field. The star on an item row pins it to the Favorites section of the sidebar. Items the sidebar already lists, like equipped gear and loadout cards, have no star.
+
+When another module sorts loot into categories that the system's sheet shows as groups of their own, the Inventory tab shows those groups too, after Loot.
 
 Every group in the Features and Inventory tabs can be collapsed with the arrow on its title. The sheet remembers which groups you collapsed, per character, on that computer.
 
@@ -75,7 +77,7 @@ The party sheet puts every member on one page. Each character has a card with th
 
 The buttons at the top start a Tag Team or a Group Roll, and light up while one is under way. The GM also gets buttons for a short and a long rest. When the system's **Hide Party Stats** setting hides the stats from you, the cards show only the portrait, the name and the heritage.
 
-The Inventory tab works like the character's, containers included, with the party's coins next to the search field. The party's Notes tab is hidden. The GM can show it with **Show the party Notes tab** in the module settings.
+The Inventory tab works like the character's, containers included, but has no search field. The party's coins sit at the top, next to a button that opens the compendium browser. The party's Notes tab is hidden. The GM can show it with **Show the party Notes tab** in the module settings.
 
 ## The companion sheet
 
@@ -123,7 +125,7 @@ Download the [latest release](https://github.com/brunocalado/dh-nice-sheets/rele
 https://github.com/brunocalado/dh-nice-sheets/releases/latest/download/module.json
 ```
 
-It needs Foundry VTT v14 and the Daggerheart system, version 2.10.13 or later.
+It needs Foundry VTT v14 and the Daggerheart system, version 2.12.0 or later.
 
 ## ⚖️ Credits & License
 

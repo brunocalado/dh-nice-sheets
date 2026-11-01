@@ -34,3 +34,9 @@ Hooks.on("dh-nice-sheets.partyActions", (sheet, actions) => {
 ```
 
 The hook only fires on the Nice party sheet. To support the system's own party sheet as well, keep that code path for it and skip the Nice one, which has the `dh-nice-sheets-party` class on its window.
+
+## Loot categories
+
+Since Daggerheart 2.12, a module can register loot categories in `CONFIG.DH.ITEM.itemCategories`. A category with a `sheetGroup` gets a group of its own in the inventory, and the Nice character and party sheets show it the way the system's sheets do: after Loot, titled with its `sheetGroup`, localized, with no create button. Nothing needs to be registered with Nice Sheets for this.
+
+On the Nice sheets the group can also be collapsed, apart from Loot. Its items are loot like any other, so they can be stored in a container and show among the container's loot. A category without a `sheetGroup` stays in the Loot group.
