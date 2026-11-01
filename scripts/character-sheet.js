@@ -35,7 +35,7 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
  *   `[data-application-part="inventory"] .items-section`; the loadout filters, whose hiding is
  *   undone (_attachPartListeners).
  * - Markup of the system's item partials: `.inventory-item[data-item-id]`, `.controls >
- *   [data-action="triggerContextMenu"]`, `.item-name`, `.img-portait` (the system's spelling);
+ *   [data-action="triggerContextMenu"]`, `.item-name`, `.img-portrait`;
  *   and `.character-details`, the heritage context menu's selector.
  * - Coins drag from `.currency[data-currency] .drag-handle` (the base actor sheet's `dragDrop` and
  *   `_onDragStart`).
@@ -878,7 +878,7 @@ export function defineNiceCharacterSheet() {
       // Sidebar rows hide their stats line, so the item tooltip the system puts on the icon is
       // also given to the name, the larger target.
       for (const row of this.element.querySelectorAll(".nice-sidebar .inventory-item-compact")) {
-        const tooltip = row.querySelector(".img-portait")?.dataset.tooltip;
+        const tooltip = row.querySelector(".img-portrait")?.dataset.tooltip;
         const name = row.querySelector(".item-name");
         if (tooltip && name) name.dataset.tooltip = tooltip;
       }

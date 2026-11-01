@@ -249,7 +249,7 @@
      light crosses it once and the two duality dice tumble in over it, Hope in gold and Fear in
      violet. The markup is the system's, so the layers are the portrait's two pseudo-elements (one
      die each, so each can spin on its own) and the system's roll image, reused for the glint. */
-  .inventory-item .img-portait:has(.roll-img) {
+  .inventory-item .img-portrait:has(.roll-img) {
     isolation: isolate;
     border-radius: 4px;
     transition: box-shadow 0.25s var(--nice-ease);

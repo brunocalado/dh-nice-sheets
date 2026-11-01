@@ -1,3 +1,7 @@
+# Unreleased
+
+- [Fixed] With Daggerheart 2.12, hovering a usable item's icon shows the tumbling Hope and Fear dice again instead of the system's white die, sidebar item icons keep their size, and sidebar item names show the item tooltip again.
+
 # 0.3.3
 
 - [Breaking][Changed] Requires Daggerheart 2.12.0.
