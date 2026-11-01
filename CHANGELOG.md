@@ -1,4 +1,4 @@
-# Unreleased
+# 0.3.3
 
 - [Breaking][Changed] Requires Daggerheart 2.12.0.
 - [Fixed] The character and party sheets open again with Daggerheart 2.12, inventory included.
