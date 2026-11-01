@@ -216,19 +216,23 @@
         text-shadow: none;
       }
 
-      &.unequipped {
+      /* The system marks a toggle that is off (an unequipped item, a versatile weapon on its main
+         profile) with `.inactive` and fades it to half; the dashed rest look below says "off" instead.
+         `.inactive` is generic: if a later system build adds it to another control, narrow these
+         selectors to the two data-actions. */
+      &.inactive {
         opacity: 1;
       }
 
       /* Rest and row-hover states skip the hovered button, or their colors land on the gold fill. */
-      &.unequipped:not(:hover) {
+      &.inactive:not(:hover) {
         color: var(--nice-text-muted);
         border-color: var(--nice-panel-border);
         border-style: dashed;
       }
 
-      /* Equipped marker stays lit so the state is readable at rest. */
-      &[data-action="toggleEquipItem"]:not(.unequipped, :hover),
+      /* An "on" toggle stays lit so the state is readable at rest. */
+      &:is([data-action="toggleEquipItem"], [data-action="toggleVersatileWeapon"]):not(.inactive, :hover),
       &.nice-favorite.active:not(:hover) {
         color: var(--nice-gold);
         border-color: var(--nice-line);

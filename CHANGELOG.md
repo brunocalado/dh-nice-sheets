@@ -4,6 +4,8 @@
 - [Fixed] The character and party sheets open again with Daggerheart 2.12, inventory included.
 - [Changed] Verified with Daggerheart 2.12.1.
 - [Added] Loot categories that another module gives a group of their own show as their own inventory group, with its own collapse toggle.
+- [Fixed] With Daggerheart 2.12, the equip button of an unequipped weapon or armor shows as off again, instead of a faded "equipped".
+- [Changed] A versatile weapon's swap button is lit while its alternate profile is active, like the equip button.
 
 # 0.3.2
 
