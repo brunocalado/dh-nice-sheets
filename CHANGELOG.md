@@ -1,4 +1,4 @@
-# Unreleased
+# 0.3.5
 
 - [Fixed] With Daggerheart 2.12.8, clicking the icon of a weapon, consumable or domain card in the Inventory and Loadout tabs (and inside containers) uses the item again, and the icon shows the dice on hover.
 - [Changed] Verified with Daggerheart 2.12.8.
