@@ -185,8 +185,16 @@ export function defineNiceCharacterSheet() {
       }
     };
 
-    /** What templates/inventory.hbs passes to the rows of each type's section, besides the quantity. */
-    static CONTAINER_ROWS = { loot: { showActions: true } };
+    /**
+     * What templates/inventory.hbs passes to the rows of each type's section, besides the quantity.
+     * Since Daggerheart 2.12.8 a row's icon uses the item only when `isUsable` or `showActions` is set.
+     */
+    static CONTAINER_ROWS = {
+      weapon: { isUsable: true },
+      armor: { isUsable: true },
+      consumable: { isUsable: true },
+      loot: { showActions: true, isUsable: true }
+    };
 
     /** @inheritdoc */
     static PARTS = {

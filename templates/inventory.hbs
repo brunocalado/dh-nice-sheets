@@ -33,7 +33,7 @@
         {{#each nice.inventory.sections as |section|}}
             {{> itemSection title=section.title type=section.type groupType=section.groupType
                 collapsed=section.collapsed collection=section.collection canCreate=section.canCreate
-                isQuantifiable=section.isQuantifiable
+                isQuantifiable=section.isQuantifiable isUsable=@root.editable
                 showActions=(and section.canCreate (eq section.type "loot"))}}
         {{/each}}
     </div>
@@ -54,7 +54,7 @@
         </legend>
         <ul class="items-list">
             {{#each collection as |item|}}
-                {{> 'daggerheart.inventory-item' item=item type=../type actorType=@root.document.type isQuantifiable=../isQuantifiable showActions=../showActions}}
+                {{> 'daggerheart.inventory-item' item=item type=../type actorType=@root.document.type isQuantifiable=../isQuantifiable isUsable=../isUsable showActions=../showActions}}
             {{/each}}
         </ul>
     </fieldset>

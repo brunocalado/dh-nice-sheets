@@ -17,7 +17,7 @@
     {{#if container.contents.length}}
         <ul class="items-list">
             {{#each container.contents as |row|}}
-                {{> 'daggerheart.inventory-item' item=row.item type=row.item.type actorType=@root.document.type isQuantifiable=row.isQuantifiable showActions=row.showActions hideResources=row.hideResources}}
+                {{> 'daggerheart.inventory-item' item=row.item type=row.item.type actorType=@root.document.type isQuantifiable=row.isQuantifiable isUsable=row.isUsable showActions=row.showActions hideResources=row.hideResources}}
             {{/each}}
         </ul>
     {{else}}

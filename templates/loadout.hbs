@@ -2,7 +2,7 @@
     {{!-- No search or filter here: rows the system's loadout filters hide are shown again (see
          NiceCharacterSheet#_attachPartListeners). --}}
     <div class="items-section nice-scroll nice-sections">
-        {{> 'daggerheart.inventory-items' title='DAGGERHEART.GENERAL.Tabs.loadout' type='domainCard' collection=document.system.domainCards.loadout canCreate=@root.editable inVault=false}}
-        {{> 'daggerheart.inventory-items' title='DAGGERHEART.GENERAL.Tabs.vault' type='domainCard' collection=document.system.domainCards.vault canCreate=@root.editable inVault=true}}
+        {{> 'daggerheart.inventory-items' title='DAGGERHEART.GENERAL.Tabs.loadout' type='domainCard' collection=document.system.domainCards.loadout canCreate=@root.editable inVault=false isUsable=@root.editable}}
+        {{> 'daggerheart.inventory-items' title='DAGGERHEART.GENERAL.Tabs.vault' type='domainCard' collection=document.system.domainCards.vault canCreate=@root.editable inVault=true isUsable=@root.editable}}
     </div>
 </section>

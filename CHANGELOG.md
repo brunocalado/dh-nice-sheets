@@ -1,3 +1,8 @@
+# Unreleased
+
+- [Fixed] With Daggerheart 2.12.8, clicking the icon of a weapon, consumable or domain card in the Inventory and Loadout tabs (and inside containers) uses the item again, and the icon shows the dice on hover.
+- [Changed] Verified with Daggerheart 2.12.8.
+
 # 0.3.4
 
 - [Fixed] With Daggerheart 2.12, hovering a usable item's icon shows the tumbling Hope and Fear dice again instead of the system's white die, sidebar item icons keep their size, and sidebar item names show the item tooltip again.

@@ -38,10 +38,10 @@ export function ContainerSheetMixin(Base) {
   return class ContainerSheet extends Base {
     /**
      * Parameters each item type's rows pass to the system's inventory-item partial inside a
-     * container panel, the same ones the type's own section passes. `showActions: true` stands for
-     * "when the sheet is editable". Whether a row has a quantity isn't listed here: the system
+     * container panel, the same ones the type's own section passes. `showActions: true` and
+     * `isUsable: true` stand for "when the sheet is editable". Whether a row has a quantity isn't listed here: the system
      * decides it per actor type (`metadata.unquantifiable`), and containerInventory asks it too.
-     * @type {Record<string, {showActions?: boolean, hideResources?: boolean}>}
+     * @type {Record<string, {showActions?: boolean, isUsable?: boolean, hideResources?: boolean}>}
      */
     static CONTAINER_ROWS = {};
 
@@ -93,12 +93,13 @@ export function ContainerSheetMixin(Base) {
         groupType: `container-${item.id}`,
         collapsed: !!collapsedGroups[`container-${item.id}`],
         contents: held.map(heldItem => {
-          const { showActions, ...row } = this.constructor.CONTAINER_ROWS[heldItem.type] ?? {};
+          const { showActions, isUsable, ...row } = this.constructor.CONTAINER_ROWS[heldItem.type] ?? {};
           return {
             item: heldItem,
             ...row,
             isQuantifiable: !this.document.metadata.unquantifiable?.includes(heldItem.type),
-            showActions: showActions ? this.isEditable : undefined
+            showActions: showActions ? this.isEditable : undefined,
+            isUsable: isUsable ? this.isEditable : undefined
           };
         })
       }));
