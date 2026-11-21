@@ -10,7 +10,7 @@ import { FLAGS, MODULE_ID, STORABLE_TYPES } from "./constants.js";
 import { releaseContents, unsetFlagData } from "./helpers.js";
 
 /*
- * What containers rely on from the Daggerheart system, checked against 2.12.1:
+ * What containers rely on from the Daggerheart system, checked against 2.13.0:
  * - The inventory sections of the system's render context (`context.inventory.sections`, each
  *   `{ type, title, collection, canCreate, isQuantifiable }`): the four base ones in
  *   STORABLE_TYPES order and sorted, then one `type: "loot"` section per item category of

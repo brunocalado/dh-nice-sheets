@@ -17,7 +17,7 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
 
 /*
  * What this sheet relies on from the Daggerheart system beyond its document data, checked against
- * 2.12.1. None of it is documented API, so when a system update breaks the sheet, start here:
+ * 2.13.0. None of it is documented API, so when a system update breaks the sheet, start here:
  * - Class paths: `game.system.api.applications.sheets.actors.Character` and
  *   `.sheetConfigs.CharacterSettings`.
  * - The `settingSheet` getter of the system's actor sheet, overridden to swap in our settings window.
@@ -37,6 +37,8 @@ import { RING_FLASHES, VitalCards } from "./vital-cards.js";
  * - Markup of the system's item partials: `.inventory-item[data-item-id]`, `.controls >
  *   [data-action="triggerContextMenu"]`, `.item-name`, `.img-portrait`;
  *   and `.character-details`, the heritage context menu's selector.
+ * - The loadout and vault pass `showActions=true` to `daggerheart.inventory-items`, as the system's
+ *   own loadout does since 2.13, so domain cards show their action buttons.
  * - Coins drag from `.currency[data-currency] .drag-handle` (the base actor sheet's `dragDrop` and
  *   `_onDragStart`).
  * - Action names in the templates, among them `toggleArmorMangement` (the system's spelling).
