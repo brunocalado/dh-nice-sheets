@@ -1,4 +1,4 @@
-# Unreleased
+# 0.3.6
 
 - [Fixed] With Daggerheart 2.13, domain cards in the Loadout and Vault show their action buttons, like the system's sheet.
 - [Changed] Verified with Daggerheart 2.13.0.
